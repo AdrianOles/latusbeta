@@ -1,0 +1,22 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-entratest-dev-115453-authRole",
+      "UnauthRoleArn": "arn:aws:iam::434555106948:role/amplify-entratest-dev-115453-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::434555106948:role/amplify-entratest-dev-115453-authRole",
+      "Region": "ca-central-1",
+      "DeploymentBucketName": "amplify-entratest-dev-115453-deployment",
+      "UnauthRoleName": "amplify-entratest-dev-115453-unauthRole",
+      "StackName": "amplify-entratest-dev-115453",
+      "StackId": "arn:aws:cloudformation:ca-central-1:434555106948:stack/amplify-entratest-dev-115453/a1c8c2e0-21ed-11f0-abfd-0637f480bae7",
+      "AmplifyAppId": "di8uwioqmggc8"
+    },
+    "categories": {
+      "auth": {
+        "entratest": {
+          "googleClientId": "26886662053-9icrvv3b5nc77o2tiaqqc6ki7udojc0t.apps.googleusercontent.com"
+        }
+      }
+    }
+  }
+}
