@@ -10,6 +10,8 @@ import { useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../colors';
 import Signin from '../screens/Signin';
+import Profile from '../screens/Profile';
+import Sports from '../screens/Sports';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,6 +41,10 @@ const Navigation = () => {
     const { authUser, loading, updateAuthUser, theme } = useAuthContext();
     const navigation = useNavigation<HomeStackParamList>();
 
+    useEffect(() => {
+        console.log(authUser)
+    }, [])
+
     const HomeStack = () => (
         <NativeStack.Navigator screenOptions={{ headerShown: false }}>
             <NativeStack.Screen name="HomeScreen" component={Home} options={{
@@ -50,12 +56,12 @@ const Navigation = () => {
     const MainTabNavigator = () => (
         <Tab.Navigator screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
-                let iconName: 'home' | 'home-outline' | 'grid' | 'grid-outline' | 'person' | 'person-outline' = 'home';
+                let iconName: 'home' | 'home-outline' | 'trophy' | 'trophy-outline' | 'person' | 'person-outline' = 'home';
 
                 if (route.name === 'Home') {
                     iconName = focused ? 'home' : 'home-outline';
-                } else if (route.name === 'Resources') {
-                    iconName = focused ? 'grid' : 'grid-outline';
+                } else if (route.name === 'Sports') {
+                    iconName = focused ? 'trophy' : 'trophy-outline';
                 } else if (route.name === 'Profile') {
                     iconName = focused ? 'person' : 'person-outline';
                 }
@@ -71,8 +77,8 @@ const Navigation = () => {
             headerShown: false,
         })}>
             <Tab.Screen name="Home" component={HomeStack} />
-            <Tab.Screen name="Resources" component={HomeStack} />
-            <Tab.Screen name="Profile" component={HomeStack} />
+            <Tab.Screen name="Sports" component={Sports} />
+            <Tab.Screen name="Profile" component={Profile} />
         </Tab.Navigator>
       );
     

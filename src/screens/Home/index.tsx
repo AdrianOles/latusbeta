@@ -1,13 +1,27 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
+import { useAuthContext } from '../../contexts/AuthContext';
+import colors from '../../colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { signOut } from 'aws-amplify/auth';
 
 const Home = () => {
+      const { authUser, theme } = useAuthContext();
+
     return (
-        <View style={{backgroundColor: "#FFFFFF"}}>
+        <SafeAreaView style={{ backgroundColor: colors.background[theme].general }}>
             <Text style={{color: '#000000'}}>
-                This is home
+                {authUser?.email}
             </Text>
-        </View>
+            <Text style={{ color: '#000000' }}>
+                {authUser?.school}
+            </Text>
+            <TouchableOpacity style={{ borderRadius: 16, backgroundColor: colors.text[theme].primary, alignItems: 'center', padding: 16, margin: 16 }} onPress={() => signOut()}>
+                <Text style={{ color: colors.background[theme].general, fontSize: 17, lineHeight: 17, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>
+                    Sign Out
+                </Text>
+            </TouchableOpacity>
+        </SafeAreaView>
     )
 }
 

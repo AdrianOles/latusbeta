@@ -1,2 +1,12 @@
 export const DARKLOGO = require('./siginLogo.png'); 
-export const LIGHTLOGO = require('./icon.png')
+export const LIGHTLOGO = require('./icon.png');
+export const asLogo = require('./schools/as.png');
+export const brLogo = require('./schools/br.png')
+export const ccLogo = require('./schools/cc.png')
+export const ctkLogo = require('./schools/ctk.png')
+export const htLogo = require('./schools/ht.png')
+export const loylogo = require('./schools/loy.png')
+export const ndLogo = require('./schools/nd.png')
+export const staLogo = require('./schools/sta.png')
+export const stfxLogo = require('./schools/stfx.png')
+export const stkLogo = require('./schools/stk.png')

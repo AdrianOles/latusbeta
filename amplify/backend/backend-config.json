@@ -1,4 +1,20 @@
 {
+  "api": {
+    "sportsAPI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "sportsHCAA"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
   "auth": {
     "entratest": {
       "customAuth": false,
@@ -15,25 +31,55 @@
         "signupAttributes": [
           "EMAIL"
         ],
-        "socialProviders": [
-          "GOOGLE"
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
         ],
-        "usernameAttributes": [],
         "verificationMechanisms": [
           "EMAIL"
         ]
       },
       "providerPlugin": "awscloudformation",
       "service": "Cognito"
-    }
-  },
-  "function": {},
-  "parameters": {
-    "AMPLIFY_auth_entratest_googleClientId": {
-      "usedBy": [
+    },
+    "userPoolGroups": {
+      "dependsOn": [
         {
+          "attributes": [
+            "UserPoolId",
+            "AppClientIDWeb",
+            "AppClientID",
+            "IdentityPoolId"
+          ],
           "category": "auth",
           "resourceName": "entratest"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito-UserPool-Groups"
+    }
+  },
+  "function": {
+    "sportsHCAA": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_sportsHCAA_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sportsHCAA"
+        }
+      ]
+    },
+    "AMPLIFY_function_sportsHCAA_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sportsHCAA"
         }
       ]
     }

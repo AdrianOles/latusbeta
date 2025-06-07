@@ -13,9 +13,17 @@
     },
     "categories": {
       "auth": {
-        "entratest": {
-          "googleClientId": "26886662053-9icrvv3b5nc77o2tiaqqc6ki7udojc0t.apps.googleusercontent.com"
+        "entratest": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "sportsHCAA": {
+          "deploymentBucketName": "amplify-entratest-dev-115453-deployment",
+          "s3Key": "amplify-builds/sportsHCAA-7a71545532483138734e-build.zip"
         }
+      },
+      "api": {
+        "sportsAPI": {}
       }
     }
   }

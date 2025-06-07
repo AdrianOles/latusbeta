@@ -9,36 +9,37 @@ import Navigation from './src/navigation';
 import Toast from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 
+// const userPoolClientId = "4jje2jbjic8g5sgu8vuud3kk2j";
+// const userPoolId = amplifyconfig.aws_user_pools_id;
+
+// const correctResponseType: "code" | "token" = "code"
+
+// const oauthConfig = {
+//   domain: "entratest-dev.auth.ca-central-1.amazoncognito.com",
+//   scopes: amplifyconfig.oauth.scope,
+//   redirectSignIn: [amplifyconfig.oauth.redirectSignIn.split(',')[2]],
+//   redirectSignOut: [amplifyconfig.oauth.redirectSignOut.split(',')[2]],
+//   responseType: correctResponseType,
+// }
+
+// Amplify.configure({
+//   Auth: {
+//     Cognito: {
+//       loginWith: {
+//         oauth: {
+//           ...oauthConfig,
+//           redirectSignIn: oauthConfig.redirectSignIn,
+//           redirectSignOut: oauthConfig.redirectSignOut
+//         }
+//       },
+//       userPoolClientId,
+//       userPoolId
+//     }
+//   }
+// });
+
+
 Amplify.configure(amplifyconfig);
-
-const userPoolClientId = "4jje2jbjic8g5sgu8vuud3kk2j";
-const userPoolId = amplifyconfig.aws_user_pools_id;
-
-const correctResponseType: "code" | "token" = "code"
-
-const oauthConfig = {
-  domain: "entratest-dev.auth.ca-central-1.amazoncognito.com",
-  scopes: amplifyconfig.oauth.scope,
-  redirectSignIn: [amplifyconfig.oauth.redirectSignIn.split(',')[2]],
-  redirectSignOut: [amplifyconfig.oauth.redirectSignOut.split(',')[2]],
-  responseType: correctResponseType,
-}
-
-Amplify.configure({
-  Auth: {
-    Cognito: {
-      loginWith: {
-        oauth: {
-          ...oauthConfig,
-          redirectSignIn: oauthConfig.redirectSignIn,
-          redirectSignOut: oauthConfig.redirectSignOut
-        }
-      },
-      userPoolClientId,
-      userPoolId
-    }
-  }
-});
 
 const myLightTheme = {
   ...DefaultTheme,

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/scores": {
+      "name": "/scores",
+      "lambdaFunction": "sportsHCAA",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

@@ -5,22 +5,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Appearance, useColorScheme } from 'react-native';
 
 export type AuthUserCustomType = {
-    staffRole: 'student' | 'teacher' | 'admin';
-    boardRole: 'HCDSB';
-    schoolRole: string;
-    lastName: string;
-    firstName: string;
     email: string;
-    picture: string;
-    uuid: string;
-    boardAccess: boolean;
+    school: string;
 }
 
 export type AuthUserType = {
     email: string;
-    picture: string;
-    "family_name": string;
-    "given_name": string;
+    school: string;
 }
 
 export interface AuthContextType {
@@ -35,46 +26,6 @@ export interface AuthContextType {
     updateSchool: (school: string) => void;
     updateAFilter: (filter: 'all' | 'upcoming' | 'new' | 'created' | 'ending') => void;
 }
-
-interface UserGroups {
-    staffRole: 'student' | 'teacher' | 'admin';
-    schoolGroup: string;
-    boardRole: 'HCDSB';
-}
-
-const categorizeGroups = (groups: any): UserGroups => {
-    const defaultGroupPattern = /^ca-central.*_Google$/;
-    const staffRoles = ['student', 'teacher', 'admin'];
-    const boardRoles = ['HCDSB', 'HDSB']; // Add other board roles as needed
-
-    let staffRole: 'student' | 'teacher' | 'admin' = 'student';
-    let schoolGroup: string = 'STFX';
-    let boardRole: 'HCDSB'= 'HCDSB';
-
-    for (const group of groups) {
-        // Ignore default Google group
-        if (defaultGroupPattern.test(group)) {
-            continue;
-        }
-
-        // Check if the group is a staff role
-        if (staffRoles.includes(group.toLowerCase())) {
-            staffRole = group.toLowerCase() as 'student' | 'teacher' | 'admin';
-        } else if (boardRoles.includes(group)) {
-            // Check if the group is a board role
-            boardRole = group;
-        } else {
-            // Otherwise, assume it's the school group
-            schoolGroup = group;
-        }
-    }
-
-    return {
-        staffRole,
-        schoolGroup,
-        boardRole
-    };
-};
 
 const AuthContext = createContext<AuthContextType>({
     authUser: null,
@@ -122,7 +73,7 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     }, [])
 
     useEffect(() => {
-        if (authUser && authUser.schoolRole === 'STFX') {
+        if (authUser && authUser.school === 'STFX') {
             if (colorScheme) {
                 if (colorScheme === 'light') {
                     setSchoolColor('#431DF040');
@@ -139,29 +90,20 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
                 }
             }
         }
-    }, [authUser?.schoolRole])
+    }, [authUser?.school])
 
     const updateAuthUser = async () => {
         try {
             const { userId } = await getCurrentUser();
             const response = (await fetchAuthSession()).tokens?.idToken?.payload["cognito:groups"];
-            const categorizedGroups = categorizeGroups(response);
             const attributes = await fetchUserAttributes();
 
 
-            if (userId && attributes && attributes.family_name && attributes.given_name && attributes.email && attributes.picture && attributes.sub) {
-                const schoolDesignation = categorizedGroups.schoolGroup === 'BOARDACCESS' ? 'STFX' : categorizedGroups.schoolGroup;
+            if (userId && attributes.email && attributes.picture) {
 
                 const tempUser: AuthUserCustomType = {
-                    staffRole: categorizedGroups.staffRole,
-                    schoolRole: schoolDesignation,
-                    boardRole: categorizedGroups.boardRole,
-                    lastName: attributes.family_name,
-                    firstName: attributes.given_name,
                     email: attributes.email,
-                    picture: attributes.picture,
-                    uuid: attributes.sub,
-                    boardAccess: categorizedGroups.schoolGroup === 'BOARDACCESS' ? true : false,
+                    school: attributes.picture,
                 }
                 setAuthUser(tempUser);
             }
@@ -197,7 +139,7 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
         if (authUser) {
             const newUser: AuthUserCustomType = {
                 ...authUser,
-                schoolRole: school
+                school: school
             }
 
             setAuthUser(newUser);

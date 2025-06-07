@@ -2,6 +2,7 @@
   "expo": {
     "name": "latusbeta",
     "slug": "latusbeta",
+    "scheme": "latusbeta.app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.adrianoles.latusbeta",
+      "bundleIdentifier": "latusbeta.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }

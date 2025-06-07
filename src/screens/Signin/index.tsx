@@ -9,9 +9,11 @@ import * as Haptics from 'expo-haptics';
 import Toast from 'react-native-toast-message'
 import { DARKLOGO, LIGHTLOGO } from '../../../assets/index';
 import colors from '../../colors';
+import { authorize } from 'react-native-app-auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const provider = {
-  custom: 'HCDSBmock'
+  custom: 'HCDSBmobile'
 }
 
 const Signin = () => {
@@ -41,22 +43,21 @@ const Signin = () => {
       clearErrorState();
       setLoading(true);
       try {
-        // updateAuthUser();
-        signInWithRedirect({provider})
-        // const { isSignedIn, nextStep } = await signIn({ username: "AdrianParent", password: "Ryanek05" });
-        // console.log(isSignedIn);
-        // console.log(nextStep);
+        updateAuthUser();
+        signInWithRedirect({ provider })
       } catch (error) {
-        console.log(error);
+        console.log('Error signing out: ', error);
       }
     }
   };
+
+  console.log("Auth user: ", authUser)
 
   //Not sure tbh XD
   useEffect(() => {
     if (error != '') setLoading(false);
   }, [error])
-  
+
   //Check auth state before allowing duplicate sign in
   useEffect(() => {
     const checkAuthState = async () => {
@@ -102,7 +103,7 @@ const Signin = () => {
                   </Text>
                 )
               }
-            </TouchableOpacity >
+            </TouchableOpacity>
             <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: colors.text[colorScheme ? colorScheme : 'light'].secondary, marginTop: 8, marginBottom: Platform.OS === 'android' ? 8 : 0 }}>Use your school google account</Text>
           </View>
         </View>

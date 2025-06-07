@@ -3,7 +3,7 @@
   "cognitoConfig": {
     "identityPoolName": "entratest",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "entrat2cf7eefe",
+    "resourceNameTruncated": "entratff269b11",
     "userPoolName": "entratest",
     "autoVerifiedAttributes": [
       "email"
@@ -26,6 +26,22 @@
     "userpoolClientGenerateSecret": false,
     "userpoolClientRefreshTokenValidity": 30,
     "userpoolClientWriteAttributes": [
+      "address",
+      "birthdate",
+      "family_name",
+      "middle_name",
+      "gender",
+      "locale",
+      "given_name",
+      "name",
+      "nickname",
+      "phone_number",
+      "preferred_username",
+      "picture",
+      "profile",
+      "updated_at",
+      "website",
+      "zoneinfo",
       "email"
     ],
     "userpoolClientReadAttributes": [
@@ -49,47 +65,30 @@
       "email_verified",
       "phone_number_verified"
     ],
-    "userpoolClientLambdaRole": "entrat2cf7eefe_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "entratff269b11_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": true,
-    "sharedId": "2cf7eefe",
+    "sharedId": "ff269b11",
     "resourceName": "entratest",
     "authSelections": "identityPoolAndUserPool",
     "useDefault": "manual",
-    "userPoolGroups": false,
+    "thirdPartyAuth": true,
+    "authProviders": [],
+    "usernameAttributes": [
+      "email"
+    ],
+    "userPoolGroups": true,
     "adminQueries": false,
     "triggers": {},
     "hostedUI": true,
     "hostedUIDomainName": "entratest",
-    "authProvidersUserPool": [
-      "Google"
+    "authProvidersUserPool": [],
+    "hostedUIProviderMeta": "[]",
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"latusbeta.app://callback/\"],\"LogoutURLs\":[\"latusbeta.app://callback/\"]}",
+    "userPoolGroupList": [
+      "parents"
     ],
-    "hostedUIProviderMeta": "[{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\",\"picture\":\"picture\"}}]",
-    "userPoolGroupList": [],
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
-    "useEnabledMfas": true,
-    "authRoleArn": {
-      "Fn::GetAtt": [
-        "AuthRole",
-        "Arn"
-      ]
-    },
-    "unauthRoleArn": {
-      "Fn::GetAtt": [
-        "UnauthRole",
-        "Arn"
-      ]
-    },
-    "breakCircularDependency": true,
-    "dependsOn": [],
-    "parentStack": {
-      "Ref": "AWS::StackId"
-    },
-    "permissions": [],
-    "authProviders": [
-      "accounts.google.com"
-    ],
-    "thirdPartyAuth": true,
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\",\"https://main.di8uwioqmggc8.amplifyapp.com/\",\"latus.app://callback/\"],\"LogoutURLs\":[\"http://localhost:3000/\",\"https://main.di8uwioqmggc8.amplifyapp.com/\",\"latus.app://callback/\"]}"
+    "useEnabledMfas": true
   }
 }
