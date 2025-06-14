@@ -25,7 +25,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "latusbeta.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,7 +36,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./local/assets/icon.png",
+          "icon": "./assets/icon.png",
           "color": "#ffffff",
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": false
@@ -66,8 +67,7 @@
             "com.zhiliaoapp.musically"
           ]
         }
-      ],
-      "expo-build-properties"
+      ]
     ],
     "extra": {
       "router": {},
