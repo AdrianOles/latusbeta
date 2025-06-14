@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native'
 import { useAuthContext } from '../../contexts/AuthContext';
 import colors from '../../colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -108,7 +108,7 @@ const Sports = () => {
         <SafeAreaView style={{ backgroundColor: colors.background[theme].general }}>
             <ScrollView style={{ paddingHorizontal: 16 }}>
                 {
-                    data?.map((item: LeagueGames, index: number) => (
+                    data ? data?.map((item: LeagueGames, index: number) => (
                         <View key={index}>
                             <View style={{ paddingVertical: 16 }}>
                                 <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 18 }}>{item.league}</Text>
@@ -168,7 +168,9 @@ const Sports = () => {
                                 }
                             </View>
                         </View>
-                    ))
+                    )) : (
+                        <ActivityIndicator></ActivityIndicator>
+                    )
                 }
             </ScrollView>
         </SafeAreaView>

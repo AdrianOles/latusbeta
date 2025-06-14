@@ -7,11 +7,13 @@ import { Appearance, useColorScheme } from 'react-native';
 export type AuthUserCustomType = {
     email: string;
     school: string;
+    role: string;
 }
 
 export type AuthUserType = {
     email: string;
     school: string;
+    role: string;
 }
 
 export interface AuthContextType {
@@ -95,15 +97,15 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     const updateAuthUser = async () => {
         try {
             const { userId } = await getCurrentUser();
-            const response = (await fetchAuthSession()).tokens?.idToken?.payload["cognito:groups"];
+            const response = (await fetchAuthSession()).tokens?.idToken?.payload;
             const attributes = await fetchUserAttributes();
-
 
             if (userId && attributes.email && attributes.picture) {
 
                 const tempUser: AuthUserCustomType = {
                     email: attributes.email,
                     school: attributes.picture,
+                    role: attributes["custom:role"] ? attributes["custom:role"] : 'Student'
                 }
                 setAuthUser(tempUser);
             }

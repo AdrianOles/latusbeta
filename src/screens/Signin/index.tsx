@@ -1,6 +1,6 @@
 import { fetchAuthSession, fetchUserAttributes, getCurrentUser, signIn, signInWithRedirect, signOut } from 'aws-amplify/auth'
 import React, { useEffect, useState, } from 'react'
-import { View, Text, TouchableOpacity, Image, Platform, useColorScheme } from 'react-native'
+import { View, Text, TouchableOpacity, Image, Platform, useColorScheme, Button } from 'react-native'
 import { SafeAreaFrameContext, SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../contexts/AuthContext'
 import { Hub } from 'aws-amplify/utils'
@@ -11,12 +11,15 @@ import { DARKLOGO, LIGHTLOGO } from '../../../assets/index';
 import colors from '../../colors';
 import { authorize } from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from 'expo-router'
+import { HomeStackParamList } from '../../navigation'
 
 const provider = {
   custom: 'HCDSBmobile'
 }
 
 const Signin = () => {
+  const navigation = useNavigation<HomeStackParamList>();
   const { authUser, updateAuthUser, error, clearErrorState } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const colorScheme = useColorScheme(); // Returns 'light' or 'dark'
@@ -43,6 +46,7 @@ const Signin = () => {
       clearErrorState();
       setLoading(true);
       try {
+        // signOut();
         updateAuthUser();
         signInWithRedirect({ provider })
       } catch (error) {
@@ -50,8 +54,6 @@ const Signin = () => {
       }
     }
   };
-
-  console.log("Auth user: ", authUser)
 
   //Not sure tbh XD
   useEffect(() => {
@@ -104,7 +106,12 @@ const Signin = () => {
                 )
               }
             </TouchableOpacity>
-            <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: colors.text[colorScheme ? colorScheme : 'light'].secondary, marginTop: 8, marginBottom: Platform.OS === 'android' ? 8 : 0 }}>Use your school google account</Text>
+            <View style={{paddingVertical: 16, display: 'flex', alignItems: 'center', flexDirection: 'row', justifyContent: 'center'}}>
+              <Text>Are you a parent? </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('ParentSignIn', {})}>
+                <Text style={{fontFamily: 'Figtree-SemiBold'}}>Log in</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>

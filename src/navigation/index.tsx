@@ -12,6 +12,7 @@ import colors from '../colors';
 import Signin from '../screens/Signin';
 import Profile from '../screens/Profile';
 import Sports from '../screens/Sports';
+import ParentSignIn from '../screens/ParentSignIn';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,11 +21,12 @@ const Stack = createStackNavigator<HomeStackParamList>();
 const Tab = createBottomTabNavigator();
 
 
-type HomeStackParamList = {
+export type HomeStackParamList = {
+    [x: string]: any;
     Home: undefined;
     MainTabs: undefined;
     Signin: undefined;
-
+    ParentSignIn: undefined;
 }
 
 const Navigation = () => {
@@ -103,6 +105,7 @@ const Navigation = () => {
             ) : (
                 <Stack.Navigator screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="Signin" component={Signin} />
+                    <Stack.Screen name="ParentSignIn" component={ParentSignIn} />
                 </Stack.Navigator>
             )}
         </>
