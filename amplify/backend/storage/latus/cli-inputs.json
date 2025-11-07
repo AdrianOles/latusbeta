@@ -1,0 +1,24 @@
+{
+  "resourceName": "latus",
+  "policyUUID": "c0809264",
+  "bucketName": "latus",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [],
+  "triggerFunction": "NONE",
+  "groupAccess": {
+    "ADMIN": [
+      "CREATE_AND_UPDATE",
+      "READ",
+      "DELETE"
+    ],
+    "TEACHER": [
+      "CREATE_AND_UPDATE",
+      "READ",
+      "DELETE"
+    ],
+    "STUDENT": [
+      "READ"
+    ]
+  }
+}

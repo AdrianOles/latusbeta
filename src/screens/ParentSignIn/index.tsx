@@ -48,8 +48,9 @@ const Signin = () => {
             clearErrorState();
             setLoading(true);
             try {
-                const result = await signIn({ username: "olesnieadrian@gmail.com", password: "latusaimformore" });
-                console.log(result);
+                // const result = await signIn({ username: email, password: password });
+                signOut();
+                // console.log(result);
             } catch (error) {
                 console.log('Error signing out: ', error);
             } finally {
@@ -73,6 +74,15 @@ const Signin = () => {
 
     useEffect(() => {
     }, [updateAuthUser]);
+
+    const signingOut = async () => {
+        console.log("Signing out")
+        await signOut();
+    }
+
+    useEffect(() => {
+        signingOut()
+    }, [])
 
     return (
         <SafeAreaView style={{ backgroundColor: colors.background[colorScheme ? colorScheme : 'light'].general }}>

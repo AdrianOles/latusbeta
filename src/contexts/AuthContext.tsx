@@ -8,6 +8,9 @@ export type AuthUserCustomType = {
     email: string;
     school: string;
     role: string;
+    staffRole: 'STUDENT' | 'ADMIN' | 'TEACHER' | 'PARENT';
+    name: string;
+    picture: string;
 }
 
 export type AuthUserType = {
@@ -19,6 +22,7 @@ export type AuthUserType = {
 export interface AuthContextType {
     authUser: AuthUserCustomType | null;
     loading: boolean;
+    staffRole: 'student' | 'admin' | 'teacher' | 'parent'
     error: string;
     aFilter: 'all' | 'upcoming' | 'new' | 'created' | 'ending'
     schoolColor: string;
@@ -31,6 +35,7 @@ export interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
     authUser: null,
+    staffRole: 'student',
     loading: true,
     error: '',
     aFilter: 'all',
@@ -59,21 +64,30 @@ const removeAnnouncementKeys = async () => {
     }
 }
 
+const possibleSchools = ["STFX", "ND", "AS", "BR"];
+
 
 const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
-    const colorScheme = useColorScheme(); // Returns 'light' or 'dark'
+    const colorScheme = useColorScheme();
     const [authUser, setAuthUser] = useState<AuthUserCustomType | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>("")
     const [aFilter, setAFilter] = useState<'all' | 'upcoming' | 'new' | 'ending' | 'created'>("all");
     const [schoolColor, setSchoolColor] = useState('#0F0052');
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const [theme, setTheme] = useState<'light' | 'dark'>(colorScheme || 'light');
+    const staffRole = 'student';
 
     useEffect(() => {
-        if (colorScheme) setTheme(colorScheme);
-        
-    }, [])
+        const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+            if (colorScheme) {
+                setTheme(colorScheme);
+            }
+        });
 
+        // Cleanup the subscription on unmount
+        return () => subscription.remove();
+    }, []);
+    
     useEffect(() => {
         if (authUser && authUser.school === 'STFX') {
             if (colorScheme) {
@@ -94,18 +108,48 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, [authUser?.school])
 
+    function getSchool(responseData: any) {
+        const schools = ["STFX", "ND", "AS", "BR"];
+        if (responseData && responseData['cognito:groups']) {
+            for (const group of responseData['cognito:groups']) {
+                if (schools.includes(group)) {
+                    return group;
+                }
+            }
+        }
+        return "STFX"; // Return null if no school is found
+    };
+
+    function getRole(responseData: any) {
+        const roles = ["STUDENT", "TEACHER", "ADMIN", "PARENT"];
+        if (responseData && responseData['cognito:groups']) {
+            for (const group of responseData['cognito:groups']) {
+                if (roles.includes(group)) {
+                    return group;
+                }
+            }
+        }
+        return "STUDENT"; // Return null if no school is found
+    };
+
     const updateAuthUser = async () => {
         try {
             const { userId } = await getCurrentUser();
             const response = (await fetchAuthSession()).tokens?.idToken?.payload;
             const attributes = await fetchUserAttributes();
 
+            const studentSchool = getSchool(response);
+            const userRole = getRole(response)
+            
             if (userId && attributes.email && attributes.picture) {
 
                 const tempUser: AuthUserCustomType = {
                     email: attributes.email,
-                    school: attributes.picture,
-                    role: attributes["custom:role"] ? attributes["custom:role"] : 'Student'
+                    school: studentSchool,
+                    role: userRole,
+                    staffRole: userRole,
+                    name: attributes["name"] ? attributes["name"] : attributes.email,
+                    picture: attributes.picture
                 }
                 setAuthUser(tempUser);
             }
@@ -186,7 +230,7 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ authUser, loading, updateAuthUser, error, clearErrorState, updateSchool, theme, aFilter, updateAFilter, schoolColor }}>
+        <AuthContext.Provider value={{ staffRole, authUser, loading, updateAuthUser, error, clearErrorState, updateSchool, theme, aFilter, updateAFilter, schoolColor }}>
             {children}
         </AuthContext.Provider>
     );

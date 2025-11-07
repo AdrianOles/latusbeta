@@ -1,5 +1,5 @@
-export const DARKLOGO = require('./siginLogo.png'); 
 export const LIGHTLOGO = require('./icon.png');
+export const SIGNIN = require('./signinLogo.png');
 export const asLogo = require('./schools/as.png');
 export const brLogo = require('./schools/br.png')
 export const ccLogo = require('./schools/cc.png')
@@ -10,3 +10,4 @@ export const ndLogo = require('./schools/nd.png')
 export const staLogo = require('./schools/sta.png')
 export const stfxLogo = require('./schools/stfx.png')
 export const stkLogo = require('./schools/stk.png')
+export const loglogo = require('./loglogo.png');

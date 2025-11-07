@@ -5,6 +5,9 @@ import { signOut } from 'aws-amplify/auth';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import colors from '../../colors';
+import { MeshGradientView } from 'expo-mesh-gradient';
+import ProfileGen from '../../components/ProfileGen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //!DONE
 const Profile = () => {
@@ -12,12 +15,13 @@ const Profile = () => {
     const [modalVisible, setModalVisible] = useState(false);
 
     //Sign out and update UI access
-    const handleSignOut = async () => {
+    const handleLocalSignOut = async () => {
         try {
-            signOut();
-            updateAuthUser(); // Trigger re-fetch of auth state
+            await AsyncStorage.clear(); // Or remove specific auth tokens
+            // Or remove from your state management (e.g., Redux, Context)
+            updateAuthUser(); // Set auth state to unauthenticated
         } catch (error) {
-            console.log('Error signing out: ', error);
+            console.log('Error clearing tokens: ', error);
         }
     };
 
@@ -26,6 +30,19 @@ const Profile = () => {
         setModalVisible(false);
         updateSchool(school)
     }
+
+    const schoolAbrv = {
+        "AS": "Assumption",
+        "BR": "Bishop Reding",
+        "CTK": "Christ the King",
+        "CC": "Corpus Christi",
+        "HT": "Holy Trinity",
+        "ND": "Notre Dame",
+        "STFX": "St. Francis Xavier",
+        "SKT": "St. Kateri Tekakwitha",
+        "LOY": "St. Ignatius of Loyola",
+        "STA": "St. Thomas Aquinas"
+    } as const
 
     const schoolData = [
         {
@@ -73,7 +90,8 @@ const Profile = () => {
     return (
         <View style={{
             height: '100%', width: '100%', display: 'flex',alignItems: 'center', gap: 16,
-            paddingBottom: 24, paddingTop: Platform.OS === 'ios' ? 104 : 72
+            paddingBottom: 24, paddingTop: Platform.OS === 'ios' ? 104 : 72, justifyContent: 'center',
+            backgroundColor: colors.background[theme].general
         }}>
             {/* Modal for school selection */}
             {/*  Only seen by developer really */}
@@ -103,19 +121,34 @@ const Profile = () => {
                     </View>
                 </Pressable>
             </Modal>
-            <View style={{height: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 12, width: '100%', paddingHorizontal: 62 }}>
-                    <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: colors.text[theme].primary, fontSize: 22, lineHeight: 30, fontFamily: 'Figtree-Bold' }}>
-                            {authUser?.email}
-                        </Text>
-                    </View>
+            {authUser && (
+                <View style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', paddingHorizontal: 48 }}>
+                    <Image
+                        width={88}
+                        height={88}
+                        source={{ uri: authUser.picture }}
+                        style={{borderRadius: 250}}
+                    />
+                    <Text numberOfLines={1} style={{ color: colors.text[theme].primary, fontSize: 22, lineHeight: 36, marginTop: 12, fontFamily: 'Figtree-Bold' }}>
+                        {authUser.name}
+                    </Text>
+                    <Text style={{
+                        color: colors.text[theme].secondary, fontSize: 17, lineHeight: 22, letterSpacing: 0.2,
+                        fontFamily: 'Figtree-SemiBold', textTransform: 'capitalize',
+                    }}>
+                        {authUser?.staffRole} - {authUser?.school ? schoolAbrv[authUser.school as keyof typeof schoolAbrv] : ''}
+                    </Text>
 
-                    <TouchableOpacity onPress={() => { handleSignOut(); }} style={{ borderRadius: 16, backgroundColor: theme === 'light' ? '#83818C1A' : '#FFFFFF1A', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 48, width: '100%' }}>
+                    <TouchableOpacity onPress={() => { handleLocalSignOut(); }}
+                        style={{
+                            borderRadius: 250, backgroundColor: theme === 'light' ? '#83818C1A' : '#B7B6BF33',
+                            alignItems: 'center', paddingVertical: 16, paddingHorizontal: 48, width: '100%',
+                            marginTop: 12
+                        }}>
                         <Text style={{ color: colors.system[theme].red, fontSize: 17, lineHeight: 22, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>Sign out</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            )}
         </View>
     )
 }

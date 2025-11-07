@@ -1,29 +1,41 @@
 {
-  "dev": {
+  "prod": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-entratest-dev-115453-authRole",
-      "UnauthRoleArn": "arn:aws:iam::434555106948:role/amplify-entratest-dev-115453-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::434555106948:role/amplify-entratest-dev-115453-authRole",
+      "AuthRoleName": "amplify-latus-prod-1e6c0-authRole",
+      "UnauthRoleArn": "arn:aws:iam::434555106948:role/amplify-latus-prod-1e6c0-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::434555106948:role/amplify-latus-prod-1e6c0-authRole",
       "Region": "ca-central-1",
-      "DeploymentBucketName": "amplify-entratest-dev-115453-deployment",
-      "UnauthRoleName": "amplify-entratest-dev-115453-unauthRole",
-      "StackName": "amplify-entratest-dev-115453",
-      "StackId": "arn:aws:cloudformation:ca-central-1:434555106948:stack/amplify-entratest-dev-115453/a1c8c2e0-21ed-11f0-abfd-0637f480bae7",
-      "AmplifyAppId": "di8uwioqmggc8"
+      "DeploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
+      "UnauthRoleName": "amplify-latus-prod-1e6c0-unauthRole",
+      "StackName": "amplify-latus-prod-1e6c0",
+      "StackId": "arn:aws:cloudformation:ca-central-1:434555106948:stack/amplify-latus-prod-1e6c0/14b8a440-65ac-11ef-bfde-0e27a94aae1d",
+      "AmplifyAppId": "d3ebv8rvc54f84",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-latus-prod-1e6c0-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
       "auth": {
-        "entratest": {},
+        "latus": {
+          "googleClientId": "618875472803-badpv8bcif94n8vhgjq32h9fugqhrlvn.apps.googleusercontent.com"
+        },
         "userPoolGroups": {}
       },
       "function": {
-        "sportsHCAA": {
-          "deploymentBucketName": "amplify-entratest-dev-115453-deployment",
-          "s3Key": "amplify-builds/sportsHCAA-7a71545532483138734e-build.zip"
+        "latusPostConfirmation": {
+          "GROUP": "STUDENT",
+          "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
+          "s3Key": "amplify-builds/latusPostConfirmation-6b686c505a716c4d562f-build.zip"
+        },
+        "latusPreSignup": {
+          "DOMAINALLOWLIST": "",
+          "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
+          "s3Key": "amplify-builds/latusPreSignup-4d596e41552f49416448-build.zip"
         }
       },
+      "storage": {
+        "latus": {}
+      },
       "api": {
-        "sportsAPI": {}
+        "latus": {}
       }
     }
   }

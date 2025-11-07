@@ -1,0 +1,49 @@
+{
+  "aws_project_region": "ca-central-1",
+  "aws_appsync_graphqlEndpoint": "https://j3iv6uogozbp5exijbwqod6tfi.appsync-api.ca-central-1.amazonaws.com/graphql",
+  "aws_appsync_region": "ca-central-1",
+  "aws_appsync_authenticationType": "AMAZON_COGNITO_USER_POOLS",
+  "aws_appsync_apiKey": "da2-rd6thuvdsjci5buf7i7rbxf2zm",
+  "aws_cognito_identity_pool_id": "ca-central-1:e6f9f784-00b8-4921-b4f4-d5daa3a5329e",
+  "aws_cognito_region": "ca-central-1",
+  "aws_user_pools_id": "ca-central-1_5XSK8Ewq3",
+  "aws_user_pools_web_client_id": "4o3hos9t34b052616vb6sfhn1",
+  "oauth": {
+    "domain": "latus-prod.auth.ca-central-1.amazoncognito.com",
+    "scope": [
+      "phone",
+      "email",
+      "openid",
+      "profile",
+      "aws.cognito.signin.user.admin"
+    ],
+    "redirectSignIn": "http://localhost:3000/signin/,https://www.latus.ca/signin/,latus.app://callback/",
+    "redirectSignOut": "http://localhost:3000/signin/,https://www.latus.ca/signin/,latus.app://callback/",
+    "responseType": "code"
+  },
+  "federationTarget": "COGNITO_USER_AND_IDENTITY_POOLS",
+  "aws_cognito_username_attributes": [],
+  "aws_cognito_social_providers": [
+    "GOOGLE"
+  ],
+  "aws_cognito_signup_attributes": [
+    "EMAIL",
+    "FAMILY_NAME",
+    "GIVEN_NAME",
+    "NAME",
+    "PICTURE"
+  ],
+  "aws_cognito_mfa_configuration": "OFF",
+  "aws_cognito_mfa_types": [
+    "SMS"
+  ],
+  "aws_cognito_password_protection_settings": {
+    "passwordPolicyMinLength": 8,
+    "passwordPolicyCharacters": []
+  },
+  "aws_cognito_verification_mechanisms": [
+    "EMAIL"
+  ],
+  "aws_user_files_s3_bucket": "latus1e6c0-prod",
+  "aws_user_files_s3_bucket_region": "ca-central-1"
+}

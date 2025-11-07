@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "latusbeta",
-    "slug": "latusbeta",
-    "scheme": "latusbeta.app",
-    "version": "1.0.1",
+    "name": "Latus",
+    "slug": "Latus",
+    "scheme": "latus.app",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -14,10 +14,54 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "latusbeta.app",
+      "buildNumber": "3",
+      "supportsTablet": false,
+      "bundleIdentifier": "latus.app",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./assets/splashDark.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
+        }
+      },
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photos to save and share images.",
+        "NSPhotoLibraryAddUsageDescription": "This app needs to save images to your photos.",
+        "NSContactsUsageDescription": "This lets you easily find and share content with your contacts directly from the app.",
+        "FacebookAppID": "1433567004455755",
+        "FacebookDisplayName": "latus",
+        "LSApplicationQueriesSchemes": [
+          "instagram",
+          "instagram-stories",
+          "fb",
+          "latus.app",
+          "instagram",
+          "instagram-stories",
+          "fb",
+          "latus.app",
+          "fb",
+          "instagram",
+          "twitter",
+          "tiktoksharesdk"
+        ],
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "fb1433567004455755",
+              "latus.app"
+            ]
+          },
+          {
+            "CFBundleURLSchemes": [
+              "fb1433567004455755",
+              "latus.app"
+            ]
+          }
+        ]
       }
     },
     "android": {
@@ -25,8 +69,21 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "config": {
+        "react-native-app-auth": {
+          "appAuthRedirectScheme": "latus.app"
+        }
+      },
       "edgeToEdgeEnabled": true,
-      "package": "latusbeta.app"
+      "package": "latus.app",
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_MEDIA_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -40,6 +97,14 @@
           "color": "#ffffff",
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": false
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+          "isAccessMediaLocationEnabled": true
         }
       ],
       [
@@ -72,8 +137,17 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "1f548b45-539f-4d85-a2c4-5f5e0c1bac6e"
+        "projectId": "38ef905d-694c-488a-8e18-c0cf3bd3fd8e"
+      },
+      "updates": {
+        "url": "https://u.expo.dev/38ef905d-694c-488a-8e18-c0cf3bd3fd8e"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/38ef905d-694c-488a-8e18-c0cf3bd3fd8e"
     }
   }
 }

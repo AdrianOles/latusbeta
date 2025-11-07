@@ -1,6 +1,30 @@
 [
   {
-    "groupName": "parents",
+    "groupName": "ADMIN",
     "precedence": 1
+  },
+  {
+    "groupName": "TEACHER",
+    "precedence": 2
+  },
+  {
+    "groupName": "STUDENT",
+    "precedence": 3
+  },
+  {
+    "groupName": "BOARDACCESS",
+    "precedence": 4
+  },
+  {
+    "groupName": "STFX",
+    "precedence": 5
+  },
+  {
+    "groupName": "HCDSB",
+    "precedence": 6
+  },
+  {
+    "groupName": "HDSB",
+    "precedence": 7
   }
 ]

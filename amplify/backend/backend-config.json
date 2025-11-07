@@ -1,24 +1,62 @@
 {
   "api": {
-    "sportsAPI": {
+    "latus": {
       "dependsOn": [
         {
           "attributes": [
-            "Name",
-            "Arn"
+            "UserPoolId"
           ],
-          "category": "function",
-          "resourceName": "sportsHCAA"
+          "category": "auth",
+          "resourceName": "latus"
         }
       ],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [
+            {
+              "apiKeyConfig": {
+                "apiKeyExpirationDate": "2025-12-28T16:51:05.829Z",
+                "apiKeyExpirationDays": 365,
+                "description": "key for 2025"
+              },
+              "authenticationType": "API_KEY"
+            }
+          ],
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authlatus"
+            }
+          }
+        }
+      },
       "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
+      "service": "AppSync"
     }
   },
   "auth": {
-    "entratest": {
+    "latus": {
       "customAuth": false,
-      "dependsOn": [],
+      "dependsOn": [
+        {
+          "attributes": [
+            "Arn",
+            "Name"
+          ],
+          "category": "function",
+          "resourceName": "latusPostConfirmation",
+          "triggerProvider": "Cognito"
+        },
+        {
+          "attributes": [
+            "Arn",
+            "Name"
+          ],
+          "category": "function",
+          "resourceName": "latusPreSignup",
+          "triggerProvider": "Cognito"
+        }
+      ],
       "frontendAuthConfig": {
         "mfaConfiguration": "OFF",
         "mfaTypes": [
@@ -29,12 +67,16 @@
           "passwordPolicyMinLength": 8
         },
         "signupAttributes": [
-          "EMAIL"
+          "EMAIL",
+          "FAMILY_NAME",
+          "GIVEN_NAME",
+          "NAME",
+          "PICTURE"
         ],
-        "socialProviders": [],
-        "usernameAttributes": [
-          "EMAIL"
+        "socialProviders": [
+          "GOOGLE"
         ],
+        "usernameAttributes": [],
         "verificationMechanisms": [
           "EMAIL"
         ]
@@ -52,7 +94,7 @@
             "IdentityPoolId"
           ],
           "category": "auth",
-          "resourceName": "entratest"
+          "resourceName": "latus"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -60,28 +102,109 @@
     }
   },
   "function": {
-    "sportsHCAA": {
+    "latusPostConfirmation": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "latusPreSignup": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
   },
   "parameters": {
-    "AMPLIFY_function_sportsHCAA_deploymentBucketName": {
+    "AMPLIFY_auth_latus_googleClientId": {
       "usedBy": [
         {
-          "category": "function",
-          "resourceName": "sportsHCAA"
+          "category": "auth",
+          "resourceName": "latus"
         }
       ]
     },
-    "AMPLIFY_function_sportsHCAA_s3Key": {
+    "AMPLIFY_function_latusPostConfirmation_GROUP": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "sportsHCAA"
+          "resourceName": "latusPostConfirmation"
         }
       ]
+    },
+    "AMPLIFY_function_latusPostConfirmation_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "latusPostConfirmation"
+        }
+      ]
+    },
+    "AMPLIFY_function_latusPostConfirmation_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "latusPostConfirmation"
+        }
+      ]
+    },
+    "AMPLIFY_function_latusPreSignup_DOMAINALLOWLIST": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "latusPreSignup"
+        }
+      ]
+    },
+    "AMPLIFY_function_latusPreSignup_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "latusPreSignup"
+        }
+      ]
+    },
+    "AMPLIFY_function_latusPreSignup_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "latusPreSignup"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "latus": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "latus"
+        },
+        {
+          "attributes": [
+            "ADMINGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        },
+        {
+          "attributes": [
+            "TEACHERGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        },
+        {
+          "attributes": [
+            "STUDENTGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
     }
   }
 }

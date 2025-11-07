@@ -1,0 +1,68 @@
+type Announcement @model @auth(rules: [
+    {allow: owner},
+    {allow: groups, groups: ["ADMIN", "BOARDACCESS"]},
+    {allow: groups, groups: ["TEACHER"], operations: [read, create]},
+    {allow: groups, groups: ["STUDENT"], operations: [read]},
+]) {
+#id STUFF
+  id: ID! @primaryKey(sortKeyFields: ["schoolAndBoard"])
+  schoolAndBoard: String! @index(name: "bySchool")
+
+  #content
+  title: String!
+  body: String!
+  path: String
+  aspectRatio: String
+  startDate: String!
+  endDate: Int! #TLL field for production
+  archiveDate: Int! #TTL field for archiving
+
+  #Any and all attachments
+  attachments: [Attach]
+
+  #logs and security
+  authorName: String!
+  authorId: String!
+  authorPicture: String!
+  authorRole: String!
+  editType: [String]!
+  editorId: [String]!
+  editTime: [String]!
+  editorname: [String]!
+
+  #extra features
+  deleted: Boolean!
+  skip: Boolean!
+}
+
+type Attach {
+  name: String! #custom name
+  address: String! # id or url
+  type: String! #image, .pdf, wtv, link
+  size: String
+}
+
+type Resource @model @auth(rules: [
+    {allow: owner},
+    {allow: groups, groups: ["ADMIN"]},
+    {allow: groups, groups: ["TEACHER"], operations: [read]},
+    {allow: groups, groups: ["STUDENT"], operations: [read]},
+    {allow: groups, groups: ["PARENT"], operations: [read]},
+]) {
+#id STUFF
+  id: ID! @primaryKey(sortKeyFields: ["schoolAndBoard"])
+  schoolAndBoard: String! @index(name: "bySchool")
+
+  #content
+  content: Attach!
+
+  #logs and security
+  authorName: String!
+  authorId: String!
+  authorPicture: String!
+  authorRole: String!
+  editType: [String]!
+  editorId: [String]!
+  editTime: [String]!
+  editorname: [String]!
+}

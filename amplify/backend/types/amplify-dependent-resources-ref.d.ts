@@ -1,15 +1,16 @@
 export type AmplifyDependentResourcesAttributes = {
   "api": {
-    "sportsAPI": {
-      "ApiId": "string",
-      "ApiName": "string",
-      "RootUrl": "string"
+    "latus": {
+      "GraphQLAPIEndpointOutput": "string",
+      "GraphQLAPIIdOutput": "string",
+      "GraphQLAPIKeyOutput": "string"
     }
   },
   "auth": {
-    "entratest": {
+    "latus": {
       "AppClientID": "string",
       "AppClientIDWeb": "string",
+      "GoogleWebClient": "string",
       "HostedUIDomain": "string",
       "IdentityPoolId": "string",
       "IdentityPoolName": "string",
@@ -19,15 +20,34 @@ export type AmplifyDependentResourcesAttributes = {
       "UserPoolName": "string"
     },
     "userPoolGroups": {
-      "parentsGroupRole": "string"
+      "ADMINGroupRole": "string",
+      "BOARDACCESSGroupRole": "string",
+      "HCDSBGroupRole": "string",
+      "HDSBGroupRole": "string",
+      "STFXGroupRole": "string",
+      "STUDENTGroupRole": "string",
+      "TEACHERGroupRole": "string"
     }
   },
   "function": {
-    "sportsHCAA": {
+    "latusPostConfirmation": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
       "Name": "string",
+      "Region": "string"
+    },
+    "latusPreSignup": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    }
+  },
+  "storage": {
+    "latus": {
+      "BucketName": "string",
       "Region": "string"
     }
   }
