@@ -10,7 +10,6 @@ import Toast from 'react-native-toast-message'
 import { LIGHTLOGO, SIGNIN } from '../../../assets/index';
 import { loglogo } from '../../../assets/index'
 import colors from '../../colors';
-import { authorize } from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from 'expo-router'
 import { HomeStackParamList } from '../../navigation'

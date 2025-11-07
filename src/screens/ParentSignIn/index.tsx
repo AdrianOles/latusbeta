@@ -7,9 +7,8 @@ import { Hub } from 'aws-amplify/utils'
 import * as Network from 'expo-network';
 import * as Haptics from 'expo-haptics';
 import Toast from 'react-native-toast-message'
-import { DARKLOGO, LIGHTLOGO } from '../../../assets/index';
+import { LIGHTLOGO } from '../../../assets/index';
 import colors from '../../colors';
-import { authorize } from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from 'expo-router'
 import { HomeStackParamList } from '../../navigation'
