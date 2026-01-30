@@ -1,7 +1,7 @@
 export type gameType = {
     date?: string;
-    league: string;
-    location: string;
+    league?: string;
+    location?: string;
     notes: string;
     home: {
         name: string;
@@ -11,5 +11,14 @@ export type gameType = {
         name: string;
         score: number | null;
     }
+    sets?: { // Optional field for game sets
+        home: number[] | undefined;
+        visitor: number[] | undefined;
+    };
     time?: string
+}
+
+export interface Sets {
+    home: number[];
+    visitor: number[];
 }

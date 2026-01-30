@@ -105,7 +105,7 @@ const ViewModal = () => {
                             }
 
                             {/* Close button */}
-                            <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', top: Platform.OS === 'ios' ? 44 : 0, right: 0, zIndex: 2, paddingHorizontal: 16, paddingVertical: 16 }}>
+                            <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', top: Platform.OS === 'ios' ? 44 : 24, right: 0, zIndex: 2, paddingHorizontal: 16, paddingVertical: 16 }}>
                                 <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: 36, aspectRatio: 1, backgroundColor: theme === 'light' ? '#83818C1F' : '#FFFFFF1F', borderRadius: 250, paddingLeft: 1 }}>
                                     <Ionicons name={'close-outline'} size={24} color={colors.text[theme].primary}></Ionicons>
                                 </View>

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback } from 'react'
-import { View, Text, useColorScheme, FlatList, TouchableOpacity, Image, RefreshControl, ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator, Pressable, Modal } from 'react-native'
+import { View, Text, useColorScheme, FlatList, TouchableOpacity, Image, RefreshControl, ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator, Pressable, Modal, Platform } from 'react-native'
 import colors from '../../colors';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,13 +11,13 @@ import { gameType } from '../../types/Games';
 import DynamicStickHeader from './components/DynamicStickHeader';
 import GameBanner from './components/GameBanner';
 import DynamicTabs from './components/DynamicTabs';
-import GameInfo from './components/GameInfo';
+import GameInfo, { removeLeadingZero } from './components/GameInfo';
 import { brLogo, stfxLogo } from '../../../assets';
 import Standings from './components/Standings';
-import { LinearGradient } from 'expo-linear-gradient';
 import { school } from '.';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { StatusBar } from 'expo-status-bar';
+import { abbreviateRank } from './components/LeagueGame';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -113,12 +113,13 @@ const MyFlatList = React.memo(({
                 if (ref) flatListRefs.current.set(pageIndex, ref);
             }}
             style={{ maxWidth: SCREEN_WIDTH, paddingTop: 300 }}
+            contentContainerStyle={{ paddingBottom: Platform.OS === 'android' ? 200 : 40 }}
             initialNumToRender={pageIndex != 1 ? 1 : 10}
             windowSize={4}
             updateCellsBatchingPeriod={50}
-            refreshControl={
-                <RefreshControl tintColor={colors.text[theme].primary} progressViewOffset={320} refreshing={refreshing} onRefresh={onRefresh} />
-            }
+            // refreshControl={
+            //     <RefreshControl tintColor={colors.text[theme].primary} progressViewOffset={320} refreshing={refreshing} onRefresh={onRefresh} />
+            // }
             ListHeaderComponent={() => (
                 <>
                     {HeaderComponent && (
@@ -158,9 +159,23 @@ const Game = () => {
         homeScore,
         awayScore,
         league,
-        notes
-    } : {
-        homeTeam: string, awayTeam: string, homeScore: string, awayScore: string, league: string, notes?: string
+        time,
+        notes,
+        dateString,
+        sets,
+        location
+    }: {
+        homeTeam: string,
+        awayTeam: string,
+        homeScore: string,
+        awayScore: string,
+        league: string,
+        notes?: string,
+            time?: string,
+        location?: string,
+        dateString?: string
+        // CHANGE IS HERE: make 'sets' optional by adding '?'
+        sets?: { home: number[] | undefined, visitor: number[] | undefined }
     } = route.params;
     const colorScheme = useColorScheme(); // Returns 'light' or 'dark'
     const mainScrollY = useSharedValue(0); // Renamed to mainScrollY
@@ -283,8 +298,8 @@ const Game = () => {
                 <View style={{ backgroundColor: colors.background[theme].general }}>
                     <View style={{ backgroundColor: colors.background[theme].elevated, position: 'absolute', width: '100%', top: 0, zIndex: 10 }}>
                         <Animated.View style={[animatedHeaderHeight, { display: 'flex', flexDirection: 'column' }]}>
-                            <DynamicStickHeader stickyHeaderAnim={stickyHeaderAnim} posting={creatingPost} label={league} mode={'game'} theme={theme} />
-                            <GameBanner theme={theme} animatedSchool={animatedSchool} homeScore={homeScore} awayScore={awayScore} home={homeTeam} away={awayTeam} league={league} />
+                            <DynamicStickHeader stickyHeaderAnim={stickyHeaderAnim} posting={creatingPost} label={abbreviateRank(league)} mode={'game'} theme={theme} />
+                            <GameBanner theme={theme} date={dateString} time={removeLeadingZero(time ? time : '')} pending={time?.includes("pending")} animatedSchool={animatedSchool} homeScore={homeScore} awayScore={awayScore} home={homeTeam} away={awayTeam} league={league} />
                             <DynamicTabs
                                 theme={theme}
                                 tabs={TABS}
@@ -318,7 +333,7 @@ const Game = () => {
                             flatListRefs={flatListRefs}
                             syncTabs={syncTabs}
                             componentItems={[
-                                <GameInfo location={homeTeam} league={league} />
+                                <GameInfo home={homeTeam} dateString={dateString} away={awayTeam} location={location || homeTeam} time={time} league={abbreviateRank(league)} sets={sets ? sets : undefined} />
                             ]}
                         />
                         <MyFlatList

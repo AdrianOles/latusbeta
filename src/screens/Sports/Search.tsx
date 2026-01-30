@@ -14,7 +14,7 @@ import NoResults from './components/NoResults';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const sports = ['soccer', 'football', 'volleyball', 'field hockey', 'basketball', 'lacrosse', 'rugby',
+const sports = ['soccer', 'football', 'volleyball', 'hockey', 'field hockey', 'basketball', 'lacrosse', 'rugby',
     'fastpitch', 'slowpitch', 'baseball', 'eSports', 'curling']
 
 interface HeaderProps {
@@ -66,7 +66,7 @@ const Header = React.memo(({ theme, onSelectPress, selectedSport, school, onScho
                 <Ionicons name='search-outline' color={colors.text[theme].secondary} size={20} style={{ position: 'absolute', left: 0, top: '50%', opacity: selectedSport ? 1 : 0.5, transform: [{ translateY: -5 }], paddingLeft: 16 }} />
                 {
                     school && (
-                        <TouchableOpacity onPress={() => onSchoolChange('')} style={{ position: 'absolute', top: '50%', right: 0, transform: [{ translateY: -7 }], paddingRight: 16 }}>
+                        <TouchableOpacity onPress={() => { onSchoolChange('')}} style={{ position: 'absolute', top: '50%', right: 0, transform: [{ translateY: -7 }], paddingRight: 16 }}>
                             <Ionicons name='close-outline' color={colors.text[theme].secondary} size={24} />
                         </TouchableOpacity>
                     )
@@ -105,22 +105,6 @@ interface CardProps {
     subNote: string | null,
     theme: 'light' | 'dark',
 }
-
-const getLeagueId = (leagueName: string): string => {
-    switch (leagueName) {
-        case "Senior Girls Field Hockey":
-            return "8";
-        case "Varsity Boys Baseball":
-            return "26";
-        case "Junior Boys Football":
-            return "1";
-        case "Senior Boys Football":
-            return "2";
-        default:
-            return "26";
-    }
-}
-
 const ResultCard = ({ label, subNote, theme }: CardProps) => {
     const navigation = useNavigation<HomeStackParamList>();
 
@@ -196,9 +180,9 @@ const getLeague = (league: string): dataFormat[] | null => {
                 { mainLabel: "Junior Girls Basketball", subLabel: null },
                 { mainLabel: "Novice Boys Basketball", subLabel: null },
             ];
-        case "lacrosee":
+        case "lacrosse":
             return [
-                { mainLabel: "Varsity Boys Lacrosee", subLabel: null }
+                { mainLabel: "Varsity Boys Lacrosse", subLabel: null }
             ];
         case "rugby":
             return [
@@ -226,6 +210,11 @@ const getLeague = (league: string): dataFormat[] | null => {
                 { mainLabel: "Varsity Boys Curling", subLabel: null },
                 { mainLabel: "Varsity Girls Curling", subLabel: null },
                 { mainLabel: "Novice Co-Ed Curling", subLabel: null },
+            ];
+        case "hockey":
+            return [
+                { mainLabel: "Varsity Boys Hockey", subLabel: null },
+                { mainLabel: "Varsity Girls Hockey", subLabel: null },
             ];
         default:
             return null;
@@ -266,22 +255,32 @@ const Search = () => {
             // Updated normalization
             const normalizedSearch = showResults.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
 
-            const matchingSchool = schoolList.find(school => {
-                // Updated normalization
+            const matchingSchools = schoolList.filter(school => {
+                // Keep normalization as is, which is good for matching names like "St Mary"
                 const normalizedSchool = school.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
                 return normalizedSchool.includes(normalizedSearch);
             });
 
-            if (matchingSchool) {
-                // Create a new array for the school's teams, populating the subLabel
-                const schoolTeams = leagueData.map(team => ({
-                    ...team,
-                    subLabel: matchingSchool,
-                }));
+            if (matchingSchools.length > 0) {
+                // 1. Create a list of prioritized teams from ALL matching schools
+                const prioritizedTeams: dataFormat[] = [];
 
-                // Prepend the school teams to the original league data
-                setData([...schoolTeams, ...leagueData]);
+                matchingSchools.forEach(matchingSchool => {
+                    // Create new team objects, populating the subLabel
+                    const schoolTeams = leagueData.map(team => ({
+                        ...team,
+                        subLabel: matchingSchool,
+                    }));
+
+                    // Add them to the priority list
+                    prioritizedTeams.push(...schoolTeams);
+                });
+
+                // 2. Prepend ALL prioritized school teams to the original league data
+                setData([...prioritizedTeams, ...leagueData]);
+
             } else {
+                // If no schools match the search term
                 setData(leagueData);
             }
         } else {
@@ -290,10 +289,14 @@ const Search = () => {
         }
     }, [selectedSport, showResults]);
 
+    useEffect(() => {
+        setShowResults(null);
+    }, [school])
+
     // Memoize the callback functions
     const handleSchoolChange = useCallback((text: string) => {
         setSchool(text);
-    }, []);
+    }, [school]);
 
     const handleSearch = useCallback(() => {
         setShowResults(school);
@@ -339,24 +342,26 @@ const Search = () => {
                             paddingBottom: 40,
                         }}
                     >
-                        <Picker
-                            selectedValue={selectedSport}
-                            onValueChange={(itemValue, itemIndex) => {
-                                if (itemValue !== null) {
-                                    setSport(itemValue);
-                                }
-                            }}
-                            itemStyle={{ color: colors.text[theme].primary }}
-                        >
-                            <Picker.Item label="Select a sport" value={null} />
-                            {sports.map((item, index) => (
-                                <Picker.Item
-                                    label={item.charAt(0).toUpperCase() + item.slice(1)}
-                                    value={item}
-                                    key={index}
-                                />
-                            ))}
-                        </Picker>
+                        <View style={{paddingHorizontal: Platform.OS === "android" ? 16 : 0}}>
+                            <Picker
+                                selectedValue={selectedSport}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    if (itemValue !== null) {
+                                        setSport(itemValue);
+                                    }
+                                }}
+                                itemStyle={{ color: colors.text[theme].primary }}
+                            >
+                                <Picker.Item label="Select a sport" value={null} />
+                                {sports.map((item, index) => (
+                                    <Picker.Item
+                                        label={item.charAt(0).toUpperCase() + item.slice(1)}
+                                        value={item}
+                                        key={index}
+                                    />
+                                ))}
+                            </Picker>
+                        </View>
                         <TouchableOpacity
                             onPress={() => {
                                 setSelect(false);

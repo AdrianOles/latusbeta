@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Keyboard, TouchableOpacity } from "react-native";
+import { View, Text, Pressable, Keyboard, TouchableOpacity, Platform } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import colors from "../../colors";
 import { useAuthContext } from "../../contexts/AuthContext";
@@ -51,7 +51,10 @@ const AddFile = () => {
     };
 
     return (
-        <Pressable onPress={() => Keyboard.dismiss()} style={{height: '100%', backgroundColor: colors.background[theme].elevated}}>
+        <Pressable onPress={() => Keyboard.dismiss()} style={{
+            height: '100%', backgroundColor: colors.background[theme].elevated,
+            paddingTop: Platform.OS === 'android' ? 24 : 0
+        }}>
             <Pressable onPress={() => Keyboard.dismiss()} style={{ height: 60, width: '100%', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 }}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={{ alignSelf: 'center', marginLeft: 'auto', }}>
                     <Ionicons

@@ -287,6 +287,12 @@ const Rcreate = () => {
                     editTime: [new Date().toString()],
                     editorname: [authUser.email],
                     id: uuidv4(),
+                    content: {
+                        name: title,
+                        address: checkThis,
+                        type: 'link',
+                        size: undefined
+                    }
                 }
 
                 console.log("Object: ", resourceDetails);
@@ -340,7 +346,10 @@ const Rcreate = () => {
 
     let content = (
         <>
-            <View style={{ backgroundColor: theme === 'dark' ? "#FFFFFF0D" : '#0000000D', borderRadius: 250, width: 80, aspectRatio: 1, marginHorizontal: 'auto', marginBottom: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', marginVertical: 32 }}>
+            <View style={{
+                backgroundColor: theme === 'dark' ? "#FFFFFF0D" : '#0000000D', borderRadius: 250, width: 80, aspectRatio: 1,
+                marginHorizontal: 'auto', marginBottom: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', marginVertical: 32,
+            }}>
                 <Ionicons name={icon} size={46} color={iconColor ? iconColor : colors.text[theme].primary}></Ionicons>
             </View>
 

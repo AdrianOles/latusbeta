@@ -9,6 +9,8 @@ import Navigation from './src/navigation';
 import Toast from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 import * as Linking from 'expo-linking';
+import React from 'react';
+import RootNavigationWithContext from './src/navigation/RootNavigationWithContext';
 
 // const userPoolClientId = "4jje2jbjic8g5sgu8vuud3kk2j";
 // const userPoolId = amplifyconfig.aws_user_pools_id;
@@ -39,10 +41,33 @@ import * as Linking from 'expo-linking';
 //   }
 // });
 
+Amplify.configure({
+  ...amplifyconfig,
+  Auth: {
+    Cognito: {
+      userPoolId: amplifyconfig.aws_user_pools_id,
+      userPoolClientId: amplifyconfig.aws_user_pools_web_client_id,
+      identityPoolId: amplifyconfig.aws_cognito_identity_pool_id,
+      loginWith: {
+        oauth: {
+          domain: amplifyconfig.oauth.domain,
+          scopes: amplifyconfig.oauth.scope,
+          redirectSignIn: amplifyconfig.oauth.redirectSignIn.split(','),
+          redirectSignOut: amplifyconfig.oauth.redirectSignOut.split(','),
+          responseType: amplifyconfig.oauth.responseType,
+          // This is what forces the Google Account selection screen
+          ...({
+            queryParams: {
+              prompt: 'select_account',
+            },
+          } as any),
+        }
+      }
+    }
+  }
+});
 
-Amplify.configure(amplifyconfig);
-
-const toastConfig = {
+export const toastConfig = {
   success: () => (
     <View style={{ marginTop: '12%', borderRadius: 250, backgroundColor: '#1C1C1C', display: 'flex', flexDirection: 'row', gap: 6, paddingVertical: 12, paddingHorizontal: 16, justifyContent: 'center', alignItems: 'center' }}>
       <Ionicons name='checkmark-circle-outline' color={'#1BCC64'} size={24} />
@@ -70,93 +95,15 @@ const toastConfig = {
 };
 
 export default function App() {
-  const { theme } = useAuthContext(); // Get the theme from your context
-  const appTheme = theme === 'dark' ? DarkTheme : DefaultTheme;
-
-  const prefix = Linking.createURL('/'); // e.g., "exp://..." or "yourapp://"
-
-  const linking = {
-    prefixes: [prefix, 'https://latus.ca'], // Add your actual website domain here
-    config: {
-      screens: {
-        MainTabs: {
-          path: '',
-          screens: {
-            SportsTab: { // Matches the Tab.Screen name in MainTabNavigator
-              path: 'sports', // Base path for all sports links
-              screens: {
-                SportsHome: {
-                  // URL: /sports?org=HCAA
-                  path: '', // Default if only '/sports' base is given
-                },
-                SportsSearch: {
-                  // URL: /sports/search?search=keyword&org=HCAA
-                  path: 'search', // Matches the /search path segment
-                },
-                SportsLeague: {
-                  // URL: /sports/league?leagueId=jrboysoccer&org=HCAA
-                  path: 'league', // Matches the /league path segment
-                },
-                SportsTeam: {
-                  // URL: /sports/team?team=stfx&leagueId=jrboysoccer&org=HCAA
-                  path: 'team', // Matches the /team path segment
-                },
-                SportsGame: {
-                  // URL: /sports/game?game=stfxvsbr2025-07-27sportsNinjaId&team=stfx&leagueId=jrboysoccer&org=HCAA
-                  path: 'game', // Matches the /game path segment
-                },
-              },
-            },
-            Profile: {
-              path: 'profile', // If you want a deep link like /profile
-            },
-            Home: {
-              path: '', // Assuming home is the default if just app scheme is opened
-            }
-          }
-        },
-        // Signin/Auth related screens can also have deep links if desired
-        Signin: {
-          path: 'signin',
-        },
-        ParentSignIn: {
-          path: 'parents-signin',
-        },
-        Testrun: {
-          path: 'testrun',
-        }
-      },
-    },
-  };
 
   return (
     <SWRConfig
-      value={{  
+      value={{
         fetcher: (resource, init) => fetch(resource, init).then(res => res.json())
       }}
     >
       <AuthContextProvider>
-        <NavigationContainer theme={appTheme} linking={linking} fallback={<Text>Loading...</Text>}>
-          <GestureHandlerRootView>
-            <View style={{ flex: 1, backgroundColor: theme === 'dark' ? '#000000' : '#FFFFFF' }}>
-              <Navigation />
-              <Toast config={toastConfig} />
-            </View>
-          </GestureHandlerRootView>
-          {
-            Platform.OS === 'android' ? (
-              <StatusBar
-                animated={true}
-                backgroundColor={theme === 'dark' ? '#000000' : '#FFFFFF'}
-              />
-            ) : (
-              <StatusBar
-                animated={true}
-                  barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
-              />
-            )
-          }
-        </NavigationContainer>
+        <RootNavigationWithContext />
       </AuthContextProvider>
     </SWRConfig>
   );

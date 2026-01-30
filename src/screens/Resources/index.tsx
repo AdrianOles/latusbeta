@@ -193,6 +193,9 @@ const Resources = () => {
             {
                 Platform.OS === 'ios' && (<View style={{ height: 50, width: '100%' }} />)
             }
+            {
+                Platform.OS === 'android' && (<View style={{ height: 32, width: '100%' }} />)
+            }
             <StatusBar translucent={true} style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={'transparent'} />
             <FlatList
                 contentInsetAdjustmentBehavior="automatic"
@@ -217,19 +220,19 @@ const Resources = () => {
                 ListHeaderComponent={<RHeader />}
                 keyExtractor={(item, index) => index.toString()}
                 ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
-                contentContainerStyle={{paddingHorizontal: 16}}
+                contentContainerStyle={{paddingHorizontal: 16, paddingBottom: Platform.OS === 'android' ? 100 : 0}}
                 refreshing={loading}
                 style={{backgroundColor: colors.background[theme].general}}
                 onRefresh={() => refetchResources()}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={loading}
-                        onRefresh={() => refetchResources()}
-                        colors={[colors.text[theme].primary]}
-                        progressBackgroundColor={colors.text[theme].primary} // Customize the background color of the indicator
-                        tintColor={colors.text[theme].primary}
-                    />
-                }
+                // refreshControl={
+                //     <RefreshControl
+                //         refreshing={loading}
+                //         onRefresh={() => refetchResources()}
+                //         colors={[colors.text[theme].primary]}
+                //         progressBackgroundColor={colors.text[theme].primary} // Customize the background color of the indicator
+                //         tintColor={colors.text[theme].primary}
+                //     />
+                // }
             />
 
             {/* Message for content */}

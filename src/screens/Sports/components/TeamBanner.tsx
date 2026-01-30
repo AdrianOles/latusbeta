@@ -1,6 +1,6 @@
 import React from "react";
 import Animated from "react-native-reanimated";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
 import { useAuthContext } from "../../../contexts/AuthContext";
 import { brLogo, stfxLogo } from "../../../../assets";
 import colors from "../../../colors";
@@ -29,17 +29,21 @@ const TeamBanner = React.memo(({ animatedSchool, label, subNote }: { animatedSch
     return (
         <Animated.View
             style={[animatedSchool, {
-                position: 'absolute', top: 60, left: 0, right: 0
+                position: 'absolute', top: 54, left: 0, right: 0
             }]}
         >
-            <TouchableOpacity onPress={() => navigation.navigate("SportsLeague", { league: subNote, org: "HCAA" })} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingHorizontal: 16 }}>
+            <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingHorizontal: 16 }}>
                 <Image
                     source={schoolLogos[label as school]}
-                    style={{ height: 80, aspectRatio: 1, marginBottom: 8, objectFit: 'contain' }}
+                    style={{
+                        height: 80, aspectRatio: 1, objectFit: 'contain',
+                    }}
                 />
                 <Text style={{ fontFamily: 'Figtree-Bold', fontSize: 22, color: colors.text['dark'].primary, marginTop: 8 }}>{label}</Text>
-                <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 20, color: colors.text['dark'].secondary }}>{subNote} &rsaquo;</Text>
-            </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("SportsLeague", { league: subNote, org: "HCAA" })}>
+                    <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 20, color: colors.text['dark'].secondary }}>{subNote} &rsaquo;</Text>
+                </TouchableOpacity>
+            </View>
         </Animated.View>
     )
 });

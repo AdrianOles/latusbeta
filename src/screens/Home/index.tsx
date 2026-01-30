@@ -126,8 +126,6 @@ const HomePage = () => {
     const { data, error, isLoading } = useSWR('announcements', fetchAnnouncements, {
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
-        refreshInterval: 0,
-        dedupingInterval: 600000,
     });
 
     //Organizes announcements by adding filter attribute to each
@@ -307,6 +305,11 @@ const HomePage = () => {
                     </>
                 )
             }
+            {
+                Platform.OS === 'android' && (
+                    <View style={{ height: 32, width: '100%', }} />
+                )
+            }
             <FlatList
                 data={viewableItems}
                 renderItem={({ item, index }) => (
@@ -362,15 +365,15 @@ const HomePage = () => {
                 keyExtractor={(item) => item.id.toString()}
                 refreshing={loading}
                 onRefresh={() => refetchAnnouncements()}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={loading}
-                        onRefresh={() => refetchAnnouncements()}
-                        colors={[colors.text[theme].primary]}
-                        progressBackgroundColor={colors.text[theme].primary} // Customize the background color of the indicator
-                        tintColor={colors.text[theme].primary}
-                    />
-                }
+                // refreshControl={
+                //     <RefreshControl
+                //         refreshing={loading}
+                //         onRefresh={() => refetchAnnouncements()}
+                //         colors={[colors.text[theme].primary]}
+                //         progressBackgroundColor={colors.text[theme].primary} // Customize the background color of the indicator
+                //         tintColor={colors.text[theme].primary}
+                //     />
+                // }
             />
             {
                 viewableItems.length === 0 && (

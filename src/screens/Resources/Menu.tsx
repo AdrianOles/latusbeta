@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Pressable, Keyboard, ActivityIndicator, Linking } from "react-native";
+import { View, Text, TouchableOpacity, Pressable, Keyboard, ActivityIndicator, Linking, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
 import colors from "../../colors";
@@ -363,7 +363,7 @@ const Menu = () => {
     }
 
     return (
-        <View style={{ height: '100%', backgroundColor: colors.background[theme].elevated }}>
+        <View style={{ height: '100%', backgroundColor: colors.background[theme].elevated, paddingTop: Platform.OS === 'android' ? 24 : 0 }}>
             <StatusBar translucent={true} style={'light'} backgroundColor={'transparent'} />
             
             <Pressable onPress={() => Keyboard.dismiss()} style={{ height: 60, width: '100%', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 }}>

@@ -1,6 +1,6 @@
 projects:
-  latus-prod:
-    schemaPath: src/graphql/schema.json
+  latus:
+    schemaPath: amplify/backend/api/latus/build/schema.graphql
     includes:
       - src/graphql/**/*.ts
     excludes:
@@ -12,8 +12,5 @@ projects:
         generatedFileName: src/API.ts
         docsFilePath: src/graphql
         region: ca-central-1
-        apiId: zsuut36mtbgidh2fhriwwc7dni
+        apiId: null
         maxDepth: 4
-extensions:
-  amplify:
-    version: 3

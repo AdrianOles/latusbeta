@@ -265,7 +265,13 @@ const Signin = () => {
 
   const handleDefaultSignIn = async () => {
     await AsyncStorage.clear(); // Or remove specific auth tokens
-    signInWithRedirect({provider : 'Google'})
+    signInWithRedirect({
+      provider: 'Google',
+      options: {
+        preferPrivateSession: true,
+        prompt: 'SELECT_ACCOUNT'
+      }
+    })
   }
 
   let content = (
@@ -890,21 +896,29 @@ const Signin = () => {
               <Text style={{ fontSize: 32, lineHeight: 40, fontFamily: 'Figtree-Bold', color: colors.text['dark'].primary, textAlign: 'center' }}>Welcome to Latus</Text>
               <Text style={{ fontSize: 16, lineHeight: 20, fontFamily: 'Figtree-Medium', color: colors.text['dark'].secondary, textAlign: 'center' }}>Everything you need in one place</Text>
             </View>
-            <View>
+            <View style={{}}>
               <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: '#FA3E42', marginBottom: 10, opacity: error ? 1 : 0 }} >{error}</Text>
-              <TouchableOpacity style={{ borderRadius: 16, backgroundColor: colors.text['dark'].primary, alignItems: 'center', padding: 16 }} onPress={() => handleDefaultSignIn()}>
+
+              {Platform.OS === 'android' && (
+                <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: colors.system['dark'].yellow, marginTop: 8, marginBottom: Platform.OS === 'android' ? 8 : 0 }}>
+                  The android version is still in beta. Please send any issues to our email at social.latus@gmail.com.
+                </Text>
+              )}
+              <TouchableOpacity
+                style={{ borderRadius: 16, backgroundColor: colors.text['dark'].primary, alignItems: 'center', padding: 16 }}
+                onPress={() => handleDefaultSignIn()}>
                 {
                   loading ? (
-                    <Text style={{ color: colors.background['dark'].general, fontSize: 17, lineHeight: 17, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>
+                    <Text style={{ color: colors.background['dark'].general, fontSize: 17, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>
                       Loading...
                     </Text>
                   ) : (
-                    <Text style={{ color: colors.background['dark'].general, fontSize: 17, lineHeight: 17, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>
+                    <Text style={{ color: colors.background['dark'].general, fontSize: 17, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>
                       Sign in
                     </Text>
                   )
                 }
-              </TouchableOpacity >
+              </TouchableOpacity>
               <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: colors.text['dark'].secondary, marginTop: 8, marginBottom: Platform.OS === 'android' ? 8 : 0 }}>Use your school google account</Text>
             </View>
           </View>

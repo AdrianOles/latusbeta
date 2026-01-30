@@ -1,14 +1,11 @@
 import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react'
-import { View, Text, useColorScheme, FlatList, TouchableOpacity, Image, RefreshControl, StatusBar, ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator } from 'react-native'
+import { View, Text, useColorScheme, FlatList, TouchableOpacity, Image, RefreshControl, StatusBar, ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator, Platform } from 'react-native'
 import colors from '../../colors';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { HomeStackParamList } from '../../navigation';
-import { Extrapolate, Extrapolation, interpolate, runOnJS, SharedValue, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import Animated from 'react-native-reanimated'
-import StickHeader from '../../components/collapse/StickHeader';
-import CollapseHeader from '../../components/collapse/CollapseHeader';
-import TabBars from '../../components/collapse/TabBars';
+import { Extrapolate, interpolate, runOnJS, SharedValue, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { GameCard } from '../Sports/components/GameCard';
 import { gameType } from '../../types/Games';
 import DynamicStickHeader from './components/DynamicStickHeader';
@@ -21,50 +18,18 @@ import LeagueBanner from './components/LeagueBanner';
 import TeamBanner from './components/TeamBanner';
 import { ApiError, get } from 'aws-amplify/api';
 import useSWR from 'swr';
-import { school } from '.';
+import { groupedLeagueType, RawInputRecord, school } from '.';
 import TeamInfo from './components/TeamInfo';
 import { leagueGames } from '../../mocks/sports';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LeagueGame } from './components/LeagueGame';
+import { getScores, ScoresParams } from './components/fetchers/master';
+import { format } from 'date-fns';
+import { SkeletonGameCard } from './components/SkeletonGameCard';
+import Svg, { Path } from 'react-native-svg';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-
-const fetchGames = async (team: string, leagueid?: string) => {
-    console.log("Fetching games from team...");
-
-    try {
-        const restOperation = get({
-            apiName: 'gamesHCAA',
-            path: '/week',
-            options: {
-                queryParams: {
-                    dateSelect: '2024-09-15',
-                    leagueid: leagueid || 'ALL',
-                    schoolid: team || 'ALL',
-                    leagueSelect: 'ALL',
-                }
-            }
-        });
-
-        const { body } = await restOperation.response;
-        const json = await body.json();
-        // console.log(json);
-        return json as Array<gameType>;
-    } catch (error) {
-        if (error instanceof ApiError) {
-            if (error.response) {
-                const {
-                    statusCode,
-                    headers,
-                    body
-                } = error.response;
-                console.error(`Received ${statusCode} error response with payload: ${body}`);
-            }
-        }
-    } finally {
-    }
-};
 
 // Define MyFlatList as a separate component outside of Testrun
 interface MyFlatListProps {
@@ -78,6 +43,7 @@ interface MyFlatListProps {
     currentActivePageIndex: Animated.SharedValue<number>;
     flatListRefs: React.MutableRefObject<Map<number, any>>;
     syncTabs: (index: number, scrollY: number) => void;
+    onRefreshRequest: () => Promise<any>;
 }
 
 export type groupedGameStatus = {
@@ -85,10 +51,38 @@ export type groupedGameStatus = {
     games: gameType[];
 }
 
-const HEADER_MAX_HEIGHT = 276; // Define or pass down if needed for calculations
+const HEADER_MAX_HEIGHT = 280; // Define or pass down if needed for calculations
 const HEADER_MIN_HEIGHT = 100;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 type GameRouteProp = RouteProp<HomeStackParamList, 'Team'>;
+
+export function convertFullDateToISO(fullDate: string): string | null {
+    const datePartsString = fullDate.split(',').slice(1).join(',').trim();
+    const match = datePartsString.match(/([A-Za-z]+)\s*(\d+),\s*(\d{4})/);
+
+    if (!match) return null;
+
+    const [, monthName, dayStr, yearStr] = match;
+    const monthNames = [
+        "january", "february", "march", "april", "may", "june",
+        "july", "august", "september", "october", "november", "december"
+    ];
+    const monthIndex = monthNames.indexOf(monthName.toLowerCase());
+
+    if (monthIndex === -1) return null;
+
+    const year = parseInt(yearStr, 10);
+    const day = parseInt(dayStr, 10) + 1;
+
+    const date = new Date(year, monthIndex, day);
+
+    if (!isNaN(date.getTime()) && date.getFullYear() === year) {
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const dayFormatted = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${dayFormatted}`;
+    }
+    return null;
+}
 
 const MyFlatList = React.memo(({
     data,
@@ -101,6 +95,7 @@ const MyFlatList = React.memo(({
     currentActivePageIndex,
     flatListRefs,
     syncTabs,
+    onRefreshRequest
 }: MyFlatListProps) => {
     const navigation = useNavigation<HomeStackParamList>();
 
@@ -130,7 +125,6 @@ const MyFlatList = React.memo(({
 
     const dataSource = hasData ? data.flat() : (hasComponentItems ? componentItems.map((_, index) => ({ _internalId: index })) : []);
 
-
     const renderItem = useCallback(({ item, index }: { item: any, index: number }) => {
         // 3. Conditionally render based on the content type.
         if (hasData) {
@@ -158,11 +152,10 @@ const MyFlatList = React.memo(({
 
     const [refreshing, setRefreshing] = React.useState(false);
     
-    const onRefresh = React.useCallback(() => {
+    const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 2000);
+        await onRefreshRequest();
+        setRefreshing(false);
     }, []);
 
     return (
@@ -173,8 +166,8 @@ const MyFlatList = React.memo(({
             ref={(ref: any) => {
                 if (ref) flatListRefs.current.set(pageIndex, ref);
             }}
-            style={{ maxWidth: SCREEN_WIDTH, paddingTop: 312, paddingHorizontal: pageIndex === 0 ? 16 : 0 }}
-            contentContainerStyle={{paddingBottom: pageIndex === 0 ?  32: 0}}
+            style={{ maxWidth: SCREEN_WIDTH, paddingTop: 312, paddingHorizontal: pageIndex === 0 ? 8 : 0 }}
+            contentContainerStyle={{ paddingBottom: Platform.OS === 'android' ? 400 : 40 }}
             initialNumToRender={pageIndex != 1 ? 1 : 1}
             windowSize={4}
             updateCellsBatchingPeriod={50}
@@ -188,6 +181,13 @@ const MyFlatList = React.memo(({
                     )}
                 </>
             )}
+            ListEmptyComponent={() => (
+                <View style={{ paddingVertical: 60, width: '100%', display: 'flex', alignItems: 'center', paddingHorizontal: 32 }}>
+                    <Ionicons name="time-outline" color={colors.text[theme].secondary} size={56} />
+                    <Text style={{ color: colors.text[theme].secondary, fontFamily: 'Figtree-Bold', fontSize: 17, textAlign: 'center', marginTop: 8 }}>No games here</Text>
+                    <Text style={{ color: colors.text[theme].secondary, fontFamily: 'Figtree-Regular', fontSize: 15, lineHeight: 20, textAlign: 'center' }}>Please check again later, scheduled games will be added closer to the season</Text>
+                </View>
+            )}
             onScroll={scrollHandler}
             scrollEventThrottle={16}
             removeClippedSubviews={true}
@@ -195,22 +195,76 @@ const MyFlatList = React.memo(({
     );
 });
 
-const getLeagueId = (leagueName: string): string => {
+export const getLeagueId = (leagueName: string): string => {
     switch (leagueName) {
-        case "Senior Girls Field Hockey":
-            return "8";
         case "Varsity Boys Baseball":
-            return "26";
+            return "26"
+        case "Junior Girls Basketball":
+            return "5"
+        case "Senior Girls Basketball":
+            return "6"
+        case "Junior Girls Field Hockey":
+            return "7"
+        case "Senior Girls Field Hockey":
+            return "8"
         case "Junior Boys Football":
-            return "1";
+            return "1"
         case "Senior Boys Football":
-            return "2";
+            return '2'
+        case "Varsity Co-Ed Ultimate":
+            return '28'
+        case "Junior Boys Volleyball":
+            return "3"
+        case "Senior Boys Volleyball":
+            return "4"
+        case "Novice Boys Basketball":
+            return "9"
+        case "Junior Boys Basketball":
+            return "10"
+        case "Senior Boys Basketball":
+            return "11"
+        case "Novice Co-Ed Curling":
+            return "29"
+        case "Varsity Boys Curling":
+            return "15"
+        case "Varsity Girls Curling":
+            return "16"
+        case "Varsity Boys Hockey":
+            return "17"
+        case "Varsity Girls Hockey":
+            return "18"
+        case "Novice Girls Volleyball":
+            return "12"
+        case "Junior Girls Volleyball":
+            return "13"
+        case "Senior Girls Volleyball":
+            return "14"
+        case "Tier 1 Varsity Co-Ed eSports":
+            return "30"
+        case "Tier 2 Varsity Co-Ed eSports":
+            return "31"
+        case "Varsity Girls Fastpitch":
+            return "25"
+        case "Varsity Boys Lacrosse":
+            return "23"
+        case "Senior Girls Rugby":
+            return "24"
+        case "Varsity Girls Slowpitch":
+            return "27"
+        case "Junior Boys Soccer":
+            return "19"
+        case "Senior Boys Soccer":
+            return "20"
+        case "Junior Girls Soccer":
+            return "21"
+        case "Senior Girls Soccer":
+            return "22"
         default:
             return "26";
     }
 }
 
-const getSchoolId = (schoolName: string): string => {
+export const getSchoolId = (schoolName: string): string => {
     switch (schoolName) {
         case "Assumption":
             return "1";
@@ -230,6 +284,8 @@ const getSchoolId = (schoolName: string): string => {
             return "8";
         case "St. Thomas Aquinas":
             return "9";
+        case "St. Kateri Tekakwitha":
+            return "51";
         default:
             return "1";
     }
@@ -304,14 +360,14 @@ const League = () => {
             mainScrollY.value,
             [0, HEADER_MAX_HEIGHT], // Should probably be HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT
             [0, -100], // Adjust this if header content moves too much
-            Extrapolation.CLAMP
+            Extrapolate.CLAMP
         );
 
         const opacity = interpolate(
             mainScrollY.value,
-            [0, HEADER_MAX_HEIGHT / 2, HEADER_MAX_HEIGHT],
+            [0, HEADER_MAX_HEIGHT / 3],
             [1, 0],
-            Extrapolation.CLAMP
+            Extrapolate.CLAMP
         );
 
         return {
@@ -320,42 +376,116 @@ const League = () => {
         };
     });
 
-    const groupedDataByDay = useMemo(() => {
-        // 1. Flatten the weeklyGames array into a single list of all games.
-        const allGames: gameType[] = (leagueGames ?? []).flat();
-
-        // 2. Group all the games into past and upcoming categories.
-        const pastGames: gameType[] = [];
-        const upcomingGames: gameType[] = [];
-
-        allGames.forEach(game => {
-            if (game.home.score !== null && game.visitor.score !== null) {
-                pastGames.push(game);
-            } else {
-                upcomingGames.push(game);
+    const groupedDataByStatus = (data: RawInputRecord[]): groupedGameStatus[] => {
+            if (!data || data.length === 0) {
+                return [];
             }
-        });
-
-        // 3. Create the final structured array for the FlatList.
-        const groupedData: groupedGameStatus[] = [];
-
-        if (pastGames.length > 0) {
-            groupedData.push({
-                league: "Past Games",
-                games: pastGames
-            });
-        }
-
-        if (upcomingGames.length > 0) {
-            groupedData.push({
-                league: "Upcoming Games",
-                games: upcomingGames
-            });
-        }
-
-        return groupedData;
-    }, [leagueGames]);
     
+            // 1. Transform RawInputRecord[] to gameType[] (Date formatting logic omitted for brevity, but remains as corrected previously)
+            const transformedGames: gameType[] = data.map(record => {
+                let formattedDate: string | undefined = undefined;
+    
+                // --- Date Formatting Logic (as finalized in prior exchanges) ---
+                if (record.date) {
+                    try {
+                        // Check for ISO format or already-formatted short date
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(record.date) || /^[A-Za-z]{3}\s\d{1,2}$/.test(record.date)) {
+                            const dateObj = new Date(record.date);
+                            if (!isNaN(dateObj.getTime())) {
+                                formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            }
+                        } else {
+                            // Handle complex full date string
+                            const isoDate = convertFullDateToISO(record.date);
+                            if (isoDate) {
+                                const dateObj = new Date(isoDate);
+                                if (!isNaN(dateObj.getTime())) {
+                                    formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // Keep formattedDate as undefined on failure
+                    }
+                }
+                // --- End Date Formatting Logic ---
+    
+                return {
+                    date: formattedDate,
+                    league: record.league || 'Unknown League',
+                    location: record.location,
+                    notes: record.notes,
+                    time: record.time,
+                    home: {
+                        name: record.schools[0] || 'Home Team',
+                        score: record.scores.home
+                    },
+                    visitor: {
+                        name: record.schools[1] || 'Visitor Team',
+                        score: record.scores.visitor
+                    },
+                    sets: record.sets
+                        ? { home: record.sets.home, visitor: record.sets.visitor }
+                        : undefined
+                };
+            });
+    
+            // 2. Separate into Upcoming and Past categories (CORRECTED PENDING LOGIC)
+            const upcomingGames: gameType[] = [];
+            const pastGames: gameType[] = [];
+    
+            transformedGames.forEach(game => {
+                const hasScores = game.home.score !== null && game.visitor.score !== null;
+                const isPending = game.time?.toLowerCase().includes('pending') ?? false;
+    
+                // A game is 'Past' if it has scores OR if its time field includes 'pending'.
+                if (hasScores || isPending) {
+                    pastGames.push(game);
+                } else {
+                    // All other games are Upcoming.
+                    upcomingGames.push(game);
+                }
+            });
+    
+            // Optional: Sort Upcoming Games chronologically (by date)
+            // Optional: Sort Past Games reverse chronologically (by date)
+            const sortGames = (a: gameType, b: gameType, isPast: boolean) => {
+                // Use the formatted date for sorting if available, otherwise fallback
+                const dateA = a.date || (isPast ? '1900-01-01' : '3000-01-01');
+                const dateB = b.date || (isPast ? '1900-01-01' : '3000-01-01');
+    
+                // To reliably sort the short "Nov 24" format, we must convert it back to a sortable Date object.
+                const dateObjA = new Date(dateA.includes(' ') ? `${dateA}, ${new Date().getFullYear()}` : dateA);
+                const dateObjB = new Date(dateB.includes(' ') ? `${dateB}, ${new Date().getFullYear()}` : dateB);
+    
+                return dateObjA.getTime() - dateObjB.getTime();
+            };
+    
+            // Sort Upcoming chronologically
+            upcomingGames.sort((a, b) => sortGames(a, b, false));
+            // Sort Past reverse chronologically (most recent first)
+            pastGames.sort((a, b) => sortGames(b, a, true));
+    
+            // 3. Create the final structured array with only two groups
+            const groupedData: groupedGameStatus[] = [];
+    
+            if (upcomingGames.length > 0) {
+                groupedData.push({
+                    league: "Upcoming Games",
+                    games: upcomingGames
+                });
+            }
+    
+            if (pastGames.length > 0) {
+                groupedData.push({
+                    league: "Past Games",
+                    games: pastGames
+                });
+            }
+    
+            return groupedData;
+        };
+
     const AnimatedHeaderContainer = React.memo(({ animatedHeaderHeight, children }: { animatedHeaderHeight: any, children: React.ReactNode }) => {
         return (
             <Animated.View style={[animatedHeaderHeight, { display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }]}>
@@ -378,25 +508,91 @@ const League = () => {
         Image.prefetch(Image.resolveAssetSource(stfxLogo).uri);
     }, []);
 
-    const { data, error, isLoading } = useSWR(`games-${team}-${league}`, () => fetchGames(getSchoolId(team), getLeagueId(league)), {
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
-        refreshInterval: 0,
-        dedupingInterval: 0,
-    });
+    const { data: teamGames, error, isLoading, mutate } = useSWR(
+        // Key depends on dateSearch changing
+        [`teamGames+${team}`, team],
+        // Fetcher receives the date object from the SWR key array
+        ([key, team]) => fetcher(team),
+        {
+            revalidateOnFocus: false,
+            revalidateOnReconnect: false,
+        }
+    );
+
+    const [minTimeLoading, setMinTimeLoading] = useState(true);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setMinTimeLoading(false);
+        }, 200); // Wait 500 milliseconds (adjust as needed)
+
+        // Cleanup the timer if the component unmounts
+        return () => clearTimeout(timer);
+    }, []);
+
+    const isTrulyLoading = isLoading || minTimeLoading;
+
+    const fetcher = useCallback(async (team: string) => {
+        const queryParams: ScoresParams = {
+            // Example: Fetching scores for a specific date
+            dateSelect: 'ALL',
+            leagueSelect: getLeagueId(league),
+            schoolSelect: getSchoolId(team),
+        };
+        const data = await getScores(queryParams);
+        return groupedDataByStatus(data as RawInputRecord[]);
+    }, []);
 
     const stickyHeaderAnim = useAnimatedStyle(() => {
         const opacity = interpolate(
             mainScrollY.value,
             [0, HEADER_MAX_HEIGHT / 2], // Adjust range to match pull amount
             [0, 1],
-            Extrapolation.CLAMP
+            Extrapolate.CLAMP
         )
 
         return {
             opacity
         }
     });
+
+    const createSkeletonGroup = (leagueName: string, count: number): groupedGameStatus => {
+        // We create dummy objects with a unique identifier like '_isSkeleton'
+        const skeletonGames = Array.from({ length: count }).map((_, index) => ({
+            // Use '_isSkeleton' or a missing required property to identify it later
+            _isSkeleton: true,
+            _id: `${leagueName}-skeleton-${index}`,
+            // Fill out required properties minimally to satisfy TypeScript/structure
+            notes: '',
+            home: { name: '', score: null },
+            visitor: { name: '', score: null }
+        } as gameType & { _isSkeleton: boolean, _id: string }));
+
+        return {
+            league: leagueName,
+            games: skeletonGames,
+        };
+    };
+
+    const renderData = useMemo(() => {
+        // 1. If data is ready AND minimum time is over, show real data
+        if (teamGames && !isTrulyLoading) {
+            return teamGames;
+        }
+
+        // 2. If loading OR minTimeLoading is active AND real data isn't ready, show skeletons.
+        if (isTrulyLoading && !teamGames) {
+            // Estimate the number of items needed for a good initial view
+            // Create 2 groups: one for upcoming (3 items) and one for past (3 items)
+            return [
+                createSkeletonGroup("Upcoming Games", 3),
+                createSkeletonGroup("Past Games", 5),
+            ];
+        }
+
+        // 3. Fallback for error/no data state after loading
+        return teamGames || null;
+
+    }, [teamGames, isTrulyLoading]);
 
     return (
         <>
@@ -439,23 +635,25 @@ const League = () => {
                     >
                         <View style={{ width: SCREEN_WIDTH }}>
                             {
-                                groupedDataByDay && (
+                                teamGames && !isTrulyLoading && (
                                     <MyFlatList
                                         theme={theme}
                                         teamName={team as school}
-                                        data={groupedDataByDay}
+                                        data={renderData}
                                         pageIndex={0}
                                         mainScrollY={mainScrollY}
                                         currentActivePageIndex={currentPage}
                                         flatListRefs={flatListRefs}
                                         syncTabs={syncTabs}
+                                        onRefreshRequest={mutate}
+
                                     />
                                 )
                             }
-                            {isLoading && false && (
-                                <View style={{ paddingTop: 320, width: '100%', display: 'flex', alignContent: 'center', alignItems: 'center' }}>
-                                    <ActivityIndicator size={'large'} />
-                                    <Text style={{ fontFamily: 'Figtree-Regular', fontSize: 16, color: colors.text[theme].secondary, marginTop: 16 }}>Loading games...</Text>
+                            {isTrulyLoading && (
+                                <View style={{ paddingTop: 340, width: '100%', display: 'flex', alignContent: 'center', alignItems: 'center', paddingHorizontal: 8 }}>
+                                    <ActivityIndicator size={"large"} color={colors.text[theme].primary} />
+                                    <Text style={{ fontFamily: 'Figtree-SemiBold', textAlign: 'left', fontSize: 16, lineHeight: 20, color: colors.text[theme].secondary, paddingTop: 8 }}>Loading games...</Text>
                                 </View>
                             )}
                             {error && (
@@ -475,6 +673,7 @@ const League = () => {
                             currentActivePageIndex={currentPage}
                             flatListRefs={flatListRefs}
                             syncTabs={syncTabs}
+                            onRefreshRequest={mutate}
                             componentItems={[
                                 <Standings league={league} focus={team as school} />
                             ]}

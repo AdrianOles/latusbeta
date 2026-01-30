@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Dimensions, Image } from "react-native";
+import { View, Text, TouchableOpacity, Dimensions, Image, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "../../colors";
 import { useAuthContext } from "../../contexts/AuthContext";
@@ -22,7 +22,7 @@ const ImagePreview = () => {
     return (
         <SafeAreaView edges={["top", "bottom"]} style={{ backgroundColor: colors.background[theme].elevated, height: '100%' }}>
             <View style={{
-                backgroundColor: colors.background[theme].elevated, width: '100%', borderBottomWidth: 1,
+                backgroundColor: colors.background[theme].elevated, width: '100%', borderBottomWidth: 1, paddingTop: Platform.OS === 'android' ? 12: 0,
                 borderColor: colors.fills[theme].stroke, paddingHorizontal: 8, paddingRight: 16, paddingBottom: 12, flexDirection: 'row',
                 justifyContent: 'space-between', alignItems: 'center'
             }}>

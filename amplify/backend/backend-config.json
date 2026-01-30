@@ -1,5 +1,27 @@
 {
   "api": {
+    "hcaaAPI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "hcaamasterfunction"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "hcaaweekly"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "latus": {
       "dependsOn": [
         {
@@ -102,6 +124,16 @@
     }
   },
   "function": {
+    "hcaamasterfunction": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "hcaaweekly": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "latusPostConfirmation": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -119,6 +151,38 @@
         {
           "category": "auth",
           "resourceName": "latus"
+        }
+      ]
+    },
+    "AMPLIFY_function_hcaamasterfunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hcaamasterfunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_hcaamasterfunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hcaamasterfunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_hcaaweekly_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hcaaweekly"
+        }
+      ]
+    },
+    "AMPLIFY_function_hcaaweekly_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hcaaweekly"
         }
       ]
     },

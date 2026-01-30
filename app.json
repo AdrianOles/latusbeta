@@ -3,26 +3,26 @@
     "name": "Latus",
     "slug": "Latus",
     "scheme": "latus.app",
-    "version": "1.1.0",
+    "version": "1.5.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "buildNumber": "3",
+      "buildNumber": "9",
       "supportsTablet": false,
       "bundleIdentifier": "latus.app",
       "splash": {
-        "image": "./assets/splash.png",
+        "image": "./assets/images/splash.png",
         "resizeMode": "contain",
         "backgroundColor": "#ffffff",
         "dark": {
-          "image": "./assets/splashDark.png",
+          "image": "./assets/images/splashDark.png",
           "resizeMode": "contain",
           "backgroundColor": "#000000"
         }
@@ -66,13 +66,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "monochromeImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "config": {
-        "react-native-app-auth": {
-          "appAuthRedirectScheme": "latus.app"
-        }
       },
       "edgeToEdgeEnabled": true,
       "package": "latus.app",
@@ -90,6 +86,18 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "./assets/images/splash.png",
+          "dark": {
+            "image": "./assets/images/splashDark.png",
+            "backgroundColor": "#000000"
+          },
+          "imageWidth": 200
+        }
+      ],
       [
         "expo-notifications",
         {
@@ -143,7 +151,7 @@
         "url": "https://u.expo.dev/38ef905d-694c-488a-8e18-c0cf3bd3fd8e"
       }
     },
-    "runtimeVersion": "1.1.0",
+    "runtimeVersion": "1.5.0",
     "updates": {
       "url": "https://u.expo.dev/38ef905d-694c-488a-8e18-c0cf3bd3fd8e"
     }

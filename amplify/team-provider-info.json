@@ -10,7 +10,8 @@
       "StackName": "amplify-latus-prod-1e6c0",
       "StackId": "arn:aws:cloudformation:ca-central-1:434555106948:stack/amplify-latus-prod-1e6c0/14b8a440-65ac-11ef-bfde-0e27a94aae1d",
       "AmplifyAppId": "d3ebv8rvc54f84",
-      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-latus-prod-1e6c0-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-latus-prod-1e6c0-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-latus-prod-1e6c0-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "auth": {
@@ -28,13 +29,59 @@
         "latusPreSignup": {
           "DOMAINALLOWLIST": "",
           "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
-          "s3Key": "amplify-builds/latusPreSignup-4d596e41552f49416448-build.zip"
+          "s3Key": "amplify-builds/latusPreSignup-30427258666964716a56-build.zip"
+        },
+        "hcaamasterfunction": {
+          "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
+          "s3Key": "amplify-builds/hcaamasterfunction-686f584964445334462f-build.zip"
+        },
+        "hcaaweekly": {
+          "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
+          "s3Key": "amplify-builds/hcaaweekly-774d4d662f74754f7332-build.zip"
         }
       },
       "storage": {
         "latus": {}
       },
       "api": {
+        "latus": {},
+        "hcaaAPI": {}
+      }
+    }
+  },
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-latus-dev-130855-authRole",
+      "UnauthRoleArn": "arn:aws:iam::434555106948:role/amplify-latus-dev-130855-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::434555106948:role/amplify-latus-dev-130855-authRole",
+      "Region": "ca-central-1",
+      "DeploymentBucketName": "amplify-latus-dev-130855-deployment",
+      "UnauthRoleName": "amplify-latus-dev-130855-unauthRole",
+      "StackName": "amplify-latus-dev-130855",
+      "StackId": "arn:aws:cloudformation:ca-central-1:434555106948:stack/amplify-latus-dev-130855/b7d47d70-6304-11ef-aab7-0e0cf716005b",
+      "AmplifyAppId": "d3ebv8rvc54f84",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-latus-dev-130855-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    },
+    "categories": {
+      "auth": {
+        "latus": {
+          "googleClientId": "618875472803-badpv8bcif94n8vhgjq32h9fugqhrlvn.apps.googleusercontent.com"
+        },
+        "userPoolGroups": {}
+      },
+      "function": {
+        "latusPostConfirmation": {
+          "GROUP": "STUDENT",
+          "deploymentBucketName": "amplify-latus-dev-130855-deployment",
+          "s3Key": "amplify-builds/latusPostConfirmation-5a4835516858524d6d2f-build.zip"
+        },
+        "latusPreSignup": {
+          "DOMAINALLOWLIST": "stfxavier.ca",
+          "deploymentBucketName": "amplify-latus-dev-130855-deployment",
+          "s3Key": "amplify-builds/latusPreSignup-79366d44484255774649-build.zip"
+        }
+      },
+      "storage": {
         "latus": {}
       }
     }

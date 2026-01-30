@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Keyboard, TouchableOpacity, Linking, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, Keyboard, TouchableOpacity, Linking, ActivityIndicator, Platform, Modal } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import colors from "../../colors";
 import { useAuthContext } from "../../contexts/AuthContext";
@@ -66,7 +66,8 @@ const AddDate = () => {
     const [loading, setLoading] = useState(false);
     const [startDate, setStartDate] = useState<Date>(startDefault);
     const [endDate, setEndDate] = useState<Date>(endDefault);
-
+    const [openAndroidStart, setOpenAndroidStart] = useState(false);
+    const [openAndroidEnd, setOpenAndroidEnd] = useState(false);
 
     /**
      * 
@@ -105,9 +106,33 @@ const AddDate = () => {
         }
     }
 
+    const onStartChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+        // Android: Always close the picker state first
+        if (Platform.OS === 'android') {
+            setOpenAndroidStart(false);
+        }
+
+        if (event.type === 'set' && selectedDate) {
+            startChange(selectedDate);
+        }
+    };
+
+    const onEndChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+        if (Platform.OS === 'android') {
+            setOpenAndroidEnd(false);
+        }
+
+        if (event.type === 'set' && selectedDate) {
+            endChange(selectedDate);
+        }
+    };
+
     return (
-        <View style={{height: '100%', backgroundColor: colors.background[theme].elevated}}>
-            <Pressable onPress={() => Keyboard.dismiss()} style={{ height: 60, width: '100%', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 }}>
+        <View style={{ height: '100%', backgroundColor: colors.background[theme].elevated, paddingTop: Platform.OS === 'android' ? 24 : 0 }}>
+            <Pressable onPress={() => Keyboard.dismiss()} style={{
+                height: 60, width: '100%', alignItems: 'center', justifyContent: 'center',
+                paddingHorizontal: 16
+            }}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={{ alignSelf: 'center', marginLeft: 'auto', }}>
                     <Ionicons
                         name="close-outline" size={26}
@@ -135,23 +160,63 @@ const AddDate = () => {
                         flexDirection: 'row', justifyContent: 'flex-start', flexGrow: 1,
                         marginLeft: 'auto', alignItems: 'center', 
                     }}>
-                        <DateTimePicker
-                            testID="dateTimePicker"
-                            value={startDate}
-                            mode={'date'}
-                            themeVariant={theme}
-                            is24Hour={true}
-                            display="default"
-                            onChange={(event, date) => startChange(date as Date)}
-                            minimumDate={new Date()}
-                            maximumDate={getMaxDateForAcademicYear()}
-                        />
-                        <Text style={{
-                            fontFamily: 'Figtree-Medium', fontSize: 12, lineHeight: 13, marginLeft: 8,
-                            color: colors.text[theme].secondary
-                        }}>
-                            {isToday(startDate) ? 'Now' : 'at 12:00 AM'}
-                        </Text>
+                        {
+                            Platform.OS === 'ios' ? (
+                                <>
+                                    <DateTimePicker
+                                        testID="dateTimePicker"
+                                        value={startDate}
+                                        mode={'date'}
+                                        themeVariant={theme}
+                                        is24Hour={true}
+                                        display="default"
+                                        onChange={(event, date) => startChange(date as Date)}
+                                        minimumDate={new Date()}
+                                        maximumDate={getMaxDateForAcademicYear()}
+                                    />
+                                    <Text style={{
+                                        fontFamily: 'Figtree-Medium', fontSize: 12, lineHeight: 13, marginLeft: 8,
+                                        color: colors.text[theme].secondary
+                                    }}>
+                                        {isToday(startDate) ? 'Now' : 'at 12:00 AM'}
+                                    </Text>
+                                </>
+                            ) : (
+                                <>
+                                    {
+                                        startDate && (
+                                            <Text style={{
+                                                fontFamily: 'Figtree-Medium', fontSize: 12, lineHeight: 13, marginLeft: 8,
+                                                color: colors.text[theme].secondary, marginRight: 'auto'
+                                            }}>
+                                                    {isToday(startDate) ? 'Now' : `${startDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) } at 12:00 AM`}
+                                            </Text>
+                                        )
+                                    }
+                                    <TouchableOpacity onPress={() => setOpenAndroidStart(true)}>
+                                        <Text style={{
+                                            fontFamily: 'Figtree-Medium', fontSize: 12, lineHeight: 13, marginLeft: 8,
+                                            color: colors.text[theme].secondary
+                                        }}>
+                                            Change
+                                        </Text>
+                                    </TouchableOpacity>
+                                        
+                                    {/* ANDROID ONLY - No Modal Wrapper */}
+                                    {openAndroidStart && (
+                                        <DateTimePicker
+                                            value={startDate}
+                                            mode="date"
+                                            display="default"
+                                            onChange={onStartChange}
+                                            minimumDate={new Date()}
+                                            maximumDate={getMaxDateForAcademicYear()}
+                                        />
+                                    )}
+                                </>
+                                    
+                            )
+                        }
                     </View>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', flexGrow: 1, marginTop: 16 }}>
@@ -162,23 +227,62 @@ const AddDate = () => {
                     <View style={{
                         flexDirection: 'row', justifyContent: 'flex-start', flexGrow: 1, marginLeft: 'auto', alignItems: 'center',
                     }}>
-                        <DateTimePicker
-                            testID="dateTimePicker"
-                            value={endDate}
-                            themeVariant={theme}
-                            mode={'date'}
-                            is24Hour={true}
-                            display="default"
-                            onChange={(event, date) => endChange(date)}
-                            minimumDate={startDate}
-                            maximumDate={getMaxDateForAcademicYear()}
-                        />
-                        <Text style={{
-                            fontFamily: 'Figtree-Medium', fontSize: 12, lineHeight: 13, marginLeft: 8,
-                            color: colors.text[theme].secondary
-                        }}>
-                            at 11:59 PM
-                        </Text>
+                        {
+                            Platform.OS === 'ios' ? (
+                                <>
+                                    <DateTimePicker
+                                        testID="dateTimePicker"
+                                        value={endDate}
+                                        themeVariant={theme}
+                                        mode={'date'}
+                                        is24Hour={true}
+                                        display={"default"}
+                                        onChange={(event, date) => endChange(date)}
+                                        minimumDate={startDate}
+                                        maximumDate={getMaxDateForAcademicYear()}
+                                    />
+                                    <Text style={{
+                                        fontFamily: 'Figtree-Medium', fontSize: 12, lineHeight: 13, marginLeft: 8,
+                                        color: colors.text[theme].secondary
+                                    }}>
+                                        at 11:59 PM
+                                    </Text>
+                                </>
+                            ) : (
+                                <>
+                                    {
+                                        endDate && (
+                                            <Text style={{
+                                                fontFamily: 'Figtree-Medium', fontSize: 12, lineHeight: 13, marginLeft: 8,
+                                                color: colors.text[theme].secondary, marginRight: 'auto'
+                                            }}>
+                                                {`${endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} at 11:59 PM`}
+                                            </Text>
+                                        )
+                                    }
+                                    <TouchableOpacity onPress={() => setOpenAndroidEnd(true)}>
+                                        <Text style={{
+                                            fontFamily: 'Figtree-Medium', fontSize: 12, lineHeight: 13, marginLeft: 8,
+                                            color: colors.text[theme].secondary
+                                        }}>
+                                            Change
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    {openAndroidEnd && (
+                                        <DateTimePicker
+                                            value={endDate}
+                                            mode="date"
+                                            display="default"
+                                            onChange={onEndChange}
+                                            minimumDate={startDate}
+                                            maximumDate={getMaxDateForAcademicYear()}
+                                        />
+                                    )}
+                                </>
+
+                            )
+                        }
                     </View>
                 </View>
             </View>

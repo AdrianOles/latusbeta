@@ -208,7 +208,7 @@ const ViewCard: React.FC<ModalCardProps> = ({ title, body, endDate, path, aspect
         <View style={{
             flex: 1,
             display: counter === index ? 'flex' : 'none',
-            paddingTop: Platform.OS === 'ios' ? 60 : 16,
+            paddingTop: Platform.OS === 'ios' ? 60 : 42,
             zIndex: 0
         }}>
             <View style={{ display: 'flex', flexDirection: 'row', gap: 8, alignItems: 'center', borderBottomColor: colors.fills[theme].stroke, borderBottomWidth: 1, paddingBottom: 12, paddingHorizontal: 16 }}>

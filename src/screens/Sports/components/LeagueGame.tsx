@@ -9,19 +9,19 @@ import { useAuthContext } from '../../../contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { GameCard } from './GameCard';
 import { school } from '..';
-
+import { FlashList, FlashListProps } from '@shopify/flash-list';
 interface gameType {
     date?: string;
-    league: string | undefined | null;
-    location: string;
+    league?: string;
+    location?: string;
     notes: string;
     home: {
         name: string;
-        score: number;
+        score: number | null;
     };
     visitor: {
         name: string;
-        score: number;
+        score: number | null;
     };
     time?: string
 }
@@ -48,12 +48,13 @@ const reorderString = (inputString: string): string => {
  * @returns An array of strings, where each string is 'W', 'L', or 'D'.
  */
 const getResultsForTeam = (games: gameType[], teamName: string): string[] => {
-    return games.map((game) => {
-        // Check if the team is the home team
+    return games && games.map((game) => {
         if (game.home.name === teamName) {
-            if (game.home.score > game.visitor.score) {
+            const homeScore = game.home.score || 0;
+            const visitorScore = game.visitor.score || 0;
+            if (homeScore > visitorScore) {
                 return 'W';
-            } else if (game.home.score < game.visitor.score) {
+            } else if (homeScore < visitorScore) {
                 return 'L';
             } else {
                 return 'D';
@@ -61,9 +62,11 @@ const getResultsForTeam = (games: gameType[], teamName: string): string[] => {
         }
         // Check if the team is the visitor team
         else if (game.visitor.name === teamName) {
-            if (game.visitor.score > game.home.score) {
+            const homeScore = game.home.score || 0;
+            const visitorScore = game.visitor.score || 0;
+            if (visitorScore > homeScore) {
                 return 'W';
-            } else if (game.visitor.score < game.home.score) {
+            } else if (visitorScore < homeScore) {
                 return 'L';
             } else {
                 return 'D';
@@ -71,16 +74,32 @@ const getResultsForTeam = (games: gameType[], teamName: string): string[] => {
         }
         // If the team is not in the game, return a placeholder
         else {
-            return '';
+            return 'O';
         }
     });
 };
 
-const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, mode }: { league: string, items: gameType[], widthScreen: number, teamName: school, mode?: "league" | "team" | "game" }) => {
+export const abbreviateRank = (inputString: string): string => {
+    if (!inputString) {
+        return inputString;
+    }
+
+    // 1. Convert "Junior" to "Jr."
+    // The 'gi' flags make the search global (g) and case-insensitive (i).
+    let result = inputString.replace(/junior/gi, 'Jr.');
+
+    // 2. Convert "Senior" to "Sr."
+    // We apply this to the result of the first replacement.
+    result = result.replace(/senior/gi, 'Sr.');
+
+    return result;
+}
+
+const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, mode, date }: { date?: string, league?: string, items: gameType[], widthScreen: number, teamName: school, mode?: "league" | "team" | "game" | 'school' }) => {
     const navigation = useNavigation<HomeStackParamList>(); // If GameCard needs navigation
     const { theme } = useAuthContext();
-
     //Remove stroke for the last GameCard
+    const leagueToUse = abbreviateRank(league || '');
 
     const handlePress = () => {
         if (mode != 'league' && mode != 'team') {
@@ -93,28 +112,48 @@ const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, 
         }
     }
 
-    const results = getResultsForTeam(items, teamName);
-
+    const results = React.useMemo(() => getResultsForTeam(items, teamName), [items, teamName]);
+    
+    const renderGameCard = ({ item, index }: { item: gameType, index: number }) => {
+        const isLastItem = index === (items.length - 1);
+        return (
+            <GameCard
+                mode={mode}
+                dateString={date}
+                date={item.date}
+                time={item.time}
+                format={mode === 'game' || mode === 'school' ? results[index] as "W" | "L" | "D" : undefined}
+                remove={isLastItem}
+                key={index} // key property is still important, although FlatList uses keyExtractor
+                item={item}
+                widthScreen={widthScreen - 32}
+                lpadding={16}
+                league={item.league}
+                teamName={teamName}
+            />
+        );
+    };
 
     return (
         <View style={{
             display: 'flex', borderRadius: 16, overflow: 'hidden', borderWidth: 0, marginBottom: 16,
-            borderColor: colors.fills[theme].stroke, boxShadow: '0px 1px 24px rgba(51, 51, 51, 0.16)'
+            borderColor: colors.fills[theme].stroke,
         }}>
-            <TouchableOpacity onPress={handlePress} style={{
-                display: 'flex', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14,
-                backgroundColor: theme === 'light' ? '#F5F5F7' : colors.fills[theme].standard
-            }}>
-                {!mode && (<Ionicons name='football-outline' size={24} style={{ paddingRight: 8 }} color={colors.text[theme].primary} />)}
-                <Text style={{ fontFamily: 'Figtree-Bold', fontSize: 15, lineHeight: 18, color: colors.text[theme].primary }}>{mode ? league : reorderString(league)}</Text>
-                {!mode && (<Ionicons name='chevron-forward-outline' color={colors.text[theme].primary} style={{ paddingLeft: 2 }} />)}
+            <TouchableOpacity onPress={handlePress} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 16}}>
+                {/* {mode === 'game' && (<Ionicons name='football-outline' size={24} style={{ paddingRight: 8 }} color={colors.text[theme].primary} />)} */}
+                <Text style={{ fontFamily: 'Figtree-Bold', fontSize: 18, lineHeight: 20, color: colors.text[theme].primary }}>{mode === 'game' && leagueToUse ? reorderString(leagueToUse) : leagueToUse}</Text>
+                {mode === 'game' && (<Ionicons name='chevron-forward-outline' color={colors.text[theme].primary} style={{ paddingLeft: 2 }} />)}
             </TouchableOpacity>
-            <View style={{ backgroundColor: colors.background[theme].elevated}}>
-                {
-                    items.map((game, index) => (
-                        <GameCard mode={mode} date={game.date} time={league === 'Upcoming Games' ? game.time : undefined} format={mode === 'team' ? results[index] as "W" | "L" | "D" : undefined} remove={index === (items.length - 1) ? true : false} key={index} item={game} widthScreen={widthScreen - 32} lpadding={16} />
-                    ))
-                }
+
+            <View style={{ backgroundColor: colors.background[theme].elevated, boxShadow: '0px 2px 24px 0px #73708014', borderRadius: 20 }}>
+                <FlashList
+                    data={items}
+                    renderItem={renderGameCard}
+                    keyExtractor={(item, index) => `game-${league}-${index}`}
+                    scrollEnabled={false}                    
+                    contentContainerStyle={{ paddingVertical: 0 }}
+                    estimatedItemSize={96}
+                />
             </View>
         </View>
     );
