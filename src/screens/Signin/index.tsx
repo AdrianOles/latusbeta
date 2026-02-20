@@ -15,6 +15,9 @@ import { useNavigation } from 'expo-router'
 import { HomeStackParamList } from '../../navigation'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons';
+import { signinAppVector } from '../../../assets/index'
+import { LinearGradient } from 'expo-linear-gradient'
+import { StatusBar } from 'expo-status-bar';
 
 const provider = {
   custom: 'HCDSBmobile'
@@ -30,7 +33,7 @@ const Signin = () => {
   const { authUser, updateAuthUser, error, clearErrorState } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const colorScheme = useColorScheme(); // Returns 'light' or 'dark'
-
+  const { theme } = useAuthContext();
   const [parent, setParent] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -268,7 +271,6 @@ const Signin = () => {
     signInWithRedirect({
       provider: 'Google',
       options: {
-        preferPrivateSession: true,
         prompt: 'SELECT_ACCOUNT'
       }
     })
@@ -880,51 +882,66 @@ const Signin = () => {
   }
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.background['dark'].general }}
-      edges={["top", "bottom"]}
-    >
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, backgroundColor: 'black' }}>
-        <Pressable onPress={Keyboard.dismiss} style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', alignContent: 'center', width: '100%', paddingTop: 84, paddingHorizontal: 24 }}>
-          <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: 0, paddingHorizontal: 16, overflow: 'hidden', height: '100%' }}>
-            <View />
-            <View>
-              <Image
-                source={SIGNIN}
-                style={{ height: 148, width: 148, alignSelf: 'center' }}
-              />
-              <Text style={{ fontSize: 32, lineHeight: 40, fontFamily: 'Figtree-Bold', color: colors.text['dark'].primary, textAlign: 'center' }}>Welcome to Latus</Text>
-              <Text style={{ fontSize: 16, lineHeight: 20, fontFamily: 'Figtree-Medium', color: colors.text['dark'].secondary, textAlign: 'center' }}>Everything you need in one place</Text>
-            </View>
-            <View style={{}}>
-              <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: '#FA3E42', marginBottom: 10, opacity: error ? 1 : 0 }} >{error}</Text>
+    <>
+    <StatusBar translucent={true} style={theme === 'dark' ? 'light' : 'light'} backgroundColor={'transparent'} />
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: colors.background['dark'].general }}
+        edges={["top"]}
+      >
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, backgroundColor: colors.background[theme].general }}>
+          <Pressable onPress={Keyboard.dismiss} style={{ height: '100%', display: 'flex', flexDirection: 'column', width: '100%' }}>
+            <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: 0, overflow: 'hidden', height: '100%' }}>
+              <View>
+                <View style={{ width: '100%', height: '50%', borderBottomColor: colors.fills[theme].stroke, borderBottomWidth: 2, marginBottom: 24 }}>
+                  <Image
+                    source={signinAppVector}
+                    style={{ width: '100%', height: '100%', alignSelf: 'center' }}
+                  />
+                </View>
+                <View style={{ paddingHorizontal: 16 }}>
+                  <Text style={{ fontSize: 32, lineHeight: 40, fontFamily: 'Figtree-Bold', color: colors.text[theme].primary, textAlign: 'left' }}>Welcome to Latus</Text>
+                  <Text style={{ fontSize: 16, lineHeight: 20, fontFamily: 'Figtree-Medium', color: colors.text[theme].secondary, textAlign: 'left' }}>If your school uses Latus for daily announcements, sign in below with your school’s Google account. </Text>
+                </View>
+              </View>
+              <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
+                <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: '#FA3E42', marginBottom: 10, opacity: error ? 1 : 0 }} >{error}</Text>
 
-              {Platform.OS === 'android' && (
-                <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: colors.system['dark'].yellow, marginTop: 8, marginBottom: Platform.OS === 'android' ? 8 : 0 }}>
-                  The android version is still in beta. Please send any issues to our email at social.latus@gmail.com.
-                </Text>
-              )}
-              <TouchableOpacity
-                style={{ borderRadius: 16, backgroundColor: colors.text['dark'].primary, alignItems: 'center', padding: 16 }}
-                onPress={() => handleDefaultSignIn()}>
-                {
-                  loading ? (
-                    <Text style={{ color: colors.background['dark'].general, fontSize: 17, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>
-                      Loading...
-                    </Text>
-                  ) : (
-                    <Text style={{ color: colors.background['dark'].general, fontSize: 17, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>
-                      Sign in
-                    </Text>
-                  )
-                }
-              </TouchableOpacity>
-              <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: colors.text['dark'].secondary, marginTop: 8, marginBottom: Platform.OS === 'android' ? 8 : 0 }}>Use your school google account</Text>
+                {Platform.OS === 'android' && (
+                  <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: colors.system[theme].yellow, marginTop: 8, marginBottom: Platform.OS === 'android' ? 8 : 0 }}>
+                    The android version is still in beta. Please send any issues to our email at social.latus@gmail.com.
+                  </Text>
+                )}
+                <TouchableOpacity
+                  style={{ borderRadius: 250, overflow: 'hidden' }}
+                  onPress={() => handleDefaultSignIn()}
+                >
+                  <LinearGradient
+                    colors={[colors.fills[theme].ctaFirst, colors.fills[theme].ctaSecond]}
+                    style={{ position: 'absolute', width: '100%', height: '100%' }}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                  />
+                  <View style={{ padding: 16, alignItems: 'center' }}>
+                    {
+                      loading ? (
+                        <Text style={{ color: colors.background['light'].general, fontSize: 17, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>
+                          Loading...
+                        </Text>
+                      ) : (
+                        <Text style={{ color: colors.background['light'].general, fontSize: 17, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>
+                          Sign in
+                        </Text>
+                      )
+                    }
+                  </View>
+                </TouchableOpacity>
+                {/* <Text maxFontSizeMultiplier={0} style={{ textAlign: 'center', fontSize: 13, lineHeight: 18, fontFamily: 'Figtree-SemiBold', color: colors.text['dark'].secondary, marginTop: 8, marginBottom: Platform.OS === 'android' ? 8 : 0 }}>Use your school google account</Text> */}
+              </View>
             </View>
-          </View>
-        </Pressable>
-      </ScrollView>
-    </SafeAreaView>
+          </Pressable>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   )
 }
 

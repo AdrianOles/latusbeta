@@ -333,7 +333,7 @@ const Game = () => {
                             flatListRefs={flatListRefs}
                             syncTabs={syncTabs}
                             componentItems={[
-                                <GameInfo home={homeTeam} dateString={dateString} away={awayTeam} location={location || homeTeam} time={time} league={abbreviateRank(league)} sets={sets ? sets : undefined} />
+                                <GameInfo pending={time?.includes("pending")} notes={notes} home={homeTeam} dateString={dateString} away={awayTeam} location={location || homeTeam} time={time} league={abbreviateRank(league)} sets={sets ? sets : undefined} />
                             ]}
                         />
                         <MyFlatList

@@ -385,7 +385,7 @@ const Navigation = () => {
         'perusina@stfxavier.ca',                // Perusin
         'omarsarafa@gmail.com',                 // Omar
         'lanktreem@stfxavier.ca',               // Lanktree
-        'DeSousaB@my.werbr.ca',                 // DeSousa
+        'desousab@my.werbr.ca',                 // DeSousa
         'luisa.olesniewicz.507@my.werbr.ca',    // Luisa
         'mukendij@myhcdsb.org',                 // Joel
         'tester.latus@gmail.com'                // Tester account
@@ -393,7 +393,7 @@ const Navigation = () => {
 
     return (
         <>
-            {authUser ? (
+            {authUser && earlyAdopters.includes(authUser.email) ? (
                 <AppStack.Navigator screenOptions={{ headerShown: false }}>
                     <AppStack.Screen name="MainTabs" component={MainTabNavigator} />
                     <AppStack.Screen name="Resources" component={Resources} />
@@ -405,9 +405,20 @@ const Navigation = () => {
                     <AppStack.Screen name="ViewModal" component={ViewModal} />
                     <AppStack.Screen name="Menu" component={Menu} options={{ presentation: 'modal' }} />
                 </AppStack.Navigator>
+            ): authUser ? (
+                <AppStack.Navigator screenOptions={{ headerShown: false }}>
+                    <AppStack.Screen name="MainTabs" component={SubMainTabNavigator} />
+                    <AppStack.Screen name="Resources" component={Resources} />
+                    <AppStack.Screen name="ACreate" component={Create} />
+                    <AppStack.Screen name="AddFile" component={AddFile} options={{ presentation: 'modal' }} />
+                    <AppStack.Screen name="AddLink" component={AddLink} options={{ presentation: 'modal' }} />
+                    <AppStack.Screen name="AddDate" component={AddDate} options={{ presentation: 'modal' }} />
+                    <AppStack.Screen name="ImagePreview" component={ImagePreview} />
+                    <AppStack.Screen name="ViewModal" component={ViewModal} />
+                    <AppStack.Screen name="Menu" component={Menu} options={{ presentation: 'modal' }} />
+                </AppStack.Navigator>
             ) : (
                 <AppStack.Navigator screenOptions={{ headerShown: false }}>
-                    <AppStack.Screen name="MainTabs" component={SportsNavigator} />
                     <AppStack.Screen name="Signin" component={Signin} />
                 </AppStack.Navigator>
             )

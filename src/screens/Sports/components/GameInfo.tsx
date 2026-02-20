@@ -30,10 +30,9 @@ export const removeLeadingZero = (time: string) => {
     return tempVariable;
 }
 
-const GameInfo = React.memo(({ location, league, home, away, sets, time, dateString }: { dateString?: string, location: string, league: string, home: string, away: string, time?: string, sets: { home: number[] | undefined, visitor: number[] | undefined } | undefined }) => {
+const GameInfo = React.memo(({ location, league, home, away, sets, time, dateString, notes, pending }: { pending?: boolean, notes?: string, dateString?: string, location: string, league: string, home: string, away: string, time?: string, sets: { home: number[] | undefined, visitor: number[] | undefined } | undefined }) => {
     const { theme } = useAuthContext();
     const navigation = useNavigation<HomeStackParamList>();
-    
 
     const handlePress = () => {
         Linking.openURL('https://hcaa.ca').catch(err => console.error("Couldn't load page", err));

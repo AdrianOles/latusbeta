@@ -63,7 +63,6 @@ const Standings = React.memo(({league, focus, home, away}: {league: string, focu
             leagueid: getLeagueId(league),
         };
         const data = await getStandings(queryParams);
-        console.log(data);
         return data;
     }, []);
 

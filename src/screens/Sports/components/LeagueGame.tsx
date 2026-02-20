@@ -146,14 +146,19 @@ const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, 
             </TouchableOpacity>
 
             <View style={{ backgroundColor: colors.background[theme].elevated, boxShadow: '0px 2px 24px 0px #73708014', borderRadius: 20 }}>
-                <FlashList
-                    data={items}
-                    renderItem={renderGameCard}
-                    keyExtractor={(item, index) => `game-${league}-${index}`}
-                    scrollEnabled={false}                    
-                    contentContainerStyle={{ paddingVertical: 0 }}
-                    estimatedItemSize={96}
-                />
+                {items.map((game, index) => (
+                    <GameCard
+                        key={`game-${league}-${index}`} // Ensure unique key
+                        item={game}
+                        widthScreen={widthScreen} // Adjust width if padding exists in parent
+                        teamName={teamName}
+                        mode={mode}
+                        date={undefined} // Assuming logic based on your snippet
+                        dateString={date}
+                        time={game.time} // Assuming game object has time
+                        remove={index === items.length - 1} // Remove divider for last item
+                    />
+                ))}
             </View>
         </View>
     );

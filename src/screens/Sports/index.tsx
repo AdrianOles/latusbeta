@@ -173,15 +173,17 @@ const MyFlatList = React.memo(({
         <Animated.FlatList
             data={dataSource}
             renderItem={renderItem}
-            keyExtractor={(item, index) => item.league ? `league-${item.league}` : `item-${item.id || index}`}
+            keyExtractor={(item, index) => {
+                return item.league || `item-${index}`;
+            }}
             style={{ maxWidth: SCREEN_WIDTH, paddingTop: authUser ? 100 : 200 }}
-            initialNumToRender={pageIndex != 3 ? 3 : 3}
-            windowSize={4}
+            initialNumToRender={5}
+            windowSize={5}
             refreshControl={
                 <RefreshControl tintColor={colors.text[theme].primary} progressViewOffset={authUser ? 120 : 200} refreshing={refreshing} onRefresh={onRefresh} />
             }
             contentContainerStyle={{paddingBottom: Platform.OS === 'android' ? 200 : 40, paddingHorizontal: 8, paddingTop: 24}}
-            updateCellsBatchingPeriod={50}
+            updateCellsBatchingPeriod={30}
             ListHeaderComponent={() => (
                 <>
                     {HeaderComponent && (

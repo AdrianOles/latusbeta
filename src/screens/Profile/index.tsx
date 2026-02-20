@@ -136,7 +136,7 @@ const Profile = () => {
                         color: colors.text[theme].secondary, fontSize: 17, lineHeight: 22, letterSpacing: 0.2,
                         fontFamily: 'Figtree-SemiBold', textTransform: 'capitalize',
                     }}>
-                        {authUser?.staffRole} - {authUser?.school ? schoolAbrv[authUser.school as keyof typeof schoolAbrv] : ''}
+                        {authUser?.staffRole} | {authUser?.school ? schoolAbrv[authUser.school as keyof typeof schoolAbrv] : ''}
                     </Text>
 
                     <TouchableOpacity onPress={() => { handleLocalSignOut(); }}

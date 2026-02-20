@@ -1,5 +1,5 @@
 // Outside of your Testrun component, ideally in its own file (e.g., GameCard.tsx)
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { HomeStackParamList } from '../../../navigation';
@@ -121,6 +121,14 @@ export const removeLeadingZero = (time: string) => {
     return tempVariable;
 }
 
+const DefaultSchoolLogo = React.memo(() => (
+    <View style={{ marginRight: 10 }}>
+        <Svg width="24" height="25" viewBox="0 0 24 25" fill="none">
+            <Path d="M24 1.99999V8.99998C24 15.59 20.81 19.5837 18.1338 21.7737C15.2513 24.1312 12.3838 24.9324 12.2588 24.9649C12.0869 25.0117 11.9056 25.0117 11.7338 24.9649C11.6088 24.9324 8.745 24.1312 5.85875 21.7737C3.19 19.5837 0 15.59 0 8.99998V1.99999C0 1.46956 0.210714 0.960856 0.585786 0.585785C0.960859 0.210713 1.46957 0 2 0H22C22.5304 0 23.0391 0.210713 23.4142 0.585785C23.7893 0.960856 24 1.46956 24 1.99999Z" fill="#9A999E" />
+        </Svg>
+    </View>
+));
+
 const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time, remove, format, mode, dateString, league, teamName }:
     {
         item: gameType, widthScreen: number, lpadding?: number | undefined, date?: string, time?: string, remove?: boolean,
@@ -128,188 +136,165 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
     }) => {
     const navigation = useNavigation<HomeStackParamList>(); // If GameCard needs navigation
     const { theme } = useAuthContext();
-    const [templateHome, setTemplateHome] = useState<boolean>(false);
-    const [templateAway, setTemplateAway] = useState<boolean>(false);
-    const [wld, setWld] = useState<"W" | "L" | "D">("D");
 
+    //Dervied states
+    const homeScore = item.home.score ?? 0;
+    const awayScore = item.visitor.score ?? 0;
+    const homeName = item.home.name;
+    const visitorName = item.visitor.name;
+
+    const templateHome = !schoolList.includes(homeName);
+    const templateAway = !schoolList.includes(visitorName);
+
+    const wld = useMemo(() => {
+        let myScore = 0;
+        let opponentScore = 0;
+
+        if (teamName === homeName) {
+            myScore = homeScore;
+            opponentScore = awayScore;
+        } else if (teamName === visitorName) {
+            myScore = awayScore;
+            opponentScore = homeScore;
+        } else {
+            return "D";
+        }
+
+        if (myScore > opponentScore) return "W";
+        if (myScore < opponentScore) return "L";
+        return "D";
+    }, [homeScore, awayScore, teamName, homeName, visitorName]);
+
+    // Flags
     const pendingFlag = time ? time.includes("pending") : false;
     const TBAFlag = time ? time.includes("TBA") : false;
     const dateBuffer = date ? 0 : 0;
 
-    const homeScore = item.home.score ? item.home.score : 0;
-    const awayScore = item.visitor.score ? item.visitor.score : 0;
+    // Helper Styles
+    const homeFont = homeScore > awayScore ? "Figtree-SemiBold" : "Figtree-Regular";
+    const homeColor = homeScore > awayScore ? colors.text[theme].body : (homeScore < awayScore ? colors.text[theme].secondary : colors.text[theme].body);
 
-    useEffect(() => {
-        let myScore = 0;
-        let opponentScore = 0;
-        if (teamName === item.home.name) {
-            myScore = homeScore;
-            opponentScore = awayScore;
-        } else if (teamName === item.visitor.name) {
-            myScore = awayScore;
-            opponentScore = homeScore;
-        }
-
-        if (myScore > opponentScore) {
-            setWld("W");
-        } else if (myScore < opponentScore) {
-            setWld("L");
-        } else {
-            setWld("D");
-        }
-    }, [homeScore, awayScore, teamName]);
-
-    useEffect(() => {
-        if (!schoolList.includes(item.home.name)) {
-            setTemplateHome(true);
-        } else {
-            setTemplateHome(false);
-        }
-        if (!schoolList.includes(item.visitor.name)) {
-            setTemplateAway(true);
-        } else {
-            setTemplateAway(false);
-        }
-    }, []);
+    const awayFont = homeScore < awayScore ? "Figtree-SemiBold" : "Figtree-Regular";
+    const awayColor = homeScore < awayScore ? colors.text[theme].primary : (homeScore > awayScore ? colors.text[theme].secondary : colors.text[theme].body);
 
     return (
         <TouchableOpacity
             onPress={() => navigation.navigate("SportsGame", {
-                homeTeam: item.home.name,
-                awayTeam: item.visitor.name,
-                homeScore: item.home.score ? item.home.score : 0,
-                awayScore: item.visitor.score ? item.visitor.score : 0,
+                homeTeam: homeName,
+                awayTeam: visitorName,
+                homeScore: homeScore,
+                awayScore: awayScore,
                 league: item.league,
                 notes: item.notes,
                 dateString: dateString || date,
                 time: time,
-                sets: item.sets ? item.sets : undefined,
+                sets: item.sets,
                 location: item.location
             })}
-            style={{ width: widthScreen, position: 'relative', display: 'flex', paddingBottom: remove ? 20 : 0, paddingHorizontal: lpadding ? lpadding : 20, justifyContent: 'space-between', paddingTop: date ? 16 : 24
-        }}>
-            {
-                date && (
-                    <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, paddingBottom: 12 }}>
-                        {date}
-                    </Text>
-                )
-            } 
-            {
-                league && !date && mode === 'school' && (
-                    <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, paddingBottom: 12 }}>
-                        {league}
-                    </Text>
-                )
-            }
+            style={{
+                width: widthScreen,
+                paddingBottom: remove ? 20 : 0,
+                paddingHorizontal: lpadding || 20,
+                justifyContent: 'space-between',
+                paddingTop: date ? 16 : 24
+            }}
+        >
+            {date && (
+                <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, paddingBottom: 12 }}>
+                    {date}
+                </Text>
+            )}
+            {league && !date && mode === 'school' && (
+                <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, paddingBottom: 12 }}>
+                    {league}
+                </Text>
+            )}
 
-            <View style={{ display: 'flex', flexDirection: 'row', width: '100%', flexGrow: 0 }}>
-                {/* Team logos */}
-                <View style={{ display: 'flex', flexGrow: 1, flex: 1, width: '100%', marginRight: 12 }}>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flexShrink: 1 }}>
-                        {
-                            !time && item.home.score != item.visitor.score && (
-                                <View style={{ position: 'absolute', left: -16, top: homeScore > awayScore ? 4 + dateBuffer : 32 + dateBuffer }}>
-                                        <Svg width="10" height="15" viewBox="0 0 10 15" fill="none">
-                                            <Path d="M7.5 5.46558C8.16667 5.85048 8.16667 6.81273 7.5 7.19763L-5.33111e-07 11.5278C-0.666668 11.9127 -1.5 11.4315 -1.5 10.6617L-1.5 2.00148C-1.5 1.23168 -0.666667 0.750551 -7.88487e-08 1.13545L7.5 5.46558Z" fill={colors.text[theme].primary} />
-                                        </Svg>
-                                </View>
-                            )
-                        } 
-                        {templateHome ? (
-                            <View style={{ marginRight: 10 }}>
-                                <Svg width="24" height="25" viewBox="0 0 24 25" fill="none">
-                                    <Path d="M24 1.99999V8.99998C24 15.59 20.81 19.5837 18.1338 21.7737C15.2513 24.1312 12.3838 24.9324 12.2588 24.9649C12.0869 25.0117 11.9056 25.0117 11.7338 24.9649C11.6088 24.9324 8.745 24.1312 5.85875 21.7737C3.19 19.5837 0 15.59 0 8.99998V1.99999C0 1.46956 0.210714 0.960856 0.585786 0.585785C0.960859 0.210713 1.46957 0 2 0H22C22.5304 0 23.0391 0.210713 23.4142 0.585785C23.7893 0.960856 24 1.46956 24 1.99999Z" fill="#9A999E" />
+            <View style={{ flexDirection: 'row', width: '100%' }}>
+                {/* TEAMS COLUMN */}
+                <View style={{ flex: 1, marginRight: 12 }}>
+                    {/* HOME TEAM */}
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                        {!time && homeScore !== awayScore && (
+                            <View style={{ position: 'absolute', left: -16, top: homeScore > awayScore ? 4 + dateBuffer : 32 + dateBuffer }}>
+                                <Svg width="10" height="15" viewBox="0 0 10 15" fill="none">
+                                    <Path d="M7.5 5.46558C8.16667 5.85048 8.16667 6.81273 7.5 7.19763L-5.33111e-07 11.5278C-0.666668 11.9127 -1.5 11.4315 -1.5 10.6617L-1.5 2.00148C-1.5 1.23168 -0.666667 0.750551 -7.88487e-08 1.13545L7.5 5.46558Z" fill={colors.text[theme].primary} />
                                 </Svg>
                             </View>
-                        ) : (
+                        )}
+
+                        {templateHome ? <DefaultSchoolLogo /> : (
                             <Image
-                                source={schoolLogos[item.home.name as school]}
-                                style={{
-                                    width: 24, aspectRatio: 1, marginRight: 10, objectFit: 'contain', transform: [{
-                                        scale: 1
-                                    }],
-                                }}
+                                source={schoolLogos[homeName as school]}
+                                style={{ width: 24, height: 24, marginRight: 10, resizeMode: 'contain' }}
                             />
                         )}
-                        <Text numberOfLines={1} style={{
-                            fontFamily: (homeScore > awayScore) ? "Figtree-SemiBold" : "Figtree-Regular", flex: 1, flexShrink: 1, fontSize: 15,
-                            color: (homeScore > awayScore)
-                                ? colors.text[theme].body
-                                : (homeScore < awayScore)
-                                    ? colors.text[theme].secondary
-                                    : colors.text[theme].body
-                        }}>{item.home.name}</Text>
+                        <Text numberOfLines={1} style={{ fontFamily: homeFont, fontSize: 15, color: homeColor, flex: 1 }}>
+                            {homeName}
+                        </Text>
                     </View>
-                    <View style={{ display: 'flex', flex: 1, flexShrink: 1, flexDirection: 'row', alignItems: 'center', paddingTop: 4 }}>
-                        {templateAway ? (
-                            <View style={{ marginRight: 10 }}>
-                                <Svg width="24" height="25" viewBox="0 0 24 25" fill="none">
-                                    <Path d="M24 1.99999V8.99998C24 15.59 20.81 19.5837 18.1338 21.7737C15.2513 24.1312 12.3838 24.9324 12.2588 24.9649C12.0869 25.0117 11.9056 25.0117 11.7338 24.9649C11.6088 24.9324 8.745 24.1312 5.85875 21.7737C3.19 19.5837 0 15.59 0 8.99998V1.99999C0 1.46956 0.210714 0.960856 0.585786 0.585785C0.960859 0.210713 1.46957 0 2 0H22C22.5304 0 23.0391 0.210713 23.4142 0.585785C23.7893 0.960856 24 1.46956 24 1.99999Z" fill="#9A999E" />
-                                </Svg>
-                            </View>
-                        ) : (
+
+                    {/* AWAY TEAM */}
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                        {templateAway ? <DefaultSchoolLogo /> : (
                             <Image
-                                source={schoolLogos[item.visitor.name as school]}
-                                style={{
-                                    width: 24, aspectRatio: 1, marginRight: 10, objectFit: 'contain', transform: [{
-                                        scale: 1
-                                    }],
-                                }}
+                                source={schoolLogos[visitorName as school]}
+                                style={{ width: 24, height: 24, marginRight: 10, resizeMode: 'contain' }}
                             />
                         )}
-                        <Text numberOfLines={1} style={{
-                            fontFamily: (homeScore < awayScore) ? "Figtree-SemiBold" : "Figtree-Regular", fontSize: 15,
-                            flex: 1, flexShrink: 1,
-                            color: (homeScore < awayScore)
-                                ? colors.text[theme].primary
-                                : (homeScore > awayScore)
-                                    ? colors.text[theme].secondary
-                                    : colors.text[theme].body
-                        }}>{item.visitor.name}</Text>
+                        <Text numberOfLines={1} style={{ fontFamily: awayFont, fontSize: 15, color: awayColor, flex: 1 }}>
+                            {visitorName}
+                        </Text>
                     </View>
                 </View>
 
-                {time && (
-                    <View style={{ marginVertical: 'auto', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginRight: 8}}>
-                        <View style={{width: 1, height: 42, backgroundColor: colors.fills[theme].stroke, marginRight: 16}} />
+                {/* STATUS/SCORE COLUMN */}
+                {time ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 8 }}>
+                        <View style={{ width: 1, height: 42, backgroundColor: colors.fills[theme].stroke, marginRight: 16 }} />
                         <View>
-                            <Text style={{ textAlign: 'center', fontFamily: 'Figtree-Medium', fontSize: 15, lineHeight: 20, color: colors.text[theme].tertiary }}>{pendingFlag ? "Pending" : TBAFlag ? "TBA" : "Starts"}</Text>
-                            {!pendingFlag && !TBAFlag && <Text style={{ textAlign: 'center', fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 20, color: colors.text[theme].secondary }}>{removeLeadingZero(time)}</Text>}
+                            <Text style={{ textAlign: 'center', fontFamily: 'Figtree-Medium', fontSize: 15, lineHeight: 20, color: colors.text[theme].tertiary }}>
+                                {pendingFlag ? "Pending" : TBAFlag ? "TBA" : "Starts"}
+                            </Text>
+                            {!pendingFlag && !TBAFlag && (
+                                <Text style={{ textAlign: 'center', fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 20, color: colors.text[theme].secondary }}>
+                                    {removeLeadingZero(time)}
+                                </Text>
+                            )}
                         </View>
                     </View>
-                )}
-
-                {!time && (
-                    <View style={{ marginVertical: 'auto', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+                ) : (
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
                         <View>
-                            <Text style={{ textAlign: 'center', fontFamily: 'Figtree-ExtraBold', fontSize: 18, lineHeight: 25, color: colors.text[theme].primary, opacity: (homeScore > awayScore) && (homeScore != awayScore) ? 1 :  0.55, marginBottom: 2 }}>{item.home.score}</Text>
-                            <Text style={{ textAlign: 'center', fontFamily: 'Figtree-ExtraBold', fontSize: 18, lineHeight: 25, color: colors.text[theme].primary, opacity: (homeScore > awayScore) || (homeScore === awayScore) ? 0.55 : 1 }}>{item.visitor.score}</Text>
+                            <Text style={{ textAlign: 'center', fontFamily: 'Figtree-ExtraBold', fontSize: 18, color: colors.text[theme].primary, opacity: homeScore > awayScore && homeScore !== awayScore ? 1 : 0.55, marginBottom: 2 }}>
+                                {homeScore}
+                            </Text>
+                            <Text style={{ textAlign: 'center', fontFamily: 'Figtree-ExtraBold', fontSize: 18, color: colors.text[theme].primary, opacity: awayScore > homeScore || homeScore === awayScore ? 1 : 0.55 }}>
+                                {awayScore}
+                            </Text>
                         </View>
                         <View style={{ width: 1, height: 42, backgroundColor: colors.fills[theme].stroke, marginHorizontal: 16 }} />
-                        {
-                            (mode === 'team' || mode === 'school') ? (
-                                <View style={{
-                                    display: wld ? 'flex' : 'none', justifyContent: 'center',
-                                    alignItems: 'center', marginVertical: 'auto', width: 28, aspectRatio: 1,
-                                    backgroundColor: (wld === 'W') ? colors.system[theme].green : (wld === 'L') ? colors.system[theme].red : colors.fills[theme].standard,
-                                }}>
-                                    <Text style={{ fontFamily: "Figtree-Bold", fontSize: 15, color: colors.system.white }}>
-                                        {wld}
-                                    </Text>
-                                </View>
-                            ) : (
-                                <View>
-                                    <Text style={{ textAlign: 'center', fontFamily: 'Figtree-Medium', fontSize: 14, color: colors.text[theme].tertiary }}>Ended</Text>
-                                </View>
-                            )
-                        }
+
+                        {(mode === 'team' || mode === 'school') ? (
+                            <View style={{
+                                width: 28, height: 28, justifyContent: 'center', alignItems: 'center',
+                                backgroundColor: (wld === 'W') ? colors.system[theme].green : (wld === 'L') ? colors.system[theme].red : colors.fills[theme].standard,
+                            }}>
+                                <Text style={{ fontFamily: "Figtree-Bold", fontSize: 15, color: colors.system.white }}>
+                                    {wld}
+                                </Text>
+                            </View>
+                        ) : (
+                            <Text style={{ textAlign: 'center', fontFamily: 'Figtree-Medium', fontSize: 14, color: colors.text[theme].tertiary }}>
+                                Ended
+                            </Text>
+                        )}
                     </View>
                 )}
             </View>
 
             {!remove && (
-                <View style={{ backgroundColor: colors.fills[theme].stroke, height: 1, width: '100%', marginHorizontal: 'auto', marginTop: 20 }} />
+                <View style={{ backgroundColor: colors.fills[theme].stroke, height: 1, width: '100%', marginTop: 20 }} />
             )}
         </TouchableOpacity>
     );
