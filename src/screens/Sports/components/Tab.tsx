@@ -27,10 +27,10 @@ const Tab = React.memo((
 
     return (
         <TouchableOpacity onPress={() => onTabPress(index)} style={{ padding: 16, flexGrow: 1, zIndex: 50 }}>
-            <Animated.Text style={[{ fontFamily: "Figtree-Bold", textAlign: 'center', fontSize: 15, lineHeight: 20, color: colors.text[theme].primary }, tabTextStyle]}>
+            <Animated.Text maxFontSizeMultiplier={1.2} style={[{ fontFamily: "Figtree-Bold", textAlign: 'center', fontSize: 15, lineHeight: 20, color: colors.text[theme].primary }, tabTextStyle]}>
                 {label}
             </Animated.Text>
-            <Animated.View style={[{ height: 4, borderRadius: 1.5, position: 'absolute', bottom: 1, left: 0, right: 0}, tabStyle]} />
+            <Animated.View style={[{ height: 4, position: 'absolute', bottom: 1, left: 0, right: 0}, tabStyle]} />
         </TouchableOpacity>
     );
 });

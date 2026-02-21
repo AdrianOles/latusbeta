@@ -26,6 +26,8 @@ const TeamBanner = React.memo(({ animatedSchool, label, subNote }: { animatedSch
     const { theme } = useAuthContext();
     const navigation = useNavigation<HomeStackParamList>();
 
+    const abbreviatedSubNote = subNote.replace(/\bSenior\b/g, 'Sr.').replace(/\bJunior\b/g, 'Jr.');
+
     return (
         <Animated.View
             style={[animatedSchool, {
@@ -39,9 +41,9 @@ const TeamBanner = React.memo(({ animatedSchool, label, subNote }: { animatedSch
                         height: 80, aspectRatio: 1, objectFit: 'contain',
                     }}
                 />
-                <Text style={{ fontFamily: 'Figtree-Bold', fontSize: 22, color: colors.text['dark'].primary, marginTop: 8 }}>{label}</Text>
+                <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: 'Figtree-Bold', fontSize: 22, color: colors.text['dark'].primary, marginTop: 8 }}>{label}</Text>
                 <TouchableOpacity onPress={() => navigation.navigate("SportsLeague", { league: subNote, org: "HCAA" })}>
-                    <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 20, color: colors.text['dark'].secondary }}>{subNote} &rsaquo;</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 20, color: colors.text['dark'].secondary }}>{abbreviatedSubNote} &rsaquo;</Text>
                 </TouchableOpacity>
             </View>
         </Animated.View>

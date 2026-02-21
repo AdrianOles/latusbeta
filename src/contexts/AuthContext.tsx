@@ -133,14 +133,16 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const updateAuthUser = async () => {
+        if (!authUser) setLoading(true);
+        
         try {
             const { userId } = await getCurrentUser();
             const response = (await fetchAuthSession()).tokens?.idToken?.payload;
             const attributes = await fetchUserAttributes();
 
             const studentSchool = getSchool(response);
-            const userRole = getRole(response)
-            
+            const userRole = getRole(response);
+
             if (userId && attributes.email && attributes.picture) {
 
                 const tempUser: AuthUserCustomType = {
@@ -152,6 +154,7 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
                     picture: attributes.picture
                 }
                 setAuthUser(tempUser);
+                clearErrorState(); // FIX: Clear the error upon a successful fetch
             }
         } catch (err) {
             console.log(err);
@@ -160,7 +163,6 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
             setLoading(false);
         }
     };
-
     const isWithinLast12Hours = (timestampString: string): boolean => (new Date().getTime() - new Date(timestampString).getTime()) <= 12 * 60 * 60 * 1000;
 
     const updateImageCache = async () => {
@@ -206,7 +208,6 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         Hub.listen('auth', ({ payload }) => {
-            console.log(payload)
             switch (payload.event) {
                 case 'signedIn':
                     break;
@@ -218,10 +219,19 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
                     break;
                 case 'signInWithRedirect':
                     updateAuthUser();
+                    setError("")
                     break;
                 case 'signInWithRedirect_failure':
                     setLoading(false);
-                    setError("Please sign in with your school account.")
+
+                    // 1. Check if the error message contains "cancel"
+                    const errString = String(payload.data?.error?.message || payload.data || '').toLowerCase();
+                    const isCancel = errString.includes('cancel') || errString.includes('usercancelled');
+
+                    // 2. Only set the error if they DID NOT cancel
+                    if (!isCancel) {
+                        setError("Please sign in with your school account.");
+                    }
                     break;
             }
         });

@@ -56,9 +56,33 @@ exports.handler = async (event) => {
 
   // -------------------------------------------------------------------------
   let schoolAccess = 'STFX';
-  if (userEmail.endsWith("@gmail.com")) {
-    schoolAccess = 'ND'
+  if (userEmail.endsWith("@gobluego.ca")) {
+    schoolAccess = 'ASU';
   }
+  if (userEmail.endsWith("@loyola.hcdsb.org")) {
+    schoolAccess = 'LOY';
+  }
+  if (userEmail.endsWith("@my.aquinas.me")) {
+    schoolAccess = 'STA';
+  }
+  if (userEmail.endsWith("@my.cccss.ca")) {
+    schoolAccess = 'CC';
+  }
+  if (userEmail.endsWith("@my.ctk.ca")) {
+    schoolAccess = 'CTK';
+  }
+  if (userEmail.endsWith("@my.htoakville.ca")) {
+    schoolAccess = 'HT';
+  }
+  if (userEmail.endsWith("@my.ntdm.ca")) {
+    schoolAccess = 'ND';
+  }
+  if (userEmail.endsWith("@my.werbr.ca")) {
+    schoolAccess = 'BR';
+  }
+  if (userEmail.endsWith("@hs.myhcdsb.org")) {
+    schoolAccess = 'STK';
+  } 
 
   const schoolGroupParams = {
     GroupName: schoolAccess,

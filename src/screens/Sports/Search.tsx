@@ -1,16 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Text, View, Image, Modal, TouchableOpacity, Platform, Pressable, FlatList, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback } from 'react-native'
+import { Text, View, Image, Modal, TouchableOpacity, Platform, Pressable, FlatList, Dimensions, Keyboard } from 'react-native'
 import { AuthContextType, useAuthContext } from '../../contexts/AuthContext';
-import { signOut, signIn } from 'aws-amplify/auth';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import colors from '../../colors';
 import { useNavigation } from '@react-navigation/native';
 import { HomeStackParamList } from '../../navigation';
 import { Picker } from '@react-native-picker/picker';
-import Sports, { school } from './index';
-import * as Haptics from 'expo-haptics';
+import { school } from './index';
 import NoResults from './components/NoResults';
+// import * as Haptics from 'expo-haptics';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -18,71 +17,68 @@ const sports = ['soccer', 'football', 'volleyball', 'hockey', 'field hockey', 'b
     'fastpitch', 'slowpitch', 'baseball', 'eSports', 'curling']
 
 interface HeaderProps {
-    theme: 'light' | 'dark'; // Use the correct type for your theme
+    theme: 'light' | 'dark';
     onSelectPress: () => void;
     selectedSport: string | null;
-    school: string;
-    onSchoolChange: (text: string) => void;
-    onSearch: () => void;
-    search: string | null
+    school: string | null;
+    onSchoolSelectPress: () => void;
+    onClearSchool: () => void;
+    onClearSport: () => void;
+    search: string | null;
 }
 
 type dataFormat = {
-    mainLabel: string,  //"Senior Boys Soccer"
-    subLabel: string | null,   //"HCAA League" if null, "SCHOOL" otherwise
+    mainLabel: string,
+    subLabel: string | null,
 }
 
-// 1. Move the Header component OUTSIDE of the Search component
-const Header = React.memo(({ theme, onSelectPress, selectedSport, school, onSchoolChange, onSearch, search }: HeaderProps) => {
+const Header = React.memo(({ theme, onSelectPress, selectedSport, school, onSchoolSelectPress, onClearSchool, onClearSport, search }: HeaderProps) => {
     return (
-        <View style={{ paddingVertical: 0, paddingHorizontal: 16, marginBottom: 16 }}>
+        <View style={{ paddingVertical: 0, paddingHorizontal: 16, paddingBottom: 16, backgroundColor: colors.background[theme].elevated }}>
             <TouchableOpacity onPress={() => { Keyboard.dismiss(); onSelectPress() }} style={{
                 display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-                paddingVertical: 12, paddingHorizontal: 24, borderRadius: 250, borderWidth: 1, borderColor: colors.fills[theme].stroke
+                 borderRadius: 250, borderWidth: 1, borderColor: colors.fills[theme].stroke
             }}>
-                <Text style={{ fontFamily: 'Figtree-Medium', fontSize: 17, lineHeight: 22, color: colors.text[theme].secondary }}>
+                <Text maxFontSizeMultiplier={1.2} style={{ paddingVertical: 12, paddingHorizontal: 24, fontFamily: selectedSport ? 'Figtree-SemiBold' : 'Figtree-Medium', fontSize: 17, lineHeight: 22, color: selectedSport ? colors.text[theme].primary : colors.text[theme].tertiary }}>
                     {selectedSport ? selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1) : "Select a Sport"}
                 </Text>
-                <Ionicons name='chevron-down' size={18} color={colors.text[theme].secondary} />
+                {selectedSport ? (
+                    <TouchableOpacity onPress={onClearSport} style={{ marginRight: -2, paddingRight: 24, paddingVertical: 12}}>
+                        <Ionicons name='close-outline' color={colors.text[theme].secondary} size={20} />
+                    </TouchableOpacity>
+                ) : (
+                        <Ionicons name='chevron-down' size={18} color={colors.text[theme].secondary} style={{ paddingRight: 24, paddingVertical: 12 }} />
+                )}
             </TouchableOpacity>
-            <View style={{ position: 'relative' }}>
-                <TextInput
-                    placeholder="Search a school"
-                    keyboardType="default"
-                    inputMode='text'
-                    maxLength={450}
-                    editable={selectedSport ? true : false}
-                    value={school}
-                    onSubmitEditing={onSearch}
-                    returnKeyType="search"
-                    placeholderTextColor={colors.text[theme].tertiary}
-                    onChangeText={onSchoolChange}
+
+            <View style={{ position: 'relative', marginTop: 8 }}>
+                <TouchableOpacity
+                    disabled={!selectedSport}
+                    onPress={() => { Keyboard.dismiss(); onSchoolSelectPress(); }}
                     style={{
-                        paddingVertical: 12, paddingHorizontal: 24, borderRadius: 250, borderWidth: 1, borderColor: colors.fills[theme].stroke,
-                        fontSize: 17, fontFamily: 'Figtree-Medium', lineHeight: 22, marginTop: 8, paddingLeft: 44, color: colors.text[theme].primary,
-                        backgroundColor: selectedSport ? 'transparent' : colors.fills[theme].standard, opacity: selectedSport ? 1 : 0.5
+                       borderRadius: 250, borderWidth: 1, borderColor: colors.fills[theme].stroke,
+                        backgroundColor: selectedSport ? 'transparent' : colors.fills[theme].standard, opacity: selectedSport ? 1 : 0.5,
+                        display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'
                     }}
-                />
-                <Ionicons name='search-outline' color={colors.text[theme].secondary} size={20} style={{ position: 'absolute', left: 0, top: '50%', opacity: selectedSport ? 1 : 0.5, transform: [{ translateY: -5 }], paddingLeft: 16 }} />
-                {
-                    school && (
-                        <TouchableOpacity onPress={() => { onSchoolChange('')}} style={{ position: 'absolute', top: '50%', right: 0, transform: [{ translateY: -7 }], paddingRight: 16 }}>
-                            <Ionicons name='close-outline' color={colors.text[theme].secondary} size={24} />
+                >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text maxFontSizeMultiplier={1.2} style={{
+                            paddingVertical: 12, paddingHorizontal: 24, 
+                            fontSize: 17, fontFamily: school ? 'Figtree-SemiBold' : 'Figtree-Medium', color: school ? colors.text[theme].primary : colors.text[theme].tertiary,
+                        }}>
+                            {school ? school : "Select a school"}
+                        </Text>
+                    </View>
+
+                    {school ? (
+                        <TouchableOpacity onPress={onClearSchool} style={{ paddingVertical: 12, paddingHorizontal: 24, }}>
+                            <Ionicons name='close-outline' color={colors.text[theme].secondary} size={20} />
                         </TouchableOpacity>
-                    )
-                }
+                    ) : (
+                        <Ionicons name='chevron-down' size={18} color={colors.text[theme].secondary} style={{ paddingRight: 24, paddingVertical: 12 }} />
+                    )}
+                </TouchableOpacity>
             </View>
-            {search && (
-                <>
-                    <Text style={{ marginTop: 32, fontFamily: 'Figtree-Medium', fontSize: 15, color: colors.text[theme].secondary }}>
-                        <Text style={{ textTransform: 'capitalize', fontFamily: 'Figtree-Bold' }}>{selectedSport}</Text> results for
-                    </Text>
-                    <Text style={{ color: colors.text[theme].primary, fontSize: 22, lineHeight: 28, fontFamily: "Figtree-Bold" }}>"{search}"</Text>
-                </>
-            )}
-            {selectedSport && !search && (
-                <Text style={{ color: colors.text[theme].primary, fontSize: 22, lineHeight: 28, fontFamily: "Figtree-Bold", textTransform: 'capitalize', paddingVertical: 16, paddingTop: 32 }}>{selectedSport}</Text>
-            )}
         </View>
     );
 });
@@ -105,6 +101,7 @@ interface CardProps {
     subNote: string | null,
     theme: 'light' | 'dark',
 }
+
 const ResultCard = ({ label, subNote, theme }: CardProps) => {
     const navigation = useNavigation<HomeStackParamList>();
 
@@ -120,10 +117,12 @@ const ResultCard = ({ label, subNote, theme }: CardProps) => {
         }
     }
 
+    const abbreviatedLabel = label.replace(/\bSenior\b/g, 'Sr.').replace(/\bJunior\b/g, 'Jr.');
+
     return (
         <TouchableOpacity onPress={handleRedirect} style={{
             display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16,
-            borderRadius: 20, backgroundColor: !subNote ? colors.fills[theme].standard: colors.schools[subNote as school][theme].primary,
+            borderRadius: 20, backgroundColor: !subNote ? colors.background[theme].elevated : colors.schools[subNote as school][theme].primary,
             marginHorizontal: 16, marginBottom: 16
         }}>
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
@@ -134,13 +133,10 @@ const ResultCard = ({ label, subNote, theme }: CardProps) => {
                     />
                 </View>
                 <View style={{ marginLeft: 8 }}>
-                    <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 15, color: !subNote ? colors.text[theme].primary : 'white', textTransform: 'capitalize' }}>{label}</Text>
-                    <Text style={{ fontFamily: 'Figtree-Medium', fontSize: 13, color: !subNote ? colors.text[theme].secondary : '#FFFFFFA6' }}>{subNote ? subNote : "HCAA League"}</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={{ fontFamily: 'Figtree-SemiBold', fontSize: 15, color: !subNote ? colors.text[theme].primary : 'white', textTransform: 'capitalize' }}>{abbreviatedLabel}</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={{ fontFamily: 'Figtree-Medium', fontSize: 13, color: !subNote ? colors.text[theme].secondary : '#FFFFFFA6' }}>{subNote ? subNote : "HCAA League"}</Text>
                 </View>
             </View>
-            {/* <TouchableOpacity style={{ padding: 4 }} onPress={() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)}>
-                <Ionicons name='star-outline' size={24} color={colors.text[theme].primary} />
-            </TouchableOpacity> */}
         </TouchableOpacity>
     )
 }
@@ -230,17 +226,26 @@ const Search = () => {
     const { authUser, updateAuthUser, updateSchool, theme }: AuthContextType = useAuthContext();
     const navigation = useNavigation<HomeStackParamList>();
     const [loading, setLoading] = useState(false);
+
     const [selectedSport, setSport] = useState<null | string>(null);
     const [openSelect, setSelect] = useState<boolean>(false);
-    const pickerRef = useRef<Picker<string | null> | null>(null);
-    const [school, setSchool] = useState<string>(''); // or just ''
+
+    const [school, setSchool] = useState<string | null>(null);
+    const [openSchoolSelect, setSchoolSelect] = useState<boolean>(false);
+
     const [showResults, setShowResults] = useState<string | null>('');
     const [showSport, setSportResult] = useState<string | null>(null);
     const [data, setData] = useState<dataFormat[] | null>(null);
 
+    const [empty, setEmpty] = useState(false);
+
+    useEffect(() => {
+        if (showResults) setEmpty(false);
+        else setEmpty(true);
+    }, [showResults])
+
     const handleRefresh = async () => {
         setLoading(true);
-        // Simulate fetching data
         await new Promise(resolve => setTimeout(resolve, 2000));
         setLoading(false);
     };
@@ -252,39 +257,27 @@ const Search = () => {
         }
 
         if (showResults) {
-            // Updated normalization
             const normalizedSearch = showResults.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
 
-            const matchingSchools = schoolList.filter(school => {
-                // Keep normalization as is, which is good for matching names like "St Mary"
-                const normalizedSchool = school.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
+            const matchingSchools = schoolList.filter(s => {
+                const normalizedSchool = s.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
                 return normalizedSchool.includes(normalizedSearch);
             });
 
             if (matchingSchools.length > 0) {
-                // 1. Create a list of prioritized teams from ALL matching schools
                 const prioritizedTeams: dataFormat[] = [];
-
                 matchingSchools.forEach(matchingSchool => {
-                    // Create new team objects, populating the subLabel
                     const schoolTeams = leagueData.map(team => ({
                         ...team,
                         subLabel: matchingSchool,
                     }));
-
-                    // Add them to the priority list
                     prioritizedTeams.push(...schoolTeams);
                 });
-
-                // 2. Prepend ALL prioritized school teams to the original league data
                 setData([...prioritizedTeams, ...leagueData]);
-
             } else {
-                // If no schools match the search term
                 setData(leagueData);
             }
         } else {
-            // If there's no search, just set the league data
             setData(leagueData);
         }
     }, [selectedSport, showResults]);
@@ -293,16 +286,23 @@ const Search = () => {
         setShowResults(null);
     }, [school])
 
-    // Memoize the callback functions
-    const handleSchoolChange = useCallback((text: string) => {
-        setSchool(text);
-    }, [school]);
+    const handleClearSchool = useCallback(() => {
+        setSchool(null);
+        setShowResults(null);
+        setSchoolSelect(false);
+    }, []);
 
     const handleSearch = useCallback(() => {
         setShowResults(school);
     }, [school]);
 
-    // Memoize the Header component to pass to the FlatList
+    const handleClearSport = useCallback(() => {
+        setSchoolSelect(false);
+        setSport(null);
+        setShowResults(null);
+        setSelect(false);
+    }, []);
+
     const memoizedHeader = useMemo(() => {
         return (
             <Header
@@ -310,15 +310,18 @@ const Search = () => {
                 selectedSport={selectedSport}
                 onSelectPress={() => setSelect(true)}
                 school={school}
-                onSchoolChange={handleSchoolChange}
-                onSearch={handleSearch}
+                onSchoolSelectPress={() => setSchoolSelect(true)}
+                onClearSchool={handleClearSchool}
+                onClearSport={handleClearSport}
                 search={showResults}
             />
         );
-    }, [theme, selectedSport, school, handleSchoolChange, handleSearch, showResults]);
+    }, [theme, selectedSport, school, handleClearSchool, handleSearch, showResults]);
 
     return (
         <SafeAreaView edges={["top"]} style={{ position: 'relative', backgroundColor: colors.background[theme].elevated, height: '100%' }}>
+
+            {/* Sport Picker Modal */}
             <Modal
                 visible={openSelect}
                 transparent={true}
@@ -327,25 +330,27 @@ const Search = () => {
             >
                 <Pressable
                     onPress={() => setSelect(false)}
-                    style={{
-                        flex: 1,
-                        justifyContent: 'flex-end',
-                        backgroundColor: '#000000A0',
-                    }}
+                    style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: '#000000A0' }}
                 >
                     <Pressable
-                        onPress={() => { }} // This prevents closing the modal when tapping the content
-                        style={{
-                            backgroundColor: colors.background[theme].elevated,
-                            borderTopRightRadius: 16,
-                            borderTopLeftRadius: 16,
-                            paddingBottom: 40,
-                        }}
+                        onPress={() => { }}
+                        style={{ backgroundColor: colors.background[theme].elevated, borderTopRightRadius: 16, borderTopLeftRadius: 16, paddingBottom: 40 }}
                     >
-                        <View style={{paddingHorizontal: Platform.OS === "android" ? 16 : 0}}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, width: '100%' }}>
+                            <TouchableOpacity onPress={handleClearSport} style={{ padding: 24 }}>
+                                <Text maxFontSizeMultiplier={1.5} style={{ color: colors.text[theme].secondary }}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => {
+                                setSelect(false);
+                                setSportResult(selectedSport);
+                            }} style={{ padding: 24 }}>
+                                <Text maxFontSizeMultiplier={1.5} style={{ color: colors.system[theme].blue }}>Confirm</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ paddingHorizontal: Platform.OS === "android" ? 16 : 0 }}>
                             <Picker
                                 selectedValue={selectedSport}
-                                onValueChange={(itemValue, itemIndex) => {
+                                onValueChange={(itemValue) => {
                                     if (itemValue !== null) {
                                         setSport(itemValue);
                                     }
@@ -362,50 +367,86 @@ const Search = () => {
                                 ))}
                             </Picker>
                         </View>
-                        <TouchableOpacity
-                            onPress={() => {
-                                setSelect(false);
-                                setSportResult(selectedSport);
-                            }}
-                            style={{
-                                marginHorizontal: 16,
-                                borderRadius: 250,
-                                backgroundColor: '#526CFF',
-                                paddingVertical: 12,
-                                paddingHorizontal: 20,
-                                marginTop: 16
-                            }}
-                        >
-                            <Text style={{
-                                color: 'white',
-                                fontFamily: 'Figtree-SemiBold',
-                                fontSize: 15,
-                                lineHeight: 20,
-                                textAlign: 'center'
-                            }}>
-                                Done
-                            </Text>
-                        </TouchableOpacity>
                     </Pressable>
                 </Pressable>
             </Modal>
 
-            <Pressable onPress={Keyboard.dismiss} style={{ borderBottomColor: colors.fills[theme].stroke, borderBottomWidth: 1, backgroundColor: colors.background[theme].elevated }}>
-                <View style={{
-                    display: 'flex', flexDirection: 'row', justifyContent: 'space-between',
-                    alignItems: 'center', paddingHorizontal: 12, width: '100%', paddingVertical: 16,
-                }}>
+            {/* School Picker Modal */}
+            <Modal
+                visible={openSchoolSelect}
+                transparent={true}
+                animationType="none"
+                onRequestClose={() => setSchoolSelect(false)}
+            >
+                <Pressable
+                    onPress={() => setSchoolSelect(false)}
+                    style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: '#000000A0' }}
+                >
+                    <Pressable
+                        onPress={() => { }}
+                        style={{ backgroundColor: colors.background[theme].elevated, borderTopRightRadius: 16, borderTopLeftRadius: 16, paddingBottom: 40 }}
+                    >
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, width: '100%' }}>
+                            <TouchableOpacity onPress={handleClearSchool} style={{ padding: 24 }}>
+                                <Text maxFontSizeMultiplier={1.5} style={{ color: colors.text[theme].secondary }}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => {
+                                setSchoolSelect(false);
+                                handleSearch();
+                            }} style={{ padding: 24 }}>
+                                <Text maxFontSizeMultiplier={1.5} style={{ color: colors.system[theme].blue }}>Confirm</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ paddingHorizontal: Platform.OS === "android" ? 16 : 0 }}>
+                            <Picker
+                                selectedValue={school}
+                                onValueChange={(itemValue) => {
+                                    setSchool(itemValue);
+                                }}
+                                itemStyle={{ color: colors.text[theme].primary }}
+                            >
+                                <Picker.Item label="Select a school" value={null} />
+                                {schoolList.map((item, index) => (
+                                    <Picker.Item
+                                        label={item}
+                                        value={item}
+                                        key={index}
+                                    />
+                                ))}
+                            </Picker>
+                        </View>
+                    </Pressable>
+                </Pressable>
+            </Modal>
+
+            <Pressable onPress={Keyboard.dismiss} style={{ backgroundColor: colors.background[theme].elevated }}>
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, width: '100%', paddingVertical: 16 }}>
                     <TouchableOpacity onPress={() => navigation.goBack()} style={{ width: 40 }}>
                         <Ionicons name='chevron-back-outline' size={24} color={colors.text[theme].primary} />
                     </TouchableOpacity>
-                    <Text style={{ textAlign: 'center', fontFamily: 'Figtree-Bold', fontSize: 17, color: colors.text[theme].primary }}>Find a team</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={{ textAlign: 'center', fontFamily: 'Figtree-Bold', fontSize: 17, color: colors.text[theme].primary }}>Find a team</Text>
                     <Ionicons name='chevron-back-outline' size={24} color={colors.text[theme].primary} style={{ opacity: 0, width: 40 }} />
                 </View>
+                 <Header
+                    theme={theme}
+                    selectedSport={selectedSport}
+                    onSelectPress={() => setSelect(true)}
+                    school={school}
+                    onSchoolSelectPress={() => setSchoolSelect(true)}
+                    onClearSchool={handleClearSchool}
+                    onClearSport={() => {
+                        setSchoolSelect(false);
+                        setSport(null);
+                        setShowResults(null);
+                    }}
+                    search={showResults}
+                />
             </Pressable>
 
             <FlatList
-                data={data} // replace with your data
-                style={{ height: '100%', paddingTop: 32, backgroundColor: colors.background[theme].general }}
+                data={data}
+                contentContainerStyle={{ paddingVertical: 16 }}
+                style={{ height: '100%',backgroundColor: colors.background[theme].alternate }}
                 renderItem={({ item, index }) => (
                     <ResultCard
                         label={`${item.mainLabel}`}
@@ -413,13 +454,15 @@ const Search = () => {
                         theme={theme}
                     />
                 )}
-                contentContainerStyle={{paddingBottom: 100}}
-                ListEmptyComponent={<NoResults theme={theme} mainLabel={'Empty search'} subLabel={'Please select a sport first'} />}
-                ListHeaderComponent={memoizedHeader}
+                ListEmptyComponent={<NoResults empty={empty} theme={theme} mainLabel={'Empty search'} subLabel={'Please select a sport first'} />}
+                // ListHeaderComponent={
+                //     <View style={{ paddingHorizontal: 16, paddingBottom: 24 }}>
+                //         <Text style={{ fontFamily: 'Figtree-Bold', fontSize: 17, color: colors.text[theme].primary }}>Results</Text>
+                //     </View>
+                // }
                 refreshing={loading}
                 onRefresh={handleRefresh}
             />
-
         </SafeAreaView>
     )
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Text, View, Image, Modal, TouchableOpacity, Platform, Pressable } from 'react-native'
+import { Text, View, Modal, TouchableOpacity, Platform, Pressable } from 'react-native'
 import { AuthContextType, useAuthContext } from '../../contexts/AuthContext';
 import { signOut } from 'aws-amplify/auth';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,17 +8,24 @@ import colors from '../../colors';
 import { MeshGradientView } from 'expo-mesh-gradient';
 import ProfileGen from '../../components/ProfileGen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { hcdsb } from '../../../assets';
+import { Image } from 'expo-image';
+import Signin from './../ParentSignIn/index';
+import { HomeStackParamList } from '../../navigation';
+import { useNavigation } from 'expo-router';
 
 //!DONE
 const Profile = () => {
     const { authUser, updateAuthUser, updateSchool, theme }: AuthContextType = useAuthContext();
     const [modalVisible, setModalVisible] = useState(false);
+    const navigation = useNavigation<HomeStackParamList>();
 
     //Sign out and update UI access
     const handleLocalSignOut = async () => {
         try {
             await AsyncStorage.clear(); // Or remove specific auth tokens
             // Or remove from your state management (e.g., Redux, Context)
+            navigation.navigate("SportsTab");
             updateAuthUser(); // Set auth state to unauthenticated
         } catch (error) {
             console.log('Error clearing tokens: ', error);
@@ -121,34 +128,53 @@ const Profile = () => {
                     </View>
                 </Pressable>
             </Modal>
-            {authUser && (
-                <View style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', paddingHorizontal: 48 }}>
-                    <Image
-                        width={88}
-                        height={88}
-                        source={{ uri: authUser.picture }}
-                        style={{borderRadius: 250}}
-                    />
-                    <Text numberOfLines={1} style={{ color: colors.text[theme].primary, fontSize: 22, lineHeight: 36, marginTop: 12, fontFamily: 'Figtree-Bold' }}>
-                        {authUser.name}
-                    </Text>
-                    <Text style={{
-                        color: colors.text[theme].secondary, fontSize: 17, lineHeight: 22, letterSpacing: 0.2,
-                        fontFamily: 'Figtree-SemiBold', textTransform: 'capitalize',
-                    }}>
-                        {authUser?.staffRole} | {authUser?.school ? schoolAbrv[authUser.school as keyof typeof schoolAbrv] : ''}
-                    </Text>
+            <View style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', paddingHorizontal: 48 }}>
+                {
+                    authUser ? (
+                        <Image
+                            source={{ uri: authUser.picture }}
+                            style={{ borderRadius: 250, width: 88, height: 88 }}
+                        />
+                    ) : (
+                        <Image
+                            source={hcdsb}
+                            style={{  width: 88, height: 88 }}
+                        />   
+                    )
+                }
+                {
+                    authUser ? (
+                        <>
+                            <Text numberOfLines={1} style={{ color: colors.text[theme].primary, fontSize: 22, lineHeight: 36, marginTop: 12, fontFamily: 'Figtree-Bold' }}>
+                                {authUser.name}
+                            </Text>
+                            <Text style={{
+                                color: colors.text[theme].secondary, fontSize: 17, lineHeight: 22, letterSpacing: 0.2,
+                                fontFamily: 'Figtree-SemiBold', textTransform: 'capitalize',
+                            }}>
+                                {authUser?.staffRole} | {authUser?.school ? schoolAbrv[authUser.school as keyof typeof schoolAbrv] : ''}
+                            </Text>
+                        </>
+                    ): (
+                        <Text numberOfLines={2} style={{ color: colors.text[theme].primary, fontSize: 22, lineHeight: 36, marginTop: 12, fontFamily: 'Figtree-Bold', textAlign: 'center' }}>
+                            Halton Catholic District School Board
+                        </Text>
+                    )
+                }
 
-                    <TouchableOpacity onPress={() => { handleLocalSignOut(); }}
-                        style={{
-                            borderRadius: 250, backgroundColor: theme === 'light' ? '#83818C1A' : '#B7B6BF33',
-                            alignItems: 'center', paddingVertical: 16, paddingHorizontal: 48, width: '100%',
-                            marginTop: 12
-                        }}>
-                        <Text style={{ color: colors.system[theme].red, fontSize: 17, lineHeight: 22, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>Sign out</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
+                {
+                    authUser && (
+                        <TouchableOpacity onPress={() => { handleLocalSignOut(); }}
+                            style={{
+                                borderRadius: 250, backgroundColor: theme === 'light' ? '#83818C1A' : '#B7B6BF33',
+                                alignItems: 'center', paddingVertical: 16, paddingHorizontal: 48, width: '100%',
+                                marginTop: 12
+                            }}>
+                            <Text style={{ color: colors.system[theme].red, fontSize: 17, lineHeight: 22, fontWeight: 600, fontFamily: 'Figtree-SemiBold' }}>Sign out</Text>
+                        </TouchableOpacity>
+                    )
+                }
+            </View>
         </View>
     )
 }

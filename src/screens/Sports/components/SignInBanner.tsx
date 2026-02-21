@@ -2,12 +2,13 @@ import React from "react";
 import Animated from "react-native-reanimated";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useAuthContext } from "../../../contexts/AuthContext";
-import { brLogo, loglogo } from "../../../../assets";
+import { brLogo, hcdsb, loglogo } from "../../../../assets";
 import colors from "../../../colors";
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackParamList } from "../../../navigation";
 import Svg, { Path } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
+import { Image } from "expo-image";
 
 const SignInBanner = React.memo(({ animation }: { animation: any }) => {
     const { theme } = useAuthContext();
@@ -27,6 +28,10 @@ const SignInBanner = React.memo(({ animation }: { animation: any }) => {
                 borderBottomWidth: 1,
                 borderColor: colors.fills[theme].subtle
             }}>
+                <Image
+                    source={hcdsb}
+                    style={{ width: 32, height: 32, marginRight: 12 }}
+                />
                 <View style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -39,11 +44,10 @@ const SignInBanner = React.memo(({ animation }: { animation: any }) => {
                             <Path d="M692.545 380.463C672.406 400.732 639.817 400.732 619.678 380.463L382.504 141.829C366.583 125.805 340.729 125.805 324.741 141.829L249.153 217.904C246.431 220.643 242.009 220.643 239.287 217.904L176.218 154.428C173.496 151.689 173.496 147.238 176.218 144.499L296.03 23.9833C327.803 -7.99444 379.374 -7.99444 411.215 23.9833L692.545 307.127C712.684 327.395 712.684 360.195 692.545 380.463Z" fill={colors.text[theme].primary} fill-opacity="0.65" />
                         </Svg>
                     </View> */}
-                    <Text style={{
+                    <Text maxFontSizeMultiplier={1} style={{
                         color: colors.text[theme].primary,
                         fontFamily: 'Figtree-Regular',
-                        fontSize: 17,
-                        lineHeight: 22,
+                        fontSize: 15,
                         flexShrink: 1
                     }}>
                         Are you a student or staff member of HCDSB?
@@ -55,16 +59,17 @@ const SignInBanner = React.memo(({ animation }: { animation: any }) => {
                         marginLeft: 16,
                         borderRadius: 250,
                         position: 'relative',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.12)',
                     }}
                 >
                     <LinearGradient
-                        colors={[colors.fills[theme].ctaFirst, colors.fills[theme].ctaSecond]}
+                        colors={["#E3A251", "#FCA94A"]}
                         style={{ position: 'absolute', width: '100%', height: '100%' }}
                         start={{ x: 0, y: 0.5 }}
                         end={{ x: 1, y: 0.5 }}
                     />
-                    <Text style={{
+                    <Text maxFontSizeMultiplier={1} style={{
                         color: colors.system.white, fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 22, paddingVertical: 9,
                         paddingHorizontal: 18, }}>Sign in</Text>
                 </TouchableOpacity>

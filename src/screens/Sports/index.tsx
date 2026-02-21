@@ -88,7 +88,7 @@ const getSchoolName = (school: string) => {
     }
 }
 
-const HEADER_MAX_HEIGHT = 177;
+const HEADER_MAX_HEIGHT = 173;
 const HEADER_MIN_HEIGHT = 100;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
@@ -197,6 +197,7 @@ const MyFlatList = React.memo(({
                             <View style={{ height: '90%', display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
                                 <NoResults
                                     theme={theme}
+                                    empty={false}
                                     mainLabel={pageIndex === 0 ? ("No games scheduled")
                                         : pageIndex === 6 ? ("No games scheduled")
                                             : ("No games scheduled")}
@@ -383,19 +384,8 @@ const Sports = () => {
 
         return Object.values(groupedData);
     };
-
-    const [minTimeLoading, setMinTimeLoading] = useState(true);
-    useEffect(() => {
-        setMinTimeLoading(true);
-        const timer = setTimeout(() => {
-            setMinTimeLoading(false);
-        }, 200); // Wait 500 milliseconds (adjust as needed)
-
-        // Cleanup the timer if the component unmounts
-        return () => clearTimeout(timer);
-    }, [dateSearch]);
     
-    const isTrulyLoading = isLoading || minTimeLoading;
+    const isTrulyLoading = isLoading;
 
     const fetcher = useCallback(async (date: Date) => {
         const queryParams: ScoresParams = {

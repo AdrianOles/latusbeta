@@ -123,7 +123,7 @@ const StickHeader = React.memo(({ currentPage, onTabPress, authUser, dateSearch,
                             fill={colors.text[theme].primary} fill-opacity="0.89"
                         />
                     </Svg>
-                    <Text style={{ fontSize: 24, fontFamily: 'Figtree-Bold', color: colors.text[theme].primary, marginLeft: 4 }}>
+                    <Text maxFontSizeMultiplier={1} style={{ fontSize: 24, fontFamily: 'Figtree-Bold', color: colors.text[theme].primary, marginLeft: 4 }}>
                         Sports
                     </Text>
                 </View>
@@ -171,15 +171,15 @@ const StickHeader = React.memo(({ currentPage, onTabPress, authUser, dateSearch,
                         flex: 1, justifyContent: 'flex-end', backgroundColor: '#00000060'
                     }}>
                         <Pressable style={{
-                            backgroundColor: colors.background[theme].elevated,
-                            borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 20
+                            backgroundColor: colors.background[theme].elevated, flexDirection: 'column', alignItems: 'center',
+                            borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 20, width: '100%'
                         }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1, width: '100%'}}>
                                 <TouchableOpacity onPress={cancelSelection} style={{ padding: 24 }}>
-                                    <Text style={{ color: colors.text[theme].secondary }}>Cancel</Text>
+                                    <Text maxFontSizeMultiplier={1.5} style={{ color: colors.text[theme].secondary }}>Cancel</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={confirmSelection} style={{ padding: 24 }}>
-                                    <Text style={{ color: colors.system[theme].blue }}>Confirm</Text>
+                                    <Text maxFontSizeMultiplier={1.5} style={{ color: colors.system[theme].blue }}>Confirm</Text>
                                 </TouchableOpacity>
                             </View>
 

@@ -39,6 +39,9 @@ const Resources = () => {
     //(Fetch) Query and API call to amplify and AppSync
     //!Update fetch to first check in cache
     const fetchResources = async () => {
+        if (!authUser) {
+            return null;
+        }
         console.log("fetching resources")
         setLoading(true);
 
@@ -237,7 +240,7 @@ const Resources = () => {
 
             {/* Message for content */}
             {
-                (data?.length === 0 || !data || data === undefined) && (
+                (data?.length === 0 || !data || data === undefined) && authUser ? (
                     <View style={{
                         position: 'absolute', top: '40%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
                         zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
@@ -248,6 +251,15 @@ const Resources = () => {
                         </Text>
                         <Text style={{ color: colors.text[theme].tertiary, fontFamily: "Figtree-SemiBold", fontSize: 15, lineHeight: 20 }}>
                             Nothing to see here
+                        </Text>
+                    </View>
+                ) : (data?.length === 0 || !data || data === undefined) && (
+                    <View style={{
+                        position: 'absolute', top: '40%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
+                        zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+                    }}>
+                        <Text style={{ color: colors.text[theme].tertiary, fontFamily: "Figtree-SemiBold", fontSize: 15, lineHeight: 20 }}>
+                            Resources are not accessible in your school yet.
                         </Text>
                     </View>
                 )

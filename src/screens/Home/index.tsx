@@ -94,6 +94,10 @@ const HomePage = () => {
     //Query and API call to amplify and AppSync
     //!Update fetch to first check in cache
     const fetchAnnouncements = async () => {
+        if (!authUser) {
+            console.log("No auth user");
+            return null;
+        }
         setLoading(true);
         console.log("Fetching...");
         const variables: AnnouncementsBySchoolAndBoardQueryVariables = {
@@ -315,7 +319,7 @@ const HomePage = () => {
                 renderItem={({ item, index }) => (
                     <>
                         {
-                            viewableItems && viewableItems?.length > 0 ? (
+                            viewableItems && authUser && viewableItems?.length > 0 ? (
                                 <ACard
                                     key={index}
                                     title={item.title}
@@ -376,7 +380,7 @@ const HomePage = () => {
                 // }
             />
             {
-                viewableItems.length === 0 && (
+                viewableItems.length === 0 && authUser ? (
                     //Message for announcement context results (# of announcements)
                     <View style={{
                         position: 'absolute', top: '50%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
@@ -388,6 +392,15 @@ const HomePage = () => {
                         </Text>
                         <Text style={{ color: colors.text[theme].tertiary, fontFamily: "Figtree-SemiBold", fontSize: 15, lineHeight: 20 }}>
                             You're all caught up
+                        </Text>
+                    </View>
+                ) : viewableItems.length === 0 && (
+                    <View style={{
+                        position: 'absolute', top: '50%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
+                        zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+                    }}>
+                        <Text style={{ color: colors.text[theme].tertiary, fontFamily: "Figtree-SemiBold", textAlign: 'center', fontSize: 15, lineHeight: 20, paddingHorizontal: 36 }}>
+                            Announcements aren't accessible for your school yet.
                         </Text>
                     </View>
                 )

@@ -21,14 +21,14 @@ const colors = {
             blue: '#2366EB',
             red: '#DF0000',
             green: '#089C46',
-            yellow: '#EBC000',
+            yellow: '#A68D00',
             orange: '#FF6A00'
         },
         "dark": {
             blue: '#4785FF',
             red: '#F23D3D',
             green: '#3AA667',
-            yellow: '#FFD30D',
+            yellow: '#EBD140',
             orange: '#FF700A'
         }
     },

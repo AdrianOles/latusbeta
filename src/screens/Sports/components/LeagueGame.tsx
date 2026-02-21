@@ -141,7 +141,7 @@ const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, 
         }}>
             <TouchableOpacity onPress={handlePress} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 16}}>
                 {/* {mode === 'game' && (<Ionicons name='football-outline' size={24} style={{ paddingRight: 8 }} color={colors.text[theme].primary} />)} */}
-                <Text style={{ fontFamily: 'Figtree-Bold', fontSize: 18, lineHeight: 20, color: colors.text[theme].primary }}>{mode === 'game' && leagueToUse ? reorderString(leagueToUse) : leagueToUse}</Text>
+                <Text maxFontSizeMultiplier={1.3} style={{ fontFamily: 'Figtree-Bold', fontSize: 18, lineHeight: 20, color: colors.text[theme].primary }}>{mode === 'game' && leagueToUse ? reorderString(leagueToUse) : leagueToUse}</Text>
                 {mode === 'game' && (<Ionicons name='chevron-forward-outline' color={colors.text[theme].primary} style={{ paddingLeft: 2 }} />)}
             </TouchableOpacity>
 
@@ -153,7 +153,7 @@ const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, 
                         widthScreen={widthScreen} // Adjust width if padding exists in parent
                         teamName={teamName}
                         mode={mode}
-                        date={undefined} // Assuming logic based on your snippet
+                        date={game.date} // Assuming logic based on your snippet
                         dateString={date}
                         time={game.time} // Assuming game object has time
                         remove={index === items.length - 1} // Remove divider for last item

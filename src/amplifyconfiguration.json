@@ -4,13 +4,6 @@
   "aws_appsync_region": "ca-central-1",
   "aws_appsync_authenticationType": "AMAZON_COGNITO_USER_POOLS",
   "aws_appsync_apiKey": "da2-rd6thuvdsjci5buf7i7rbxf2zm",
-  "aws_cloud_logic_custom": [
-    {
-      "name": "hcaaAPI",
-      "endpoint": "https://w2sj2xjxi5.execute-api.ca-central-1.amazonaws.com/prod",
-      "region": "ca-central-1"
-    }
-  ],
   "aws_cognito_identity_pool_id": "ca-central-1:e6f9f784-00b8-4921-b4f4-d5daa3a5329e",
   "aws_cognito_region": "ca-central-1",
   "aws_user_pools_id": "ca-central-1_5XSK8Ewq3",

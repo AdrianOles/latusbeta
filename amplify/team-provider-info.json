@@ -24,12 +24,12 @@
         "latusPostConfirmation": {
           "GROUP": "STUDENT",
           "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
-          "s3Key": "amplify-builds/latusPostConfirmation-6b686c505a716c4d562f-build.zip"
+          "s3Key": "amplify-builds/latusPostConfirmation-7667332f53566349564e-build.zip"
         },
         "latusPreSignup": {
           "DOMAINALLOWLIST": "",
           "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
-          "s3Key": "amplify-builds/latusPreSignup-30427258666964716a56-build.zip"
+          "s3Key": "amplify-builds/latusPreSignup-5a516165736c67316a66-build.zip"
         },
         "hcaamasterfunction": {
           "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",

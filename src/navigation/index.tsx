@@ -213,8 +213,9 @@ const MainTabNavigator = () => {
     )
 
     return (
-        <Tab.Navigator screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
                 let iconName: 'home' | 'home-outline' | 'trophy' | 'trophy-outline' | 'person' | 'person-outline' | 'grid' | 'grid-outline' = 'home';
 
                 if (route.name === 'SportsTab') { // Changed from 'Sports' to 'SportsTab' as per your Tab.Screen name
@@ -247,7 +248,8 @@ const MainTabNavigator = () => {
                 }
 
                 return <Ionicons name={iconName} size={size} color={color} />;
-            },
+                },
+                
             tabBarActiveTintColor: colors.text[theme].primary,
             tabBarInactiveTintColor: 'gray',
             tabBarStyle: {
@@ -255,7 +257,8 @@ const MainTabNavigator = () => {
                 borderTopColor: colors.fills[theme].stroke,
             },
             headerShown: false,
-        })}>
+            })}
+            initialRouteName={authUser ? "Home" : "SportsTab"}>
             {/* The 'Home' tab might be missing if it's meant to be a separate tab and not just a screen */}
             <Tab.Screen name="Home" component={Home} options={{ title: 'Home' }} />
             <Tab.Screen name="SportsTab" component={SportsNavigator} options={{ title: 'Sports' }} />
@@ -265,7 +268,7 @@ const MainTabNavigator = () => {
     )
 };
 
-const SubMainTabNavigator = () => {
+const SubMainTabNavigator = () => { 
     const { authUser, theme } = useAuthContext();
 
     const unfilledSports = (
@@ -375,8 +378,16 @@ const Navigation = () => {
         }
     }, [fontsLoaded, error, loading, isMinimumTimeElapsed]); // <-- Added isMinimumTimeElapsed dependency
 
-    // Return null if ANY condition is false
-    if (!fontsLoaded || loading || !isMinimumTimeElapsed) {
+    const [appIsReady, setAppIsReady] = useState(false);
+
+    useEffect(() => {
+        if (fontsLoaded && !loading && isMinimumTimeElapsed) {
+            setAppIsReady(true);
+            SplashScreen.hideAsync();
+        }
+    }, [fontsLoaded, loading, isMinimumTimeElapsed]);
+
+    if (!appIsReady) {
         return null;
     }
 
@@ -391,39 +402,27 @@ const Navigation = () => {
         'tester.latus@gmail.com'                // Tester account
     ];
 
+    const contractedSchoolDomains = [
+        'stfxavier.ca'
+    ]
+
     return (
-        <>
-            {authUser && earlyAdopters.includes(authUser.email) ? (
-                <AppStack.Navigator screenOptions={{ headerShown: false }}>
-                    <AppStack.Screen name="MainTabs" component={MainTabNavigator} />
-                    <AppStack.Screen name="Resources" component={Resources} />
-                    <AppStack.Screen name="ACreate" component={Create} />
-                    <AppStack.Screen name="AddFile" component={AddFile} options={{ presentation: 'modal' }} />
-                    <AppStack.Screen name="AddLink" component={AddLink} options={{ presentation: 'modal' }} />
-                    <AppStack.Screen name="AddDate" component={AddDate} options={{ presentation: 'modal' }} />
-                    <AppStack.Screen name="ImagePreview" component={ImagePreview} />
-                    <AppStack.Screen name="ViewModal" component={ViewModal} />
-                    <AppStack.Screen name="Menu" component={Menu} options={{ presentation: 'modal' }} />
-                </AppStack.Navigator>
-            ): authUser ? (
-                <AppStack.Navigator screenOptions={{ headerShown: false }}>
-                    <AppStack.Screen name="MainTabs" component={SubMainTabNavigator} />
-                    <AppStack.Screen name="Resources" component={Resources} />
-                    <AppStack.Screen name="ACreate" component={Create} />
-                    <AppStack.Screen name="AddFile" component={AddFile} options={{ presentation: 'modal' }} />
-                    <AppStack.Screen name="AddLink" component={AddLink} options={{ presentation: 'modal' }} />
-                    <AppStack.Screen name="AddDate" component={AddDate} options={{ presentation: 'modal' }} />
-                    <AppStack.Screen name="ImagePreview" component={ImagePreview} />
-                    <AppStack.Screen name="ViewModal" component={ViewModal} />
-                    <AppStack.Screen name="Menu" component={Menu} options={{ presentation: 'modal' }} />
-                </AppStack.Navigator>
-            ) : (
-                <AppStack.Navigator screenOptions={{ headerShown: false }}>
-                    <AppStack.Screen name="Signin" component={Signin} />
-                </AppStack.Navigator>
-            )
-        }
-        </>
+        <AppStack.Navigator screenOptions={{ headerShown: false }}>
+            <AppStack.Screen
+                name="MainTabs"
+                component={MainTabNavigator}
+            />
+            {/* Other screens for authenticated users */}
+            <AppStack.Screen name="ACreate" component={Create} />
+            <AppStack.Screen name="AddFile" component={AddFile} options={{ presentation: 'modal' }} />
+            <AppStack.Screen name="AddLink" component={AddLink} options={{ presentation: 'modal' }} />
+            <AppStack.Screen name="AddDate" component={AddDate} options={{ presentation: 'modal' }} />
+            {/* Common Screens accessible in both states */}
+            <AppStack.Screen name="Signin" component={Signin} />
+            <AppStack.Screen name="ImagePreview" component={ImagePreview} />
+            <AppStack.Screen name="ViewModal" component={ViewModal} />
+            <AppStack.Screen name="Menu" component={Menu} options={{ presentation: 'modal' }} />
+        </AppStack.Navigator>
     );
 };
 

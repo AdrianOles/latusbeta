@@ -4,13 +4,24 @@
 exports.handler = async (event) => {
   const { email } = event.request.userAttributes;
 
+  const schoolList = [
+    "@stfxavier.ca",
+    "@gobluego.ca",
+    "@loyola.hcdsb.org",
+    "@my.aquinas.me",
+    "@my.cccss.ca",
+    "@my.ctk.ca",
+    "@my.htoakville.ca",
+    "@my.ntdm.ca",
+    "@my.werbr.ca",
+    "@hs.myhcdsb.org"
+  ]
+
   if ((email != 'olesnieadrian@gmail.com')
     && email != 'cofounder.latus@gmail.com'
     && email != 'omarsarafa@gmail.com'
     && email != 'social.latus@gmail.com'
-    && email != 'mukendij@myhcdsb.org'
-    && email != 'luisa.olesniewicz.507@my.werbr.ca'
-    && !email.includes("@stfxavier.ca")) {
+    && !schoolList.find(school => email.endsWith(school))) {
     throw new Error(`Invalid email domain...`);
   }
 

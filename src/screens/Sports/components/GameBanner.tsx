@@ -59,7 +59,7 @@ const GameBanner = React.memo((
     const [templateAway, setTemplateAway] = useState<boolean>(false);
     const testing = "12345";
 
-    const correctFont = (testing).length > 2 ? ((testing).length > 4 ? 36 : 36) : 42;
+    const correctFont = (testing).length > 2 ? ((testing).length > 4 ? 30 : 30) : 42;
 
     useEffect(() => {
             if (!schoolList.includes(home)) {
@@ -90,13 +90,56 @@ const GameBanner = React.memo((
         }
     }
 
+    const formatGameDate = (date: string): string => {
+        const today = new Date();
+        const todayMonth = today.getMonth(); // 0-indexed (0 = Jan, 1 = Feb)
+        const todayDay = today.getDate();
+        const todayYear = today.getFullYear();
+
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        let targetMonth: number;
+        let targetDay: number;
+        let targetYear: number | null = null;
+        let formattedString = date;
+
+        // Handle "YYYY-MM-DD" format
+        if (date.includes('-')) {
+            const [year, month, day] = date.split('-');
+            targetYear = parseInt(year, 10);
+            targetMonth = parseInt(month, 10) - 1; // Convert to 0-indexed
+            targetDay = parseInt(day, 10);
+
+            formattedString = `${months[targetMonth]} ${targetDay}`;
+        }
+        // Handle "Feb 27" format
+        else {
+            const [monthStr, dayStr] = date.split(' ');
+            targetMonth = months.indexOf(monthStr);
+            targetDay = parseInt(dayStr, 10);
+            // We don't have a year in this format, so we leave targetYear as null
+        }
+
+        // Check if the date matches today
+        // If a year was provided, ensure it matches today's year. Otherwise, just check month and day.
+        const isSameYear = targetYear === null || targetYear === todayYear;
+
+        if (isSameYear && targetMonth === todayMonth && targetDay === todayDay) {
+            return "Today";
+        }
+
+        return formattedString;
+    };
+
+    const formattedDate = date ? formatGameDate(date) : undefined;
+
     return (
         <Animated.View
             style={[animatedSchool, {
                 position: 'absolute', top: 80, left: 0, right: 0
             }]}
         >
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', paddingHorizontal: 16 }}>
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', paddingHorizontal: 8 }}>
                 <TouchableOpacity onPress={handlePressHome} style={{ flex: 1, alignItems: 'center', minWidth: 50 }}>
                     {templateHome ? (
                         <View style={{marginBottom: 8}}>
@@ -108,40 +151,48 @@ const GameBanner = React.memo((
                         <Image
                             source={schoolLogos[home as school]}
                             style={{
-                                height: 64, aspectRatio: 1, marginBottom: 8, objectFit: 'contain'
+                                height: 60, aspectRatio: 1, marginBottom: 8, objectFit: 'contain'
                             }}
                         />
                     )}
-                    <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 15, color: colors.text[theme].primary, textAlign: 'center' }}>
+                    <Text maxFontSizeMultiplier={1} style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, color: colors.text[theme].primary, textAlign: 'center' }}>
                         {home}
-                    </Text>
-                    <Text style={{ fontFamily: 'Figtree-Medium', fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, textAlign: 'center' }}>
-                        {getLocation(home)}
                     </Text>
                 </TouchableOpacity>
 
                 {/* Center View */}
-                <View style={{ display: 'flex', flexDirection: time ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', marginHorizontal: 0, paddingTop: 4, flexShrink: 1 }}>
-                    {time ? (
-                        <>
-                            <Text style={{fontFamily: "Figtree-Bold", fontSize: 20, letterSpacing: -0.02, color: colors.text[theme].primary}}>
-                                {pending ? 'Pending' : time}
-                            </Text>
-                            <Text style={{ fontFamily: 'Figtree-Medium', fontSize: 15, color: colors.text[theme].secondary}}>
-                                {pending ? "Check later" : date}
-                            </Text>
-                        </>
-                    ) : (
-                        <>
-                            <Text style={{ fontSize: correctFont, fontFamily: 'Figtree-ExtraBold', color: awayScore > homeScore ? colors.text[theme].secondary : colors.text[theme].primary }}>
+                <View style={{ display: 'flex', flexDirection: time ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', marginHorizontal: 0, paddingTop: 4, flexShrink: 1, minWidth: 117 }}>
+                    <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', }}>
+                            <Text maxFontSizeMultiplier={1} style={{ paddingHorizontal: 16, fontSize: correctFont, fontFamily: 'Figtree-ExtraBold', color: (awayScore > homeScore) || pending ? colors.text[theme].secondary : colors.text[theme].primary }}>
                                 {pending ? "-" : homeScore}
                             </Text>
                             <View style={{ width: 1, height: 32, backgroundColor: colors.fills['dark'].stroke, marginHorizontal: 14 }} />
-                            <Text style={{ fontSize: correctFont, fontFamily: 'Figtree-ExtraBold', color: homeScore > awayScore ? colors.text[theme].secondary : colors.text[theme].primary }}>
+                            <Text maxFontSizeMultiplier={1} style={{ paddingHorizontal: 16, fontSize: correctFont, fontFamily: 'Figtree-ExtraBold', color: (homeScore > awayScore) || pending ? colors.text[theme].secondary : colors.text[theme].primary }}>
                                 {pending ? '-' : awayScore}
                             </Text>
-                        </>
-                    )}
+                        </View>
+                        <View style={{ justifyContent: 'center', marginTop: 24, width: 'auto' }}>
+                            {
+                                pending ? (
+                                    <Text maxFontSizeMultiplier={1}
+                                        style={{
+                                            textAlign: 'center', fontSize: 11, paddingVertical: 4,
+                                            fontFamily: 'Figtree-Medium', width: 60,
+                                            borderRadius: 250,
+                                            backgroundColor: "#FFD90019",
+                                            color: colors.system[theme].yellow,
+                                        }}>
+                                        Pending
+                                    </Text>  
+                                ): (
+                                    <Text maxFontSizeMultiplier={1} style={{ textAlign: 'center', fontSize: 11, color: colors.text[theme].tertiary, fontFamily: 'Figtree-Medium' }}>
+                                        Ended
+                                    </Text>  
+                                )
+                            }
+                        </View>
+                    </View>
                 </View>
 
                 {/* Right Side View */}
@@ -156,15 +207,12 @@ const GameBanner = React.memo((
                         <Image
                             source={schoolLogos[away as school]}
                             style={{
-                                height: 64, aspectRatio: 1, marginBottom: 8, objectFit: 'contain'
+                                height: 60, aspectRatio: 1, marginBottom: 8, objectFit: 'contain'
                             }}
                         />
                     )}
-                    <Text style={{ fontFamily: 'Figtree-SemiBold', fontSize: 15, color: colors.text[theme].primary, textAlign: 'center' }}>
+                    <Text maxFontSizeMultiplier={1} style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, color: colors.text[theme].primary, textAlign: 'center' }}>
                         {away}
-                    </Text>
-                    <Text style={{ fontFamily: 'Figtree-Medium', fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, textAlign: 'center' }}>
-                        {getLocation(away)}
                     </Text>
                 </TouchableOpacity>
 

@@ -24,7 +24,7 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 type GameRouteProp = RouteProp<HomeStackParamList, 'Game'>;
 
-const HEADER_MAX_HEIGHT = 280; // Define or pass down if needed for calculations
+const HEADER_MAX_HEIGHT = 260; // Define or pass down if needed for calculations
 const HEADER_MIN_HEIGHT = 104;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 

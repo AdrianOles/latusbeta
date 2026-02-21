@@ -10,7 +10,7 @@ const DynamicTabs = React.memo(({ tabs, currentPage, onTabPress, theme }:
     const activePageIndex = useDerivedValue(() => currentPage.value);
 
     return (
-        <View style={{ zIndex: 100, marginTop: 'auto', height: 52, position: 'relative', borderBottomColor: colors.fills[theme].subtle, borderBottomWidth: 1 }}>
+        <View style={{ zIndex: 100, marginTop: 'auto', height: 52, position: 'relative' }}>
             <View style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', paddingHorizontal: 16 }}>
                 {tabs.map((label, index) => (
                     <Tab

@@ -1,27 +1,5 @@
 {
   "api": {
-    "hcaaAPI": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "hcaamasterfunction"
-        },
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "hcaaweekly"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
-    },
     "latus": {
       "dependsOn": [
         {
@@ -124,16 +102,6 @@
     }
   },
   "function": {
-    "hcaamasterfunction": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
-    "hcaaweekly": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
     "latusPostConfirmation": {
       "build": true,
       "providerPlugin": "awscloudformation",

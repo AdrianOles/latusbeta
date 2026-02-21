@@ -653,13 +653,13 @@ const League = () => {
                             {isTrulyLoading && (
                                 <View style={{ paddingTop: 340, width: '100%', display: 'flex', alignContent: 'center', alignItems: 'center', paddingHorizontal: 8 }}>
                                     <ActivityIndicator size={"large"} color={colors.text[theme].primary} />
-                                    <Text style={{ fontFamily: 'Figtree-SemiBold', textAlign: 'left', fontSize: 16, lineHeight: 20, color: colors.text[theme].secondary, paddingTop: 8 }}>Loading games...</Text>
+                                    <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: 'Figtree-SemiBold', textAlign: 'left', fontSize: 16, lineHeight: 20, color: colors.text[theme].secondary, paddingTop: 8 }}>Loading games...</Text>
                                 </View>
                             )}
                             {error && (
                                 <View style={{ paddingTop: 320, width: '100%', display: 'flex', alignContent: 'center', alignItems: 'center' }}>
                                     <ActivityIndicator size={'large'} />
-                                    <Text style={{ fontFamily: 'Figtree-Regular', fontSize: 16, color: colors.text[theme].secondary, marginTop: 16 }}>Please try again, an error occured.</Text>
+                                    <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: 'Figtree-Regular', fontSize: 16, color: colors.text[theme].secondary, marginTop: 16 }}>Please try again, an error occured.</Text>
                                 </View>
                             )}
                         </View>

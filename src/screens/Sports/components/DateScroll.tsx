@@ -91,8 +91,6 @@ const DateScroll: React.FC<DatePickerProps> = ({ onDateSelect, datePresent, them
             display: 'flex',
             justifyContent: 'flex-start',
             alignItems: 'center',
-            borderBottomColor: colors.fills[theme].stroke,
-            borderBottomWidth: 1,
             flexDirection: 'row',
             paddingTop: 12,
         },
@@ -107,7 +105,6 @@ const DateScroll: React.FC<DatePickerProps> = ({ onDateSelect, datePresent, them
         },
         selectedDateItem: {
             borderColor: colors.text[theme].primary,
-            borderRadius: 2,
         },
         dateText: {
             fontSize: 15,
@@ -187,6 +184,7 @@ const DateScroll: React.FC<DatePickerProps> = ({ onDateSelect, datePresent, them
             >
                 <Text
                     numberOfLines={1}
+                    maxFontSizeMultiplier={1}
                     style={[
                         styles.dateText,
                         { color: isCurrentDateSelected ? colors.text[theme].primary : colors.text[theme].tertiary },
@@ -225,6 +223,7 @@ const DateScroll: React.FC<DatePickerProps> = ({ onDateSelect, datePresent, them
                         >
                             <Text
                                 numberOfLines={1}
+                                maxFontSizeMultiplier={1.2}
                                 style={[styles.dateText, {
                                     color: colors.text[theme].primary, textAlign: 'center',
                                     marginBottom: 0
@@ -232,8 +231,9 @@ const DateScroll: React.FC<DatePickerProps> = ({ onDateSelect, datePresent, them
                                 ]}
                             >
                                 {manualDate.toLocaleString('en-US', {
+                                    weekday: 'short',
                                     year: 'numeric',
-                                    month: 'long',
+                                    month: 'short',
                                     day: 'numeric',
                                 })}
                             </Text>
@@ -249,7 +249,7 @@ const DateScroll: React.FC<DatePickerProps> = ({ onDateSelect, datePresent, them
                                     backgroundColor: colors.fills[theme].standard,
                                     alignSelf: 'flex-end',
                                 }}>
-                                <Text style={{
+                                <Text maxFontSizeMultiplier={1.2} style={{
                                     textAlign: 'center',
                                     color: colors.text[theme].primary,
                                     fontSize: 14,

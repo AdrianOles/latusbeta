@@ -45,6 +45,9 @@ const DynamicStickHeader = React.memo((
     const [leftWidth, setLeftWidth] = useState<number>(90);
     const { authUser } = useAuthContext();
 
+    const abbreviatedLabel = label.replace(/\bSenior\b/g, 'Sr.').replace(/\bJunior\b/g, 'Jr.');
+
+
     const handleFollow = () => {
         if (following){
             // setFollowing(false);
@@ -58,12 +61,12 @@ const DynamicStickHeader = React.memo((
     return (
         <View style={{ paddingHorizontal: 16, paddingVertical: Platform.OS === 'android' ? 0 : 4, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', position: 'relative', width: '100%' }}>
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={{ width: 90, zIndex: 10, flexShrink: 1 }}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ width: 50, zIndex: 10, flexShrink: 1 }}>
                     <Ionicons name='chevron-back-outline' color={colors.text[theme].primary} size={32} style={{marginRight: 'auto'}} />
                 </TouchableOpacity>
                 <Animated.View style={[stickyHeaderAnim, { display: 'flex', flexDirection: 'column', flexGrow: 1, flex: 1, zIndex: 1 }]}>
-                    <Text numberOfLines={1} style={{ color: colors.text[theme].primary, fontSize: 17, lineHeight: 22, fontFamily: 'Figtree-Bold', marginLeft: 8, textAlign: 'center' }}>
-                        {mode === 'game' || mode === 'league' ? reorderString(label) : label}
+                    <Text maxFontSizeMultiplier={1.2} numberOfLines={1} style={{ color: colors.text[theme].primary, fontSize: 17, lineHeight: 22, fontFamily: 'Figtree-Bold', marginLeft: 8, textAlign: 'center' }}>
+                        {mode === 'game' || mode === 'league' ? reorderString(abbreviatedLabel) : abbreviatedLabel}
                     </Text>
                 </Animated.View>
                 {/* <View style={[{ display: 'flex', flexDirection: 'column', flexGrow: 1, flex: 1, zIndex: 1 }]}>
@@ -71,7 +74,7 @@ const DynamicStickHeader = React.memo((
                         {mode === 'game' || mode === 'league' ? reorderString(label) : label}
                     </Text>
                 </View> */}
-                <View style={{ width: 90, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingVertical: 10, }}>
+                <View style={{ width: 50, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingVertical: 10, }}>
                     {/* {mode === 'game' && authUser && (
                         <>
                             <TouchableOpacity onPress={posting} style={{  paddingHorizontal: 10, zIndex: 10 }}>
