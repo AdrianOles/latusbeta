@@ -5,8 +5,8 @@ import { useAuthContext } from "../../../contexts/AuthContext";
 import colors from "../../../colors";
 import Tab from "./Tab";
 
-const DynamicTabs = React.memo(({ tabs, currentPage, onTabPress, theme }:
-    { tabs: string[], currentPage: SharedValue<number>, onTabPress: (index: number) => void, theme: 'light' | 'dark' }) => {
+const DynamicTabs = React.memo(({ tabs, currentPage, onTabPress, theme, final }:
+    { tabs: string[], currentPage: SharedValue<number>, onTabPress: (index: number) => void, theme: 'light' | 'dark', final: boolean }) => {
     const activePageIndex = useDerivedValue(() => currentPage.value);
 
     return (
@@ -14,6 +14,7 @@ const DynamicTabs = React.memo(({ tabs, currentPage, onTabPress, theme }:
             <View style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', paddingHorizontal: 16 }}>
                 {tabs.map((label, index) => (
                     <Tab
+                        final={final}
                         key={index}
                         label={label}
                         index={index}

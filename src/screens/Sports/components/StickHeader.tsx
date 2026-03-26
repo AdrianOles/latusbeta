@@ -108,14 +108,14 @@ const StickHeader = React.memo(({ currentPage, onTabPress, authUser, dateSearch,
         }
     };
 
+
     return (
         <View style={{
             display: 'flex', backgroundColor: colors.background[theme].elevated, flexShrink: 0, height: 100, marginTop: 'auto', opacity: 1,
-            borderBottomColor: colors.fills[theme].stroke, borderBottomWidth: authUser ? 1 : 0
+             boxShadow: '0px 1px 8px rgba(56, 54, 64, 0.05)'
          }}>
             <View style={{
-                display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 0,
-                borderColor: colors.fills[theme].stroke, paddingHorizontal: 16, paddingTop: 4
+                display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 0, paddingHorizontal: 16, paddingTop: 4
             }}>
                 <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                     <Svg height={28} width={28} style={{top: 4}}>
@@ -131,20 +131,12 @@ const StickHeader = React.memo(({ currentPage, onTabPress, authUser, dateSearch,
                     <TouchableOpacity onPress={() => {
                         setTempDate(selectedDate); // Ensure the temporary date starts at the current value
                         setShowPicker(true);
-                    }} style={{ paddingHorizontal: 6, paddingVertical: 10 }}>
-                        <Ionicons name="calendar-outline" size={24} color={colors.text[theme].primary} />
+                    }} style={{ paddingHorizontal: 6, paddingVertical: 6, marginRight: 4 }}>
+                        <Ionicons name="calendar-outline" size={26} color={colors.text[theme].primary} />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SportsSearch")} style={{ paddingHorizontal: 16, paddingVertical: 10 }}>
-                        <Ionicons name="search-outline" size={24} color={colors.text[theme].primary} />
+                    <TouchableOpacity onPress={() => navigation.navigate("SportsSearch")} style={{ paddingHorizontal: 16, paddingVertical: 10, paddingRight: 8 }}>
+                        <Ionicons name="search-outline" size={26} color={colors.text[theme].primary} />
                     </TouchableOpacity>
-
-                    {
-                        authUser && authUser.school != 'STFX' && (
-                            <TouchableOpacity onPress={() => navigation.navigate("Profile")} style={{display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 250, backgroundColor: '#a1234A71', width: 36, aspectRatio: 1 }}>
-                                <Text style={{textAlign: 'center', fontFamily: 'Figtree-Bold'}}>AO</Text>
-                            </TouchableOpacity>
-                        )
-                    }
                 </View>
             </View>
             <DateScroll theme={theme} manualDate={manualDate} datePresent={dateSearch} onDateSelect={(date: Date, flag?: boolean) => onDayPress(date, flag)} />

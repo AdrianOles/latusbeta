@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
@@ -83,32 +83,86 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
     }) => {
     const navigation = useNavigation<HomeStackParamList>();
     const { theme } = useAuthContext();
+    const [templateHome, setTemplateHome] = React.useState(false);
+    const [templateAway, setTemplateAway] = React.useState(false);
+
+    useEffect(() => {
+            if (!schoolList.includes(item.home.name)) {
+                setTemplateHome(true);
+            } else {
+                setTemplateHome(false);
+            }
+            if (!schoolList.includes(item.visitor.name)) {
+                setTemplateAway(true);
+            } else {
+                setTemplateAway(false);
+            }
+    }, []);
+
+    // console.log("All data for card: ", { item, widthScreen, lpadding, date, time, remove, format, mode, dateString, league, teamName });
 
     const homeScore = item.home.score ?? 0;
     const awayScore = item.visitor.score ?? 0;
     const homeName = item.home.name;
     const visitorName = item.visitor.name;
 
+    const homeLogoSource = schoolLogos[homeName as school];
+
+    const formatToShortDate = (dateStr: string): string | undefined => {
+        if (!dateStr) return undefined;
+
+        // This regex looks for any word (the month) followed by a space and 1-2 digits (the day).
+        // In "Tuesday, December 4, 2025", it skips "Tuesday," and safely matches "December 4".
+        const match = dateStr.match(/([A-Za-z]+)\s+(\d{1,2})/);
+
+        if (match) {
+            const fullMonth = match[1]; // e.g., "December"
+            const day = match[2];       // e.g., "4"
+
+            // Grab the first 3 letters of the month to make it short (e.g., "Dec")
+            const shortMonth = fullMonth.substring(0, 3);
+
+            return `${shortMonth} ${day}`;
+        }
+
+        console.error("Could not extract month and day from string:", dateStr);
+        return undefined;
+    };
+
     const wld = useMemo(() => {
+        if (format === "W" || format === "L" || format === "D") {
+            return format;
+        }
+
+        if (!teamName) {
+            return undefined;
+        }
+
+        const normalize = (str: string) => str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+        const targetTeam = normalize(teamName);
+        const homeTeam = normalize(homeName || '');
+        const visitorTeam = normalize(visitorName || '');
+
         let myScore = 0;
         let opponentScore = 0;
 
-        if (teamName === homeName) {
+        if (targetTeam === homeTeam) {
             myScore = homeScore;
             opponentScore = awayScore;
-        } else if (teamName === visitorName) {
+        } else if (targetTeam === visitorTeam) {
             myScore = awayScore;
             opponentScore = homeScore;
         } else {
-            return "D";
+            return undefined;
         }
 
         if (myScore > opponentScore) return "W";
         if (myScore < opponentScore) return "L";
         return "D";
-    }, [homeScore, awayScore, teamName, homeName, visitorName]);
+    }, [format, homeScore, awayScore, teamName, homeName, visitorName]);
 
-    const pendingFlag = time ? time.includes("pending") : false;
+    const pendingFlag = time?.includes('pending') || item.home.score === null ? true : false;
     const TBAFlag = time ? time.includes("TBA") : false;
     const dateBuffer = date ? 0 : 0;
 
@@ -128,18 +182,29 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
 
     return (
         <TouchableOpacity
-            onPress={() => navigation.navigate("SportsGame", {
-                homeTeam: homeName,
-                awayTeam: visitorName,
-                homeScore: homeScore,
-                awayScore: awayScore,
-                league: item.league,
-                notes: item.notes,
-                dateString: dateString || date,
-                time: time,
-                sets: item.sets,
-                location: item.location
-            })}
+            onPress={() => {
+                console.log("Navigating to game details with data: ", {
+                    league: item.league,
+                    notes: item.notes,
+                    dateString: mode === 'school' ? "Today" : dateString || date,
+                    time: time,
+                    sets: item.sets,
+                    location: item.location
+                });
+                navigation.navigate("SportsGame", {
+                    homeTeam: homeName,
+                    awayTeam: visitorName,
+                    homeScore: homeScore,
+                    awayScore: awayScore,
+                        league: item.league,
+                        notes: item.notes,
+                        dateString: mode === 'school' ? "Today" :  dateString || date,
+                        time: time,
+                        sets: item.sets,
+                        location: item.location
+                    })
+                }
+            }
             style={{
                 width: widthScreen,
                 paddingBottom: remove ? 20 : 0,
@@ -149,8 +214,11 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
         >
             {date && (
                 <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: 'Figtree-SemiBold', paddingHorizontal: 16, fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, paddingBottom: 12 }}>
-                    {date}{item.notes && !item.notes.startsWith('Regular Season')
-                        ? ` • ${item.notes.replace(/\.$/, '')}`
+                    {formatToShortDate(date)}{item.notes && !item.notes.startsWith('Regular Season')
+                        ? ` • ${item.notes
+                            .split('.')[0] // Captures 'GHAC' and stops at the first dot
+                            .replace(/\.$/, '') // Keeps your existing logic for other strings
+                            .trim()}`
                         : ''}
                 </Text>
             )}
@@ -169,13 +237,22 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                                 <WinningArrow color={colors.text[theme].primary} />
                             </View>
                         )}
-
-                        <Image
-                            source={schoolLogos[homeName as school]}
-                            style={{ width: 24, height: 24, marginRight: 10 }}
-                            contentFit="contain"
-                            transition={300}
-                        />
+                        {
+                            templateHome ? (
+                                <View style={{marginRight: 10}}>
+                                    <Svg width="24" height="24" viewBox="0 0 24 25" fill="none">
+                                        <Path d="M24 1.99999V8.99998C24 15.59 20.81 19.5837 18.1338 21.7737C15.2513 24.1312 12.3838 24.9324 12.2588 24.9649C12.0869 25.0117 11.9056 25.0117 11.7338 24.9649C11.6088 24.9324 8.745 24.1312 5.85875 21.7737C3.19 19.5837 0 15.59 0 8.99998V1.99999C0 1.46956 0.210714 0.960856 0.585786 0.585785C0.960859 0.210713 1.46957 0 2 0H22C22.5304 0 23.0391 0.210713 23.4142 0.585785C23.7893 0.960856 24 1.46956 24 1.99999Z" fill="#9A999E" />
+                                    </Svg>
+                                </View>
+                            ) : (
+                                <Image
+                                    source={schoolLogos[homeName as school]}
+                                    style={{ width: 24, height: 24, marginRight: 10 }}
+                                    contentFit="contain"
+                                    transition={300}
+                                />
+                            ) 
+                        }
                         <Text maxFontSizeMultiplier={1.3} numberOfLines={1} style={{ fontFamily: homeFont, fontSize: 15, color: homeColor, flex: 1 }}>
                             {homeName}
                         </Text>
@@ -183,12 +260,22 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
 
                     {/* AWAY TEAM */}
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-                        <Image
-                            source={schoolLogos[visitorName as school]}
-                            style={{ width: 24, height: 24, marginRight: 10 }}
-                            contentFit="contain"
-                            transition={300}
-                        />
+                        {
+                            templateAway ? (
+                                <View style={{ marginRight: 10 }}>
+                                    <Svg width="24" height="24" viewBox="0 0 24 25" fill="none">
+                                        <Path d="M24 1.99999V8.99998C24 15.59 20.81 19.5837 18.1338 21.7737C15.2513 24.1312 12.3838 24.9324 12.2588 24.9649C12.0869 25.0117 11.9056 25.0117 11.7338 24.9649C11.6088 24.9324 8.745 24.1312 5.85875 21.7737C3.19 19.5837 0 15.59 0 8.99998V1.99999C0 1.46956 0.210714 0.960856 0.585786 0.585785C0.960859 0.210713 1.46957 0 2 0H22C22.5304 0 23.0391 0.210713 23.4142 0.585785C23.7893 0.960856 24 1.46956 24 1.99999Z" fill="#9A999E" />
+                                    </Svg>
+                                </View>
+                            ): (
+                                <Image
+                                    source={schoolLogos[visitorName as school]}
+                                    style={{ width: 24, height: 24, marginRight: 10 }}
+                                    contentFit="contain"
+                                    transition={300}
+                                />  
+                            )
+                        }
                         <Text maxFontSizeMultiplier={1.3} numberOfLines={1} style={{ fontFamily: awayFont, fontSize: 15, color: awayColor, flex: 1 }}>
                             {visitorName}
                         </Text>
@@ -208,13 +295,17 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                     )
                 }
 
-                {time ? (
+                {(pendingFlag || time) ? (
                     <View style={{ flexDirection: 'row', alignItems: 'center', width: 100 }}>
                         <View style={{ width: 1, height: 42, backgroundColor: colors.fills[theme].stroke }} />
-                        <Text maxFontSizeMultiplier={1.13} style={{ textAlign: 'center', fontFamily: 'Figtree-Medium', fontSize: 15, lineHeight: 20, color: colors.text[theme].tertiary, flexGrow: 1 }}>
-                            {pendingFlag ? "Pending" : TBAFlag && "TBA"}
-                        </Text>
-                        {!pendingFlag && !TBAFlag && (
+                        {
+                            (pendingFlag || TBAFlag) && (
+                                <Text maxFontSizeMultiplier={1.13} style={{ textAlign: 'center', fontFamily: 'Figtree-Medium', fontSize: 15, lineHeight: 20, color: colors.text[theme].tertiary, flexGrow: 1 }}>
+                                    {pendingFlag ? "Pending" : TBAFlag && "TBA"}
+                                </Text>
+                            )
+                        }
+                        {!pendingFlag && !TBAFlag && time && (
                             <Text maxFontSizeMultiplier={1.13} style={{ textAlign: 'center', fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 20, color: colors.text[theme].secondary, flexGrow: 1 }}>
                                 {removeLeadingZero(time)}
                             </Text>
@@ -223,7 +314,7 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                 ) : (
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: 100 }}>
                         <View style={{ width: 1, height: 42, backgroundColor: colors.fills[theme].stroke }} />
-                        {(mode === 'team' || mode === 'school') ? (
+                        {(mode === 'team' || mode === 'school') && wld ? (
                             <View style={{
                                 width: 28, height: 28, justifyContent: 'center', alignItems: 'center', marginHorizontal: 'auto', borderRadius: 6,
                                 backgroundColor: (wld === 'W') ? colors.system[theme].green : (wld === 'L') ? colors.system[theme].red : colors.fills[theme].standard,

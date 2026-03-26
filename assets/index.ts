@@ -13,3 +13,4 @@ export const stkLogo = require('./schools/stk.png')
 export const loglogo = require('./loglogo.png');
 export const signinAppVector = require('./images/signinAppVector.png');
 export const hcdsb = require('./schools/hcdsb.png');
+export const signbg = require('./schools/signbg.png');

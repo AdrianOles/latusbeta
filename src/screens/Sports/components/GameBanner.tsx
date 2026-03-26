@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Animated from "react-native-reanimated";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useAuthContext } from "../../../contexts/AuthContext";
 import { brLogo, stfxLogo } from "../../../../assets";
 import colors from "../../../colors";
@@ -9,6 +9,18 @@ import { useNavigation } from "@react-navigation/native";
 import { school } from "..";
 import { schoolList } from "./GameCard";
 import Svg, { Path } from "react-native-svg";
+import { Image } from "expo-image";
+import * as Notifications from 'expo-notifications';
+
+// Tells iOS to show the banner even if the app is open
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowBanner: true, // Show the dropdown alert
+        shouldShowList: true,   // Show in the notification center
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+    }),
+});
 
 const schoolLogos = {
     "St. Thomas Aquinas": require('../../../../assets/schools/sta.png'),
@@ -51,8 +63,8 @@ const getLocation = (school: string) => {
 }
 
 const GameBanner = React.memo((
-    { animatedSchool, homeScore, awayScore, home, away, league, theme, pending, time, date }:
-    { animatedSchool: any, pending: boolean | undefined, time: string, date?: string, homeScore: string, awayScore: string, home: string, away: string, league: string, theme: 'light' | 'dark' }
+    { animatedSchool, homeScore, awayScore, home, away, league, theme, pending, time, date, final }:
+    { final: boolean, animatedSchool: any, pending: boolean | undefined, time: string, date?: string, homeScore: string, awayScore: string, home: string, away: string, league: string, theme: 'light' | 'dark' }
 ) => {
     const navigation = useNavigation<HomeStackParamList>();
     const [templateHome, setTemplateHome] = useState<boolean>(false);
@@ -60,6 +72,29 @@ const GameBanner = React.memo((
     const testing = "12345";
 
     const correctFont = (testing).length > 2 ? ((testing).length > 4 ? 30 : 30) : 42;
+
+    useEffect(() => {
+        async function getMyToken() {
+            // 1. Ask for iOS permission
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+                console.log('Permission not granted!');
+                return;
+            }
+
+            // 2. Fetch the Expo token
+            try {
+                const tokenData = await Notifications.getExpoPushTokenAsync();
+                console.log("\n👇 COPY THIS TOKEN 👇");
+                console.log(tokenData.data);
+                console.log("👆 COPY THIS TOKEN 👆\n");
+            } catch (error) {
+                console.error("Error fetching token:", error);
+            }
+        }
+
+        getMyToken();
+    }, []);
 
     useEffect(() => {
             if (!schoolList.includes(home)) {
@@ -136,7 +171,7 @@ const GameBanner = React.memo((
     return (
         <Animated.View
             style={[animatedSchool, {
-                position: 'absolute', top: 80, left: 0, right: 0
+                position: 'absolute', top: 120, left: 0, right: 0
             }]}
         >
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', paddingHorizontal: 8 }}>
@@ -151,11 +186,13 @@ const GameBanner = React.memo((
                         <Image
                             source={schoolLogos[home as school]}
                             style={{
-                                height: 60, aspectRatio: 1, marginBottom: 8, objectFit: 'contain'
+                                height: 60, aspectRatio: 1, marginBottom: 8
                             }}
+                            contentFit="contain"
+                            transition={300}
                         />
                     )}
-                    <Text maxFontSizeMultiplier={1} style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, color: colors.text[theme].primary, textAlign: 'center' }}>
+                    <Text maxFontSizeMultiplier={1} style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, color: colors.text[final ? 'dark' : theme].primary, textAlign: 'center' }}>
                         {home}
                     </Text>
                 </TouchableOpacity>
@@ -164,13 +201,28 @@ const GameBanner = React.memo((
                 <View style={{ display: 'flex', flexDirection: time ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', marginHorizontal: 0, paddingTop: 4, flexShrink: 1, minWidth: 117 }}>
                     <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', }}>
-                            <Text maxFontSizeMultiplier={1} style={{ paddingHorizontal: 16, fontSize: correctFont, fontFamily: 'Figtree-ExtraBold', color: (awayScore > homeScore) || pending ? colors.text[theme].secondary : colors.text[theme].primary }}>
-                                {pending ? "-" : homeScore}
-                            </Text>
-                            <View style={{ width: 1, height: 32, backgroundColor: colors.fills['dark'].stroke, marginHorizontal: 14 }} />
-                            <Text maxFontSizeMultiplier={1} style={{ paddingHorizontal: 16, fontSize: correctFont, fontFamily: 'Figtree-ExtraBold', color: (homeScore > awayScore) || pending ? colors.text[theme].secondary : colors.text[theme].primary }}>
-                                {pending ? '-' : awayScore}
-                            </Text>
+                            {
+                                homeScore === null && awayScore === null && !pending ? (
+                                    <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                                        <Text maxFontSizeMultiplier={1} style={{ paddingHorizontal: 16, fontSize: 20, fontFamily: 'Figtree-SemiBold', color: colors.text[final ? 'dark' : theme].primary }}>
+                                            {time}
+                                        </Text>
+                                        <Text maxFontSizeMultiplier={1} style={{ paddingHorizontal: 16, fontSize: 15, fontFamily: 'Figtree-Regular', color: colors.text[final ? 'dark' : theme].secondary }}>
+                                            {formattedDate}
+                                        </Text>
+                                    </View>
+                                ): (
+                                    <>
+                                        <Text maxFontSizeMultiplier={1} style={{ paddingHorizontal: 16, fontSize: correctFont, fontFamily: 'Figtree-ExtraBold', color: (awayScore > homeScore) || pending ? colors.text[final ? 'dark' : theme].secondary : colors.text[final ? 'dark' : theme].primary }}>
+                                            {pending ? "-" : homeScore}
+                                        </Text>
+                                        <View style={{ width: 1, height: 32, backgroundColor: colors.fills['dark'].stroke, marginHorizontal: 14 }} />
+                                            <Text maxFontSizeMultiplier={1} style={{ paddingHorizontal: 16, fontSize: correctFont, fontFamily: 'Figtree-ExtraBold', color: (homeScore > awayScore) || pending ? colors.text[final ? 'dark' : theme].secondary : colors.text[final ? 'dark' : theme].primary }}>
+                                            {pending ? '-' : awayScore}
+                                        </Text>
+                                    </>
+                                )
+                            }
                         </View>
                         <View style={{ justifyContent: 'center', marginTop: 24, width: 'auto' }}>
                             {
@@ -181,12 +233,12 @@ const GameBanner = React.memo((
                                             fontFamily: 'Figtree-Medium', width: 60,
                                             borderRadius: 250,
                                             backgroundColor: "#FFD90019",
-                                            color: colors.system[theme].yellow,
+                                            color: colors.system[final ? 'dark' : theme].yellow,
                                         }}>
                                         Pending
                                     </Text>  
-                                ): (
-                                    <Text maxFontSizeMultiplier={1} style={{ textAlign: 'center', fontSize: 11, color: colors.text[theme].tertiary, fontFamily: 'Figtree-Medium' }}>
+                                ) : !time && (
+                                    <Text maxFontSizeMultiplier={1} style={{ textAlign: 'center', fontSize: 11, color: colors.text[final ? 'dark' : theme].tertiary, fontFamily: 'Figtree-Medium' }}>
                                         Ended
                                     </Text>  
                                 )
@@ -211,7 +263,7 @@ const GameBanner = React.memo((
                             }}
                         />
                     )}
-                    <Text maxFontSizeMultiplier={1} style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, color: colors.text[theme].primary, textAlign: 'center' }}>
+                    <Text numberOfLines={3} maxFontSizeMultiplier={1} style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, color: colors.text[final ? 'dark' : theme].primary, textAlign: 'center' }}>
                         {away}
                     </Text>
                 </TouchableOpacity>

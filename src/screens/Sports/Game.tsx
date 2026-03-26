@@ -18,14 +18,15 @@ import { school } from '.';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { StatusBar } from 'expo-status-bar';
 import { abbreviateRank } from './components/LeagueGame';
+import { MeshGradientView } from 'expo-mesh-gradient';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 type GameRouteProp = RouteProp<HomeStackParamList, 'Game'>;
 
-const HEADER_MAX_HEIGHT = 260; // Define or pass down if needed for calculations
-const HEADER_MIN_HEIGHT = 104;
+const HEADER_MAX_HEIGHT = 280; // Define or pass down if needed for calculations
+const HEADER_MIN_HEIGHT = 144;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 interface MyFlatListProps {
@@ -171,7 +172,7 @@ const Game = () => {
         awayScore: string,
         league: string,
         notes?: string,
-            time?: string,
+        time?: string,
         location?: string,
         dateString?: string
         // CHANGE IS HERE: make 'sets' optional by adding '?'
@@ -228,6 +229,14 @@ const Game = () => {
             Extrapolate.CLAMP
         ),
     }));
+    const animatedFinalHeader = useAnimatedStyle(() => ({
+        height: interpolate(
+            mainScrollY.value,
+            [0, HEADER_MAX_HEIGHT - (HEADER_MIN_HEIGHT)], // Adjust range to match pull amount
+            [HEADER_MAX_HEIGHT, (HEADER_MIN_HEIGHT)],
+            Extrapolate.CLAMP
+        ),
+    }));
 
     const animatedSchool = useAnimatedStyle(() => {
         const translateY = interpolate(
@@ -264,13 +273,13 @@ const Game = () => {
         Image.prefetch(Image.resolveAssetSource(stfxLogo).uri);
     }, []);
 
-    const getWinner = (): school => {
+    const getWinner = (): school | undefined => {
         if (homeScore > awayScore) {
             return homeTeam as school;
         } else if (homeScore < awayScore) {
             return awayTeam as school;
         } else {
-            return homeTeam as school;
+            return undefined;
         }
     }
 
@@ -290,17 +299,100 @@ const Game = () => {
                 opacity
             }
     });
+
+    const getGameType = (league?: string): boolean => {
+        const regex = /(ghac final|playoff final|quarter final|semi final|final)/i;
+
+        const match = league && league.match(regex);
+
+        if (match) {
+            return true
+        }
+
+        return false;
+    }
+
+    const final = getGameType(notes ?? "");
+    const winner = getWinner();
     
     return (
         <>
-            <StatusBar translucent={true} style={theme === 'dark' ? 'light' : 'dark'} backgroundColor='transparent' />
-            <View style={{ backgroundColor: colors.background[theme].elevated, flex: 1, paddingTop: 48 }}>
+            <StatusBar translucent={true} style={final ? 'light' : theme === 'dark' ? 'light' : 'dark'} backgroundColor='transparent' />
+            <View style={{ backgroundColor: colors.background[theme].elevated, flex: 1, }}>
                 <View style={{ backgroundColor: colors.background[theme].general }}>
                     <View style={{ backgroundColor: colors.background[theme].elevated, position: 'absolute', width: '100%', top: 0, zIndex: 10 }}>
-                        <Animated.View style={[animatedHeaderHeight, { display: 'flex', flexDirection: 'column' }]}>
-                            <DynamicStickHeader stickyHeaderAnim={stickyHeaderAnim} posting={creatingPost} label={abbreviateRank(league)} mode={'game'} theme={theme} />
-                            <GameBanner theme={theme} date={dateString} time={removeLeadingZero(time ? time : '')} pending={time?.includes("pending")} animatedSchool={animatedSchool} homeScore={homeScore} awayScore={awayScore} home={homeTeam} away={awayTeam} league={league} />
+                        <Animated.View style={[animatedHeaderHeight, { display: 'flex', flexDirection: 'column', position: 'relative' }]}>
+                            {
+                                final && (
+                                    <Animated.View style={[animatedFinalHeader, {
+                                        position: 'absolute',
+                                        height: '100%',
+                                        backgroundColor: 'black',
+                                        width: '100%',
+                                        opacity: 1,
+                                        zIndex: 0,
+                                        transform: [{ translateY: 0 }]
+                                    }]}>
+                                        {Platform.OS === 'ios' && (
+                                            <MeshGradientView
+                                                style={{ flex: 1, zIndex: 1 }}
+                                                ignoresSafeArea={true}
+                                                smoothsColors={true}
+                                                columns={4} // <-- 4 Columns
+                                                rows={5}    // <-- 5 Rows
+                                                colors={[
+                                                    // ROW 1: Top Edge (y = 0.0)
+                                                    `${colors.schools[winner ? winner : homeTeam as school]['dark'].secondary}ff`, // Left Inner
+                                                    `${colors.schools[winner ? winner : homeTeam as school]['dark'].secondary}a6`, // Left Inner
+                                                    `${colors.schools[winner ? winner : awayTeam as school]['dark'].secondary}a6`, // Right Inner
+                                                    `${colors.schools[winner ? winner : awayTeam as school]['dark'].secondary}ff`, // Left Inner
+
+                                                    // ROW 2: Upper Middle (y = 0.25)
+                                                    `${colors.schools[winner ? winner : homeTeam as school]['dark'].secondary}b3`, // Left Inner
+                                                    `${colors.schools[winner ? winner : homeTeam as school]['dark'].secondary}73`, // Left Inner
+                                                    `${colors.schools[winner ? winner : awayTeam as school]['dark'].secondary}73`, // Right Inner
+                                                    `${colors.schools[winner ? winner : awayTeam as school]['dark'].secondary}b3`, // Right Inner
+
+                                                    // ROW 3: True Middle (y = 0.5) - Fading entirely to black
+                                                    `${colors.schools[winner ? winner : homeTeam as school]['dark'].secondary}32`, // Left Inner
+                                                    `${colors.schools[winner ? winner : homeTeam as school]['dark'].secondary}59`, // Left Inner
+                                                    `${colors.schools[winner ? winner : awayTeam as school]['dark'].secondary}59`, // Right Inner
+                                                    `${colors.schools[winner ? winner : awayTeam as school]['dark'].secondary}32`, // Right Innerr
+
+                                                    // ROW 4: Lower Middle (y = 0.75) - Black Void
+                                                    `${colors.schools[winner ? winner : homeTeam as school]['dark'].secondary}0f`, // Left Inner
+                                                    `${colors.schools[winner ? winner : homeTeam as school]['dark'].secondary}05`, // Left Inner
+                                                    `${colors.schools[winner ? winner : awayTeam as school]['dark'].secondary}05`, // Right Inner
+                                                    `${colors.schools[winner ? winner : awayTeam as school]['dark'].secondary}0f`, // Right Inner
+
+                                                    // ROW 5: Bottom Edge (y = 1.0) - Black Void
+                                                    `${colors.schools[winner ? winner : homeTeam as school]['dark'].secondary}00`, // Left Inner
+                                                    `${colors.schools[winner ? winner : homeTeam as school]['dark'].secondary}00`, // Left Inner
+                                                    `${colors.schools[winner ? winner : awayTeam as school]['dark'].secondary}00`, // Right Inner
+                                                    `${colors.schools[winner ? winner : awayTeam as school]['dark'].secondary}00`, // Right Inner
+                                                ]}
+                                                points={[
+                                                    // ROW 1
+                                                    [0.0, 0.0], [0.33, 0.0], [0.66, 0.0], [1.0, 0.0],
+                                                    // ROW 2
+                                                    [0.0, 0.25], [0.33, 0.25], [0.66, 0.25], [1.0, 0.25],
+                                                    // ROW 3
+                                                    [0.0, 0.5], [0.33, 0.5], [0.66, 0.5], [1.0, 0.5],
+                                                    // ROW 4
+                                                    [0.0, 0.75], [0.33, 0.75], [0.66, 0.75], [1.0, 0.75],
+                                                    // ROW 5
+                                                    [0.0, 1.0], [0.33, 1.0], [0.66, 1.0], [1.0, 1.0],
+                                                ]}
+                                            />
+                                        )}
+                                    </Animated.View>
+                                )
+                            }
+                            <View style={{height: 48}}></View>
+                            <DynamicStickHeader final={final} stickyHeaderAnim={stickyHeaderAnim} posting={creatingPost} label={abbreviateRank(league)} mode={'game'} theme={theme} />
+                            <GameBanner final={final} theme={theme} date={dateString} time={removeLeadingZero(time ? time : '')} pending={time?.includes("pending")} animatedSchool={animatedSchool} homeScore={homeScore} awayScore={awayScore} home={homeTeam} away={awayTeam} league={league} />
                             <DynamicTabs
+                                final={final}
                                 theme={theme}
                                 tabs={TABS}
                                 currentPage={currentPage}
@@ -333,7 +425,7 @@ const Game = () => {
                             flatListRefs={flatListRefs}
                             syncTabs={syncTabs}
                             componentItems={[
-                                <GameInfo pending={time?.includes("pending")} notes={notes} home={homeTeam} dateString={dateString} away={awayTeam} location={location || homeTeam} time={time} league={abbreviateRank(league)} sets={sets ? sets : undefined} />
+                                <GameInfo winner={winner} pending={time?.includes("pending")} notes={notes} home={homeTeam} dateString={dateString} away={awayTeam} location={location || homeTeam} time={time} league={abbreviateRank(league)} sets={sets ? sets : undefined} />
                             ]}
                         />
                         <MyFlatList

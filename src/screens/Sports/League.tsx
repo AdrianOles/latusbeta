@@ -74,35 +74,8 @@ const groupedDataByStatus = (data: RawInputRecord[]): groupedGameStatus[] => {
             if (myScore < opponentScore) wldStatus = "L";
         }
 
-        if (record.date) {
-            try {
-                if (REGEX_YYYY_MM_DD.test(record.date) || REGEX_MMM_DD.test(record.date)) {
-                    const dateObj = new Date(record.date);
-                    if (!isNaN(dateObj.getTime())) {
-                        formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                        // Pre-calculate timestamp for fast O(1) sorting later
-                        sortTimestamp = dateObj.getTime();
-                    }
-                } else {
-                    const isoDate = convertFullDateToISO(record.date);
-                    if (isoDate) {
-                        const dateObj = new Date(isoDate);
-                        if (!isNaN(dateObj.getTime())) {
-                            formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            sortTimestamp = dateObj.getTime();
-                        }
-                    }
-                }
-
-                // If it's just 'MMM DD' missing the year, adjust timestamp logic slightly to match previous behavior
-                if (formattedDate && !record.date.includes(CURRENT_YEAR.toString()) && !record.date.includes('-')) {
-                    sortTimestamp = new Date(`${formattedDate}, ${CURRENT_YEAR}`).getTime();
-                }
-            } catch (e) { }
-        }
-
         return {
-            date: formattedDate,
+            date: record.date,
             league: record.league || 'Unknown League',
             location: record.location,
             notes: record.notes,
@@ -409,9 +382,9 @@ const League = () => {
                 <View style={{ backgroundColor: colors.background[theme].general, flex: 1 }}>
                     <View style={{ backgroundColor: '#665642', position: 'absolute', width: '100%', top: 0, zIndex: 10 }}>
                         <Animated.View style={[animatedHeaderHeight, { display: 'flex', flexDirection: 'column' }]}>
-                            <DynamicStickHeader stickyHeaderAnim={stickyHeaderAnim} label={league} subNote='' mode={'league'} theme={'dark'} />
+                            <DynamicStickHeader stickyHeaderAnim={stickyHeaderAnim} label={league} subNote='' mode={'league'} theme={'dark'} final={false} />
                             <LeagueBanner animatedSchool={animatedSchool} label={league} subNote={'HCAA League'} />
-                            <DynamicTabs tabs={TABS} currentPage={currentPage} onTabPress={handleTabPress} theme={'dark'} />
+                            <DynamicTabs tabs={TABS} currentPage={currentPage} onTabPress={handleTabPress} theme={'dark'} final={false} />
                         </Animated.View>
                     </View >
 

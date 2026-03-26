@@ -193,6 +193,10 @@ const ResourceNavigator = () => (
 const MainTabNavigator = () => {
     const { authUser, theme } = useAuthContext();
 
+    const contractedSchoolDomains = ['stfxavier.ca'];
+    const userDomain = authUser?.email?.split('@')[1];
+    const isContractedUser = userDomain && contractedSchoolDomains.includes(userDomain);
+
     const unfilledSports = (
         <View style={{transform: [{ scale: 0.35}], top: 3}}>
             <Svg height={78} width={78}>
@@ -258,7 +262,8 @@ const MainTabNavigator = () => {
             },
             headerShown: false,
             })}
-            initialRouteName={authUser ? "Home" : "SportsTab"}>
+            initialRouteName={isContractedUser ? "Home" : "SportsTab"}
+        >
             {/* The 'Home' tab might be missing if it's meant to be a separate tab and not just a screen */}
             <Tab.Screen name="Home" component={Home} options={{ title: 'Home' }} />
             <Tab.Screen name="SportsTab" component={SportsNavigator} options={{ title: 'Sports' }} />
@@ -406,23 +411,37 @@ const Navigation = () => {
         'stfxavier.ca'
     ]
 
+    console.log(authUser)
+
     return (
-        <AppStack.Navigator screenOptions={{ headerShown: false }}>
-            <AppStack.Screen
-                name="MainTabs"
-                component={MainTabNavigator}
-            />
-            {/* Other screens for authenticated users */}
-            <AppStack.Screen name="ACreate" component={Create} />
-            <AppStack.Screen name="AddFile" component={AddFile} options={{ presentation: 'modal' }} />
-            <AppStack.Screen name="AddLink" component={AddLink} options={{ presentation: 'modal' }} />
-            <AppStack.Screen name="AddDate" component={AddDate} options={{ presentation: 'modal' }} />
-            {/* Common Screens accessible in both states */}
-            <AppStack.Screen name="Signin" component={Signin} />
-            <AppStack.Screen name="ImagePreview" component={ImagePreview} />
-            <AppStack.Screen name="ViewModal" component={ViewModal} />
-            <AppStack.Screen name="Menu" component={Menu} options={{ presentation: 'modal' }} />
-        </AppStack.Navigator>
+        <>
+            {authUser ? (
+                <AppStack.Navigator screenOptions={{ headerShown: false }}>
+                    <AppStack.Screen
+                        name="MainTabs"
+                        component={MainTabNavigator}
+                    />
+                    {/* Other screens for authenticated users */}
+                    <AppStack.Screen name="ACreate" component={Create} />
+                    <AppStack.Screen name="AddFile" component={AddFile} options={{ presentation: 'modal' }} />
+                    <AppStack.Screen name="AddLink" component={AddLink} options={{ presentation: 'modal' }} />
+                    <AppStack.Screen name="AddDate" component={AddDate} options={{ presentation: 'modal' }} />
+                    {/* Common Screens accessible in both states */}
+                    <AppStack.Screen name="Signin" component={Signin} />
+                    <AppStack.Screen name="ImagePreview" component={ImagePreview} />
+                    <AppStack.Screen name="ViewModal" component={ViewModal} />
+                    <AppStack.Screen name="Menu" component={Menu} options={{ presentation: 'modal' }} />
+                </AppStack.Navigator>
+            ) : (
+                <AppStack.Navigator screenOptions={{ headerShown: false }}>
+                    <AppStack.Screen
+                        name="Sports"
+                            component={SportsNavigator}
+                        />
+                    <AppStack.Screen name="Signin" component={Signin} />
+                </AppStack.Navigator>
+            )}
+        </>
     );
 };
 

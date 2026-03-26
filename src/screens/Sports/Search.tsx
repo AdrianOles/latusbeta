@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Text, View, Image, Modal, TouchableOpacity, Platform, Pressable, FlatList, Dimensions, Keyboard } from 'react-native'
+import { Text, View, Modal, TouchableOpacity, Platform, Pressable, FlatList, Dimensions, Keyboard } from 'react-native'
 import { AuthContextType, useAuthContext } from '../../contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +9,7 @@ import { HomeStackParamList } from '../../navigation';
 import { Picker } from '@react-native-picker/picker';
 import { school } from './index';
 import NoResults from './components/NoResults';
+import { Image } from 'expo-image';
 // import * as Haptics from 'expo-haptics';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -129,7 +130,9 @@ const ResultCard = ({ label, subNote, theme }: CardProps) => {
                 <View>
                     <Image
                         source={subNote ? schoolLogos[subNote as school] : require('../../../assets/schools/hcaa.png')}
-                        style={{ height: 32, aspectRatio: 1, objectFit: 'contain' }}
+                        style={{ height: 32, aspectRatio: 1 }}
+                        contentFit='contain'
+                        transition={300}
                     />
                 </View>
                 <View style={{ marginLeft: 8 }}>

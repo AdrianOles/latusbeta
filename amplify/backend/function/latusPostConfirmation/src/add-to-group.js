@@ -57,7 +57,7 @@ exports.handler = async (event) => {
   // -------------------------------------------------------------------------
   let schoolAccess = 'STFX';
   if (userEmail.endsWith("@gobluego.ca")) {
-    schoolAccess = 'ASU';
+    schoolAccess = 'AS';
   }
   if (userEmail.endsWith("@loyola.hcdsb.org")) {
     schoolAccess = 'LOY';

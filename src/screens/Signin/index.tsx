@@ -7,7 +7,7 @@ import { Hub } from 'aws-amplify/utils'
 import * as Network from 'expo-network';
 import * as Haptics from 'expo-haptics';
 import Toast from 'react-native-toast-message'
-import { LIGHTLOGO, SIGNIN } from '../../../assets/index';
+import { LIGHTLOGO, SIGNIN, hcdsb, signbg } from '../../../assets/index';
 import { loglogo } from '../../../assets/index'
 import colors from '../../colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -112,15 +112,28 @@ const Signin = () => {
     }
   }, [error]);
 
+  const handleGoBack = () => {
+    navigation.navigate('Sports');
+  }
+
   useEffect(() => {
     if (success) {
-      const test = setTimeout(() => {
-        navigation.goBack();
+      const timer = setTimeout(() => {
+        const school = authUser?.school?.toUpperCase();
+
+        if (school === 'STFX') {
+          console.log("going into announcement page")
+          navigation.navigate('MainTabs', { screen: 'AnnouncementsTab' });
+        } else {
+          console.log("going into sports page")
+          // Navigate to nested tab route from auth navigators
+          navigation.navigate('MainTabs', { screen: 'SportsTab' });
+        }
       }, 500); // Keep the success state for a moment to show the animation
 
-      return () => clearTimeout(test); // Cleanup if the user taps something early
+      return () => clearTimeout(timer);
     }
-  }, [success]);
+  }, [success, authUser, navigation]);
 
   const blurhash =
     '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
@@ -128,35 +141,41 @@ const Signin = () => {
 
   return (
     <>
-    <StatusBar translucent={true} style={theme === 'dark' ? 'light' : 'light'} backgroundColor={'transparent'} />
+    <StatusBar translucent={true} style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={'transparent'} />
       <SafeAreaView
-        style={{ flex: 1, backgroundColor: colors.background['dark'].general }}
-        edges={["top"]}
+        style={{ backgroundColor: colors.background['dark'].general }}
+        edges={["left", "right"]}
       >
         <View style={{ backgroundColor: colors.background[theme].general }}>
-          <View style={{ position: 'absolute', top: 8, left: 0, right: 0, bottom: 0, zIndex: 1, height: 200 }}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingHorizontal: 16, flexDirection: 'row' }}>
-              <Ionicons name="chevron-back" size={24} color={colors.system.white} onPress={() => navigation.goBack()} />
-              <Text maxFontSizeMultiplier={1.2} style={{ color: colors.system.white, fontSize: 17, fontFamily: 'Figtree-SemiBold' }}>Back</Text>
+          <View style={{ position: 'absolute', top: 56, left: 0, right: 0, bottom: 0, zIndex: 1, height: 200 }}>
+            <TouchableOpacity onPress={() => handleGoBack()} style={{ paddingHorizontal: 16, flexDirection: 'row' }}>
+              <Ionicons name="chevron-back" size={24} color={colors.text[theme].primary} onPress={() => navigation.goBack()} />
+              <Text maxFontSizeMultiplier={1.2} style={{ color: colors.text[theme].primary, fontSize: 17, fontFamily: 'Figtree-SemiBold' }}>Back</Text>
             </TouchableOpacity>
           </View>
-
           <Pressable onPress={Keyboard.dismiss} style={{ height: '100%', display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: 0, overflow: 'hidden', height: '100%' }}>
-              <View>
-                <View style={{ width: '100%', height: 356, borderBottomColor: colors.fills[theme].stroke, borderBottomWidth: 2, marginBottom: 24 }}>
+            <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: 0, overflow: 'hidden', height: '100%', position: 'relative' }}>
+              <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexGrow: 1, position: 'relative' }}>
+                <View style={{ position: 'absolute', top: 80, left: 0, right: 0, bottom: 0, zIndex: 0, }}>
                   <Image
-                    source={signinAppVector}
-                    style={{ width: '100%', height: 355 }}
-                    placeholder={{ blurhash }}
-                    contentFit='contain'
+                    source={signbg}
+                    style={{ width: '100%', height: '100%', zIndex: 50 }} // Update dimensions to fill the parent
+                    contentFit="cover" // Change from contain to cover to ensure the image spans the space
                     transition={300}
                   />
                 </View>
-                <View style={{ paddingHorizontal: 16 }}>
-                  <Text maxFontSizeMultiplier={1.2} style={{ fontSize: 32, lineHeight: 40, fontFamily: 'Figtree-Bold', color: colors.text[theme].primary, textAlign: 'left' }}>Welcome to Latus</Text>
-                  <Text maxFontSizeMultiplier={1.2} style={{ fontSize: 17, lineHeight: 22, fontFamily: 'Figtree-REgular', color: colors.text[theme].secondary, textAlign: 'left' }}>
-                    Only students & staff in highschool can sign in with their school Google accounts. We plan on expanding this soon.
+                <View style={{ paddingHorizontal: 32, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 12, flexGrow: 1, position: 'relative' }}>
+                  <Image
+                    source={hcdsb}
+                    style={{ width: 85, height: 90 }}
+                    contentFit="contain"
+                    transition={300}
+                  />
+                  <Text maxFontSizeMultiplier={1.2} style={{ fontSize: 32, lineHeight: 40, fontFamily: 'Figtree-Bold', color: colors.text[theme].primary, textAlign: 'center' }}>
+                    Sign in to Latus
+                  </Text>
+                  <Text maxFontSizeMultiplier={1.2} style={{ fontSize: 17, lineHeight: 22, fontFamily: 'Figtree-Regular', color: colors.text[theme].secondary, textAlign: 'center' }}>
+                    Only students & staff in highschool can sign in with their school <Text style={{ fontFamily: 'Figtree-Bold' }}>Google accounts</Text>. We plan on expanding this soon.
                   </Text>
                 </View>
               </View>

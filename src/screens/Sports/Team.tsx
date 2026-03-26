@@ -72,7 +72,7 @@ export function convertFullDateToISO(fullDate: string): string | null {
     if (monthIndex === -1) return null;
 
     const year = parseInt(yearStr, 10);
-    const day = parseInt(dayStr, 10) + 1;
+    const day = parseInt(dayStr, 10);
 
     const date = new Date(year, monthIndex, day);
 
@@ -167,7 +167,7 @@ const MyFlatList = React.memo(({
                 if (ref) flatListRefs.current.set(pageIndex, ref);
             }}
             style={{ maxWidth: SCREEN_WIDTH, paddingTop: 312, paddingHorizontal: pageIndex === 0 ? 8 : 0 }}
-            contentContainerStyle={{ paddingBottom: Platform.OS === 'android' ? 400 : 40 }}
+            contentContainerStyle={{ paddingBottom: Platform.OS === 'android' ? 400 : 40, paddingHorizontal: pageIndex === 1 ? 8 : 0 }}
             initialNumToRender={pageIndex != 1 ? 1 : 1}
             windowSize={4}
             updateCellsBatchingPeriod={50}
@@ -605,12 +605,12 @@ const League = () => {
                 <View style={{ backgroundColor: colors.background[theme].general }}>
                     <View style={{ backgroundColor: colors.schools[team as school]['light'].primary, position: 'absolute', width: '100%', top: 0, zIndex: 10 }}>
                         <AnimatedHeaderContainer animatedHeaderHeight={animatedHeaderHeight}>
-                            <DynamicStickHeader stickyHeaderAnim={stickyHeaderAnim} label={team} subNote='' mode={'team'} theme={'dark'} />
+                            <DynamicStickHeader stickyHeaderAnim={stickyHeaderAnim} label={team} subNote='' mode={'team'} theme={'dark'} final={false} />
                             <TeamBanner animatedSchool={animatedSchool} label={team} subNote={league} />
                             <DynamicTabs
                                 tabs={TABS}
                                 currentPage={currentPage}
-                                onTabPress={handleTabPress} theme={'dark'}
+                                onTabPress={handleTabPress} theme={'dark'} final={false}
                             />
                         </AnimatedHeaderContainer>
                     </View>

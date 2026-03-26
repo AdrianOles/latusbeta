@@ -23,12 +23,22 @@ const Profile = () => {
     //Sign out and update UI access
     const handleLocalSignOut = async () => {
         try {
-            await AsyncStorage.clear(); // Or remove specific auth tokens
-            // Or remove from your state management (e.g., Redux, Context)
-            navigation.navigate("SportsTab");
-            updateAuthUser(); // Set auth state to unauthenticated
+            // AWS auth sign out
+            await signOut();
+
+            // Clear local storage if used to store flags
+            await AsyncStorage.clear();
+
+            // Force auth context update
+            await updateAuthUser();
+
+            // Reset navigator to sign-in screen (avoid left-behind history)
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Signin' }],
+            });
         } catch (error) {
-            console.log('Error clearing tokens: ', error);
+            console.log('Error signing out: ', error);
         }
     };
 
@@ -46,7 +56,7 @@ const Profile = () => {
         "HT": "Holy Trinity",
         "ND": "Notre Dame",
         "STFX": "St. Francis Xavier",
-        "SKT": "St. Kateri Tekakwitha",
+        "STK": "St. Kateri Tekakwitha",
         "LOY": "St. Ignatius of Loyola",
         "STA": "St. Thomas Aquinas"
     } as const

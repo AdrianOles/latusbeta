@@ -35,10 +35,10 @@ const reorderString = (inputString: string): string => {
 
 
 const DynamicStickHeader = React.memo((
-    { stickyHeaderAnim, subNote, label, mode, posting, theme }:
+    { stickyHeaderAnim, subNote, label, mode, posting, theme, final }:
         {
             stickyHeaderAnim?: any, label: string, subNote?: string, mode: "game" | "league" | "team",
-            posting?: () => void, theme: 'light' | 'dark'
+            posting?: () => void, theme: 'light' | 'dark', final: boolean
          }) => {
     const navigation = useNavigation<HomeStackParamList>(); // If GameCard needs navigation
     const [following, setFollowing] = useState<boolean>(false);
@@ -62,10 +62,10 @@ const DynamicStickHeader = React.memo((
         <View style={{ paddingHorizontal: 16, paddingVertical: Platform.OS === 'android' ? 0 : 4, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', position: 'relative', width: '100%' }}>
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={{ width: 50, zIndex: 10, flexShrink: 1 }}>
-                    <Ionicons name='chevron-back-outline' color={colors.text[theme].primary} size={32} style={{marginRight: 'auto'}} />
+                    <Ionicons name='chevron-back-outline' color={colors.text[final ? 'dark' : theme].primary} size={32} style={{marginRight: 'auto'}} />
                 </TouchableOpacity>
                 <Animated.View style={[stickyHeaderAnim, { display: 'flex', flexDirection: 'column', flexGrow: 1, flex: 1, zIndex: 1 }]}>
-                    <Text maxFontSizeMultiplier={1.2} numberOfLines={1} style={{ color: colors.text[theme].primary, fontSize: 17, lineHeight: 22, fontFamily: 'Figtree-Bold', marginLeft: 8, textAlign: 'center' }}>
+                    <Text maxFontSizeMultiplier={1.2} numberOfLines={1} style={{ color: colors.text[final ? 'dark' : theme].primary, fontSize: 17, lineHeight: 22, fontFamily: 'Figtree-Bold', marginLeft: 8, textAlign: 'center' }}>
                         {mode === 'game' || mode === 'league' ? reorderString(abbreviatedLabel) : abbreviatedLabel}
                     </Text>
                 </Animated.View>

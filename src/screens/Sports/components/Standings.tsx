@@ -142,6 +142,7 @@ const Standings = React.memo(({ league, focus, home, away }: { league: string, f
                                                     source={schoolLogos[temp as school]}
                                                     style={{ height: '100%', width: '100%' }}
                                                     contentFit="contain" // Expo image prop
+                                                    transition={300}
                                                 />
                                             </View>
                                             <View style={{ display: 'flex', alignItems: "center", justifyContent: 'center' }}>

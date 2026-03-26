@@ -109,8 +109,10 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     }, [authUser?.school])
 
     function getSchool(responseData: any) {
-        const schools = ["STFX", "ND", "AS", "BR"];
+        const schools = ["STFX", "ND", "AS", "BR", "STK", "CTK", "CC", "HT", "LOY", "STA"];
         if (responseData && responseData['cognito:groups']) {
+            console.log("groups")
+            console.log(responseData['cognito:groups'])
             for (const group of responseData['cognito:groups']) {
                 if (schools.includes(group)) {
                     return group;

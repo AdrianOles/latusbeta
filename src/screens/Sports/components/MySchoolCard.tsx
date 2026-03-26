@@ -13,6 +13,24 @@ const getSchoolName = (school: string) => {
     switch (school) {
         case "STFX":
             return "St. Francis Xavier"
+        case "STK":
+            return "St. Kateri Tekakwitha"
+        case "LOY":
+            return "St. Ignatius of Loyola"
+        case "ND":
+            return "Notre Dame"
+        case "AS":
+            return "Assumption"
+        case "BR":
+            return "Bishop Reding"
+        case "CTK":
+            return "Christ the King"
+        case "CC":
+            return "Corpus Christi"
+        case "HT":
+            return "Holy Trinity"
+        case "STA":
+            return "St. Thomas Aquinas"
         default:
             return undefined;
     }

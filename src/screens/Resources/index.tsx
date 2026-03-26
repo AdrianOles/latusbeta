@@ -92,7 +92,7 @@ const Resources = () => {
                     <Text style={{ color: colors.text[theme].secondary, fontFamily: 'Figtree-Semibold', fontSize: 16, lineHeight: 21 }}>{data?.length > 0 && data ? data.length : 0} total</Text>
                 </View>
                 {
-                    authUser?.staffRole === 'ADMIN' && (
+                    authUser?.staffRole === 'ADMIN' && (authUser?.school === "stfx" ? true : false) && (
                         <TouchableOpacity onPress={() => navigation.navigate("Menu", { })} style={{ paddingHorizontal: 16, paddingRight: 0, paddingVertical: 16 }}>
                             <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: 36, aspectRatio: 1, backgroundColor: colors.text[theme].primary, borderRadius: 250 }}>
                                 <Ionicons name={'add'} size={24} color={colors.background[theme].general}></Ionicons>
@@ -197,7 +197,12 @@ const Resources = () => {
                 Platform.OS === 'ios' && (<View style={{ height: 50, width: '100%' }} />)
             }
             {
-                Platform.OS === 'android' && (<View style={{ height: 32, width: '100%' }} />)
+                Platform.OS === 'android' && (
+                    <>
+                        <StatusBar style={theme === 'light' ? 'dark' : 'light'} backgroundColor={"transparent"} />
+                        <View style={{ height: 62, width: '100%', }} />
+                    </>
+                )
             }
             <StatusBar translucent={true} style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={'transparent'} />
             <FlatList
@@ -240,7 +245,7 @@ const Resources = () => {
 
             {/* Message for content */}
             {
-                (data?.length === 0 || !data || data === undefined) && authUser ? (
+                (data?.length === 0 || !data || data === undefined) && authUser && authUser.school === 'stfx' ? (
                     <View style={{
                         position: 'absolute', top: '40%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
                         zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
@@ -253,15 +258,19 @@ const Resources = () => {
                             Nothing to see here
                         </Text>
                     </View>
-                ) : (data?.length === 0 || !data || data === undefined) && (
-                    <View style={{
-                        position: 'absolute', top: '40%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
-                        zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-                    }}>
-                        <Text style={{ color: colors.text[theme].tertiary, fontFamily: "Figtree-SemiBold", fontSize: 15, lineHeight: 20 }}>
-                            Resources are not accessible in your school yet.
-                        </Text>
-                    </View>
+                ) : (data?.length === 0 || !data || data === undefined) && authUser?.school != 'stfx' && (
+                        <View style={{
+                            position: 'absolute', top: '45%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
+                            zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginHorizontal: 'auto',
+                        }}>
+                            <Ionicons name='filter' color={colors.text[theme].secondary} size={60} />
+                            <Text style={{ fontFamily: 'Figtree-Bold', fontSize: 17, color: colors.text[theme].primary, textAlign: 'center', maxWidth: 300, marginHorizontal: 'auto', marginTop: 8 }}>
+                                No resources here
+                            </Text>
+                            <Text style={{ color: colors.text[theme].tertiary, fontFamily: "Figtree-Regular", textAlign: 'center', fontSize: 15, lineHeight: 20, paddingHorizontal: 36, marginTop: 4 }}>
+                                Your school does not currently use Latus for resources. Stay tuned for future updates!
+                            </Text>
+                        </View>
                 )
             }
 

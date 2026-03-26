@@ -32,7 +32,7 @@ const VolleyCard = React.memo(({ scores: initialScores, home, away }: { scores: 
 
     const getAccentColor = (schoolName: string) => {
         if (schoolList.includes(schoolName as school)) {
-            return colors.schools[schoolName as school].accent;
+            return colors.schools[schoolName as school][theme].primary;
         } else {
             return "#9A999E";
         }
@@ -80,8 +80,8 @@ const VolleyCard = React.memo(({ scores: initialScores, home, away }: { scores: 
 
     return (
         <View style={{
-            borderRadius: 24, padding: 16, width: '100%',
-            marginBottom: 16,
+            borderRadius: 20, padding: 16, width: '100%',
+            marginBottom: 8,
             backgroundColor: colors.background[theme].elevated
         }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start'}}>
@@ -127,7 +127,7 @@ const VolleyCard = React.memo(({ scores: initialScores, home, away }: { scores: 
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                         {
                             localScores.home.map((score, index) => (
-                                <View style={{ flexGrow: 1, height: 18, width: 18, display: 'flex', justifyContent: 'center', marginLeft: 20, }} key={index}>
+                                <View style={{ flexGrow: 1, height: 18, width: 18, display: 'flex', justifyContent: 'center', marginLeft: 20}} key={index}>
                                     <Text key={index} style={styles.setText}>{index + 1}</Text>
                                 </View>
                             ))

@@ -311,7 +311,10 @@ const HomePage = () => {
             }
             {
                 Platform.OS === 'android' && (
-                    <View style={{ height: 32, width: '100%', }} />
+                    <>
+                        <StatusBar style={theme === 'light' ? 'dark' : 'light'} backgroundColor={"transparent"} />
+                        <View style={{ height: 62, width: '100%', }} />
+                    </>
                 )
             }
             <FlatList
@@ -380,7 +383,7 @@ const HomePage = () => {
                 // }
             />
             {
-                viewableItems.length === 0 && authUser ? (
+                viewableItems.length === 0 && authUser?.school === 'stfx' ? (
                     //Message for announcement context results (# of announcements)
                     <View style={{
                         position: 'absolute', top: '50%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
@@ -394,14 +397,18 @@ const HomePage = () => {
                             You're all caught up
                         </Text>
                     </View>
-                ) : viewableItems.length === 0 && (
+                ) : viewableItems.length === 0 && authUser?.school != 'stfx' && (
                     <View style={{
-                        position: 'absolute', top: '50%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
-                        zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+                        position: 'absolute', top: '45%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
+                        zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginHorizontal: 'auto',
                     }}>
-                        <Text style={{ color: colors.text[theme].tertiary, fontFamily: "Figtree-SemiBold", textAlign: 'center', fontSize: 15, lineHeight: 20, paddingHorizontal: 36 }}>
-                            Announcements aren't accessible for your school yet.
+                        <Ionicons name='filter' color={colors.text[theme].secondary} size={60} />
+                        <Text style={{fontFamily: 'Figtree-Bold', fontSize: 17, color: colors.text[theme].primary, textAlign: 'center', maxWidth: 300, marginHorizontal: 'auto', marginTop: 8}}>
+                            No announcements here
                         </Text>
+                        <Text style={{ color: colors.text[theme].tertiary, fontFamily: "Figtree-Regular", textAlign: 'center', fontSize: 15, lineHeight: 20, paddingHorizontal: 36, marginTop: 4 }}>
+                            Your school does not currently use Latus for announcements. Stay tuned for future updates!
+                        </Text> 
                     </View>
                 )
             }

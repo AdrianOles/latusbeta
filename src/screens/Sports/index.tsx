@@ -189,9 +189,10 @@ const MyFlatList = React.memo(({
                     {HeaderComponent && (
                         <HeaderComponent />
                     )}
-                    {authUser?.school && dateString === todayFormatted && todayCard && (
+                    {/* authUser?.school && dateString === todayFormatted && todayCard && */}
+                    {/* {authUser?.school && (
                         <MySchoolCard school={authUser.school} />
-                    )}
+                    )} */}
                     {
                         !(data && data.length > 0) && (
                             <View style={{ height: '90%', display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
@@ -209,7 +210,7 @@ const MyFlatList = React.memo(({
                 </>
             )}
             scrollEventThrottle={16}
-            removeClippedSubviews={true}
+            removeClippedSubviews={false}
         />
     );
 });
@@ -465,7 +466,7 @@ const Sports = () => {
 
     return (
         <>
-            {/* <StatusBar translucent={true} style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={colors.background[theme].elevated} /> */}
+            <StatusBar translucent={true} style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={colors.background[theme].elevated} />
             <SafeAreaView edges={['left', 'right', 'top']} style={{ backgroundColor: colors.background[theme].elevated, flex: 1, flexGrow: 1, height: '100%' }}>
                 <View style={{ backgroundColor: colors.background[theme].alternate, height: '100%' }}>
                     <View style={{ position: 'absolute', width: '100%', top: 0, zIndex: 10 }}>

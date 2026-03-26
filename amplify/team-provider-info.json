@@ -24,7 +24,7 @@
         "latusPostConfirmation": {
           "GROUP": "STUDENT",
           "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
-          "s3Key": "amplify-builds/latusPostConfirmation-7667332f53566349564e-build.zip"
+          "s3Key": "amplify-builds/latusPostConfirmation-536a495a424a34317957-build.zip"
         },
         "latusPreSignup": {
           "DOMAINALLOWLIST": "",

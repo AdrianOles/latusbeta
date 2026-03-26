@@ -1,6 +1,6 @@
 import React from "react";
 import Animated from "react-native-reanimated";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity, Linking } from "react-native";
 import { useAuthContext } from "../../../contexts/AuthContext";
 import { brLogo, stfxLogo } from "../../../../assets";
 import colors from "../../../colors";
@@ -16,7 +16,7 @@ const LeagueBanner = React.memo(({ animatedSchool, label, subNote }: { animatedS
                 position: 'absolute', top: 76, left: 0, right: 0
             }]}
         >
-            <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingHorizontal: 16 }}>
+            <TouchableOpacity onPress={() => Linking.openURL('https://www.hcaa.ca')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingHorizontal: 16 }}>
                 <Image
                     source={require('../../../../assets/schools/hcaa.png')}
                     style={{
@@ -26,8 +26,11 @@ const LeagueBanner = React.memo(({ animatedSchool, label, subNote }: { animatedS
                     transition={300}
                 />
                 <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: 'Figtree-Bold', fontSize: 22, color: colors.text['dark'].primary, marginTop: 8 }}>{abbreviatedLabel}</Text>
-                <Text maxFontSizeMultiplier={1.2} style={{fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 20, color: colors.text['dark'].secondary}}>{subNote}</Text>
-            </View>
+                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                    <Text maxFontSizeMultiplier={1.2} style={{fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 20, color: colors.text['dark'].secondary}}>{subNote}</Text>
+                    <Ionicons name="chevron-forward-outline" size={12} color={colors.text['dark'].secondary} style={{marginLeft: 4, paddingTop: 2}} />
+                </View>
+            </TouchableOpacity>
         </Animated.View>
     )
 });

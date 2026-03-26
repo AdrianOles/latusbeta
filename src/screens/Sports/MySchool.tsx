@@ -199,7 +199,7 @@ const MySchool = () => {
     const fetcher = useCallback(async (school?: string) => {
         if (school) {
             const queryParams: ScoresParams = {
-                dateSelect: getFormattedDate(new Date()),
+                dateSelect: getFormattedDate(new Date(new Date().setDate(new Date().getDate() + 1))),
                 schoolSelect: getSchoolId(school),
             };
             const data = await getScores(queryParams);

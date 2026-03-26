@@ -48,8 +48,14 @@ const reorderString = (inputString: string): string => {
  * @returns An array of strings, where each string is 'W', 'L', or 'D'.
  */
 const getResultsForTeam = (games: gameType[], teamName: string): string[] => {
+    const normalize = (str: string) => str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    const targetTeam = normalize(teamName);
+
     return games && games.map((game) => {
-        if (game.home.name === teamName) {
+        const homeTeam = normalize(game.home.name);
+        const visitorTeam = normalize(game.visitor.name);
+
+        if (homeTeam === targetTeam) {
             const homeScore = game.home.score || 0;
             const visitorScore = game.visitor.score || 0;
             if (homeScore > visitorScore) {
@@ -61,7 +67,7 @@ const getResultsForTeam = (games: gameType[], teamName: string): string[] => {
             }
         }
         // Check if the team is the visitor team
-        else if (game.visitor.name === teamName) {
+        else if (visitorTeam === targetTeam) {
             const homeScore = game.home.score || 0;
             const visitorScore = game.visitor.score || 0;
             if (visitorScore > homeScore) {
@@ -100,6 +106,8 @@ const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, 
     const { theme } = useAuthContext();
     //Remove stroke for the last GameCard
     const leagueToUse = abbreviateRank(league || '');
+
+    console.log(items)
 
     const handlePress = () => {
         if (mode != 'league' && mode != 'team') {
@@ -153,7 +161,7 @@ const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, 
                         widthScreen={widthScreen} // Adjust width if padding exists in parent
                         teamName={teamName}
                         mode={mode}
-                        date={game.date} // Assuming logic based on your snippet
+                        date={mode === 'school' ? game.league : game.date} // Assuming logic based on your snippet
                         dateString={date}
                         time={game.time} // Assuming game object has time
                         remove={index === items.length - 1} // Remove divider for last item

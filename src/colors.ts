@@ -71,7 +71,7 @@ const colors = {
             },
             "light": {
                 primary: '#362A85',
-                secondary: '#B8ADFF'
+                secondary: '#B9AEFF'
             }
         }, 
         "Bishop Reding": {
@@ -82,7 +82,7 @@ const colors = {
             },
             "light": {
                 primary: "#850B0E",
-                secondary: "#FFA6A8"
+                secondary: "#FFAFB1"
             }
         }, 
         "St. Ignatius of Loyola": {
@@ -93,7 +93,7 @@ const colors = {
             },
             "light": {
                 primary: "#8C0426",
-                secondary: "#FC8DA9"
+                secondary: "#FF99B3"
             }
         },
         "Holy Trinity": {
@@ -121,23 +121,23 @@ const colors = {
         "Assumption": {
             accent: '#00263E',
             "dark": {
-                primary: '#1F6A99',
-                secondary: '#004E80'
+                primary: '#1D81BF',
+                secondary: '#003F66'
             },
             "light": {
                 primary: "#00263E",
-                secondary: "#ADDFFF"
+                secondary: "#C2E3FF"
             }
         },
         "St. Thomas Aquinas": {
             accent: '#28409E',
             "dark": {
-                primary: '#4B63BD',
-                secondary: '#112B8F'
+                primary: '#676970',
+                secondary: '#4E5366'
             },
             "light": {
-                primary: "#28409E",
-                secondary: "#A6B8FF"
+                primary: "#5A5C66",
+                secondary: "#B8BFE0"
             }
         },
         "Notre Dame": {
@@ -170,7 +170,7 @@ const colors = {
             },
             "light": {
                 primary: "#00704B",
-                secondary: "#96F2D4"
+                secondary: "#BFFFEA"
             }
         },
     }
