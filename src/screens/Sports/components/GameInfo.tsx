@@ -322,12 +322,17 @@ const GameInfo = React.memo(({ location, league, home, away, sets, time, dateStr
                 getGameType(notes ?? "") === "GHAC" && (
                     <View style={{
                         backgroundColor: colors.background[theme].elevated, display: 'flex', flexDirection: 'row', borderRadius: 16,
-                        boxShadow: "0px 1px 12px rgba(38, 38, 38, 0.08)", marginBottom: 8, padding: 16, alignItems: 'center' 
+                        boxShadow: "0px 1px 12px rgba(38, 38, 38, 0.08)", marginBottom: 8, padding: 16, alignItems: 'center', paddingLeft: 12
                     }}>
                         <View>
-                            <Ionicons name="trophy-outline" size={22} color={colors.system[theme].yellow} style={{ marginBottom: 4 }} />
+                            <Image
+                                source={require('../../../../assets/schools/ghac.png')}
+                                style={{
+                                    height: 28, aspectRatio: 1,  objectFit: 'contain'
+                                }}
+                            />
                         </View>
-                        <View style={{marginLeft: 16}}>
+                        <View style={{marginLeft: 12}}>
                             <Text maxFontSizeMultiplier={1.1} style={{ fontFamily: 'Figtree-SemiBold', fontSize: 15, color: colors.text[theme].primary, textAlign: 'left' }}>
                                 GHAC Event
                             </Text>

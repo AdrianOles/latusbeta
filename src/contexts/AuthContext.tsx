@@ -29,6 +29,7 @@ export interface AuthContextType {
     theme: 'light' | 'dark';
     updateAuthUser: () => void;
     clearErrorState: () => void;
+    setError: (error: string) => void;
     updateSchool: (school: string) => void;
     updateAFilter: (filter: 'all' | 'upcoming' | 'new' | 'created' | 'ending') => void;
 }
@@ -43,6 +44,7 @@ const AuthContext = createContext<AuthContextType>({
     theme: 'light',
     updateAuthUser: () => {},
     clearErrorState: () => { },
+    setError: (error: string) => {},
     updateSchool: (school: string) => { },
     updateAFilter: (filter: 'all' | 'upcoming' | 'new' | 'created' | 'ending') => {}
 });
@@ -109,7 +111,7 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     }, [authUser?.school])
 
     function getSchool(responseData: any) {
-        const schools = ["STFX", "ND", "AS", "BR", "STK", "CTK", "CC", "HT", "LOY", "STA"];
+        const schools = ["STFX", "ND", "AS", "BR", "STK", "CTK", "CC", "HT", "LOY", "STA", "DEMO"];
         if (responseData && responseData['cognito:groups']) {
             console.log("groups")
             console.log(responseData['cognito:groups'])
@@ -200,6 +202,10 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
         setError("");
     }
 
+    const setErrorMessage = (errorMessage: string) => {
+        setError(errorMessage);
+    }
+
     useEffect(() => {
         updateAuthUser();
     }, []);
@@ -242,7 +248,7 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ staffRole, authUser, loading, updateAuthUser, error, clearErrorState, updateSchool, theme, aFilter, updateAFilter, schoolColor }}>
+        <AuthContext.Provider value={{ staffRole, authUser, loading, updateAuthUser, error, clearErrorState, setError: setErrorMessage, updateSchool, theme, aFilter, updateAFilter, schoolColor }}>
             {children}
         </AuthContext.Provider>
     );

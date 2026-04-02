@@ -85,7 +85,8 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
     const { theme } = useAuthContext();
     const [templateHome, setTemplateHome] = React.useState(false);
     const [templateAway, setTemplateAway] = React.useState(false);
-
+    const tbaTimeFlag = time ? time.includes("TBA") : false;
+    
     useEffect(() => {
             if (!schoolList.includes(item.home.name)) {
                 setTemplateHome(true);
@@ -98,6 +99,8 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                 setTemplateAway(false);
             }
     }, []);
+
+
 
     // console.log("All data for card: ", { item, widthScreen, lpadding, date, time, remove, format, mode, dateString, league, teamName });
 
@@ -212,10 +215,20 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                 paddingTop: date ? 16 : 24
             }}
         >
-            {date && (
+            {date && !tbaTimeFlag && (
                 <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: 'Figtree-SemiBold', paddingHorizontal: 16, fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, paddingBottom: 12 }}>
                     {formatToShortDate(date)}{item.notes && !item.notes.startsWith('Regular Season')
                         ? ` • ${item.notes
+                            .split('.')[0] // Captures 'GHAC' and stops at the first dot
+                            .replace(/\.$/, '') // Keeps your existing logic for other strings
+                            .trim()}`
+                        : ''}
+                </Text>
+            )}
+            {date && tbaTimeFlag && (
+                <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: 'Figtree-SemiBold', paddingHorizontal: 16, fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, paddingBottom: 12 }}>
+                    {item.notes && !item.notes.startsWith('Regular Season')
+                        ? `${item.notes
                             .split('.')[0] // Captures 'GHAC' and stops at the first dot
                             .replace(/\.$/, '') // Keeps your existing logic for other strings
                             .trim()}`
@@ -283,7 +296,7 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                 </View>
                 
                 {
-                    !time && ((homeScore !== awayScore) || wld === 'D') && (
+                    !time && (
                         <View style={{ marginRight: 16, justifyContent: 'center', alignItems: 'center' }}>
                             <Text maxFontSizeMultiplier={1.2} style={{ textAlign: 'center', fontFamily: 'Figtree-Bold', fontSize: 17, color: homeColor, marginBottom: 4 }}>
                                 {homeScore}
@@ -299,9 +312,9 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                     <View style={{ flexDirection: 'row', alignItems: 'center', width: 100 }}>
                         <View style={{ width: 1, height: 42, backgroundColor: colors.fills[theme].stroke }} />
                         {
-                            (pendingFlag || TBAFlag) && (
+                            (pendingFlag || TBAFlag || tbaTimeFlag) && (
                                 <Text maxFontSizeMultiplier={1.13} style={{ textAlign: 'center', fontFamily: 'Figtree-Medium', fontSize: 15, lineHeight: 20, color: colors.text[theme].tertiary, flexGrow: 1 }}>
-                                    {pendingFlag ? "Pending" : TBAFlag && "TBA"}
+                                    {pendingFlag != tbaTimeFlag ? "Pending" : TBAFlag || tbaTimeFlag ? "TBA" : "TBA"}
                                 </Text>
                             )
                         }

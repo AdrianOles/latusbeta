@@ -58,7 +58,8 @@ const Profile = () => {
         "STFX": "St. Francis Xavier",
         "STK": "St. Kateri Tekakwitha",
         "LOY": "St. Ignatius of Loyola",
-        "STA": "St. Thomas Aquinas"
+        "STA": "St. Thomas Aquinas",
+        "DEMO": "Demo Environment"
     } as const
 
     const schoolData = [
@@ -101,6 +102,10 @@ const Profile = () => {
         {
             name: 'St. Thomas Aquinas',
             abbrev: 'sta'
+        },
+        {
+            name: 'Demo Environment',
+            abbrev: 'demo'
         }
     ];
 
@@ -162,7 +167,7 @@ const Profile = () => {
                                 color: colors.text[theme].secondary, fontSize: 17, lineHeight: 22, letterSpacing: 0.2,
                                 fontFamily: 'Figtree-SemiBold', textTransform: 'capitalize',
                             }}>
-                                {authUser?.staffRole} | {authUser?.school ? schoolAbrv[authUser.school as keyof typeof schoolAbrv] : ''}
+                                {authUser?.staffRole?.toLocaleLowerCase()} | {authUser?.school ? schoolAbrv[authUser.school as keyof typeof schoolAbrv] : ''}
                             </Text>
                         </>
                     ): (

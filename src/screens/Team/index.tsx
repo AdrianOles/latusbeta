@@ -67,6 +67,10 @@ const Profile = () => {
         {
             name: 'St. Thomas Aquinas',
             abbrev: 'sta'
+        },
+        {
+            name: 'Demo Environment',
+            abbrev: 'demo'
         }
     ];
 

@@ -181,6 +181,7 @@ const MyFlatList = React.memo(({
             data.forEach(section => {
                 flatList.push({ type: 'header', title: section.title });
                 section.data.forEach((game, index) => {
+                    console.log(game)
 
                     flatList.push({
                         type: 'game',

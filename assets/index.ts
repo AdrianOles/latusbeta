@@ -14,3 +14,4 @@ export const loglogo = require('./loglogo.png');
 export const signinAppVector = require('./images/signinAppVector.png');
 export const hcdsb = require('./schools/hcdsb.png');
 export const signbg = require('./schools/signbg.png');
+export const ghac = require('./schools/ghac.png');

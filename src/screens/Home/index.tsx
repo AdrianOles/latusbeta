@@ -48,6 +48,31 @@ const HomePage = () => {
     const ahook = useAnnouncements();
     const [showMessage, setShowMessage] = useState(false);
     const [viewableItems, setViewableItems] = useState<LocalAnnouncement[]>([]);
+
+    // Mock announcements for demo users
+    const mockAnnouncements: LocalAnnouncement[] = [
+        {
+            id: 'demo-2',
+            title: 'Welcome to the demo environment',
+            body: 'This is an example of what announcements will look like in the app for specific schools. Feel free to explore.',
+            authorName: 'Demo Environment',
+            authorPicture: 'https://lh3.googleusercontent.com/ogw/AF2bZyjT3JmaeLw0Gjo_eddcAgpKAmBN-cJL-_6bSq848ye6iw=s64-c-mo',
+            authorId: 'social.latus@gmail.com',
+            startDate: new Date(Date.now()).toISOString(), // 2 days from now
+            endDate: Math.floor((Date.now() + 5 * 24 * 60 * 60 * 1000) / 1000), // 5 days from now
+            createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+            updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+            school: 'DEMO',
+            board: 'DEMO',
+            deleted: false,
+            path: null,
+            aspectRatio: null,
+            skip: false,
+            attachments: null,
+            displayFilters: ['ALL', 'UPCOMING'],
+            subTitles: []
+        }
+    ];
     const [loading, setLoading] = useState<boolean>(false);
     const [counts, setCounts] = useState({
         "all": 0,
@@ -209,6 +234,33 @@ const HomePage = () => {
 
     // Sets viewable announcements to correct filter
     useEffect(() => {
+        // Check if user is demo user
+        const isDemoUser = authUser?.school?.toUpperCase() === 'DEMO';
+
+        if (isDemoUser) {
+            // For demo users, use mock announcements and set counts
+            let filter = 'ALL';
+            if (aFilter) filter = aFilter.toUpperCase();
+
+            const filteredAnnouncements: LocalAnnouncement[] = mockAnnouncements.filter(announcement => {
+                return announcement.displayFilters.includes(filter);
+            });
+
+            // Update counts for demo user
+            const demoCounts = {
+                "all": mockAnnouncements.filter(a => a.displayFilters.includes('ALL')).length,
+                "upcoming": mockAnnouncements.filter(a => a.displayFilters.includes('UPCOMING')).length,
+                "new": mockAnnouncements.filter(a => a.displayFilters.includes('NEW')).length,
+                "ending": mockAnnouncements.filter(a => a.displayFilters.includes('ENDING')).length,
+                "created": 0 // Demo user doesn't create announcements
+            };
+            setCounts(demoCounts);
+
+            setViewableItems(filteredAnnouncements);
+            return;
+        }
+
+        // Original logic for non-demo users
         let filter = 'ALL';
         if (data && aFilter) filter = aFilter.toUpperCase();
         if (data && data.length > 0) {
@@ -230,7 +282,7 @@ const HomePage = () => {
         if (!data) {
             setViewableItems([])
         }
-    }, [aFilter, data, isLoading, loading, error])
+    }, [aFilter, data, isLoading, loading, error, authUser])
 
     function convertAttachToInput(attach: Attach): AttachInput {
         return {
@@ -313,7 +365,7 @@ const HomePage = () => {
                 Platform.OS === 'android' && (
                     <>
                         <StatusBar style={theme === 'light' ? 'dark' : 'light'} backgroundColor={"transparent"} />
-                        <View style={{ height: 62, width: '100%', }} />
+                        <View style={{ height: 32, width: '100%', }} />
                     </>
                 )
             }
@@ -383,7 +435,7 @@ const HomePage = () => {
                 // }
             />
             {
-                viewableItems.length === 0 && authUser?.school === 'stfx' ? (
+                viewableItems.length === 0 && authUser?.school?.toUpperCase() === 'STFX' ? (
                     //Message for announcement context results (# of announcements)
                     <View style={{
                         position: 'absolute', top: '50%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
@@ -397,7 +449,7 @@ const HomePage = () => {
                             You're all caught up
                         </Text>
                     </View>
-                ) : viewableItems.length === 0 && authUser?.school != 'stfx' && (
+                ) : viewableItems.length === 0 && authUser?.school?.toUpperCase() !== 'STFX' && authUser?.school?.toUpperCase() !== 'DEMO' && (
                     <View style={{
                         position: 'absolute', top: '45%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
                         zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginHorizontal: 'auto',
@@ -408,7 +460,7 @@ const HomePage = () => {
                         </Text>
                         <Text style={{ color: colors.text[theme].tertiary, fontFamily: "Figtree-Regular", textAlign: 'center', fontSize: 15, lineHeight: 20, paddingHorizontal: 36, marginTop: 4 }}>
                             Your school does not currently use Latus for announcements. Stay tuned for future updates!
-                        </Text> 
+                        </Text>
                     </View>
                 )
             }

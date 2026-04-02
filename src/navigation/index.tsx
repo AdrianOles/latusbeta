@@ -193,9 +193,8 @@ const ResourceNavigator = () => (
 const MainTabNavigator = () => {
     const { authUser, theme } = useAuthContext();
 
-    const contractedSchoolDomains = ['stfxavier.ca'];
-    const userDomain = authUser?.email?.split('@')[1];
-    const isContractedUser = userDomain && contractedSchoolDomains.includes(userDomain);
+    
+    const isContractedUser = authUser?.school === 'STFX';
 
     const unfilledSports = (
         <View style={{transform: [{ scale: 0.35}], top: 3}}>

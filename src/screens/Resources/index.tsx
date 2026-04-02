@@ -27,6 +27,54 @@ type resource = {
 
 const client = generateClient();
 
+// Mock resources for demo users
+const mockResources = [
+    {
+        "id": "10b2a030-5a4a-4fe9-b6ab-193fee950526",
+        "schoolAndBoard": "DEMO+HCDSB",
+        "authorId": "olesnieadrian@gmail.com",
+        "authorName": "olesnieadrian@gmail.com",
+        "authorPicture": "olesnieadrian@gmail.com",
+        "authorRole": "ADMIN",
+        "content": {
+            "address": "https://hcaa.ca/",
+            "name": "HCAA",
+            "size": null,
+            "type": "url"
+        },
+        "createdAt": "2025-09-01T04:32:54.961Z",
+        "editorId": [],
+        "editorname": [],
+        "editTime": [],
+        "editType": [],
+        "owner": "7c8d9568-b0c1-70b0-fd06-b0f85f91fc91::google_105727136410137616077",
+        "updatedAt": "2025-09-01T04:32:54.961Z",
+        "__typename": "Resource"
+    },
+    {
+        "id": "20b2a030-5a4a-4fe9-b6ab-193fee950527",
+        "schoolAndBoard": "DEMO+HCDSB",
+        "authorId": "olesnieadrian@gmail.com",
+        "authorName": "olesnieadrian@gmail.com",
+        "authorPicture": "olesnieadrian@gmail.com",
+        "authorRole": "ADMIN",
+        "content": {
+            "address": "https://www.hcdsb.org/",
+            "name": "HCDSB",
+            "size": null,
+            "type": "url"
+        },
+        "createdAt": "2025-09-01T04:32:54.961Z",
+        "editorId": [],
+        "editorname": [],
+        "editTime": [],
+        "editType": [],
+        "owner": "7c8d9568-b0c1-70b0-fd06-b0f85f91fc91::google_105727136410137616077",
+        "updatedAt": "2025-09-01T04:32:54.961Z",
+        "__typename": "Resource"
+    }
+];
+
 const Resources = () => {
     const { authUser, updateAFilter, theme } = useAuthContext();
     const [loading, setLoading] = useState<boolean>(false);
@@ -42,6 +90,14 @@ const Resources = () => {
         if (!authUser) {
             return null;
         }
+
+        // Check if user is demo user
+        if (authUser?.school?.toUpperCase() === 'DEMO') {
+            console.log("Returning mock resources for demo user");
+            setLoading(false);
+            return mockResources;
+        }
+
         console.log("fetching resources")
         setLoading(true);
 
@@ -197,13 +253,13 @@ const Resources = () => {
                 Platform.OS === 'ios' && (<View style={{ height: 50, width: '100%' }} />)
             }
             {
-                Platform.OS === 'android' && (
-                    <>
-                        <StatusBar style={theme === 'light' ? 'dark' : 'light'} backgroundColor={"transparent"} />
-                        <View style={{ height: 62, width: '100%', }} />
-                    </>
-                )
-            }
+                        Platform.OS === 'android' && (
+                            <>
+                                <StatusBar style={theme === 'light' ? 'dark' : 'light'} backgroundColor={"transparent"} />
+                                <View style={{ height: 32, width: '100%', }} />
+                            </>
+                        )
+                    }
             <StatusBar translucent={true} style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={'transparent'} />
             <FlatList
                 contentInsetAdjustmentBehavior="automatic"
@@ -245,7 +301,7 @@ const Resources = () => {
 
             {/* Message for content */}
             {
-                (data?.length === 0 || !data || data === undefined) && authUser && authUser.school === 'stfx' ? (
+                (data?.length === 0 || !data || data === undefined) && authUser && authUser.school === 'stfx' && authUser?.school?.toUpperCase() !== 'DEMO' ? (
                     <View style={{
                         position: 'absolute', top: '40%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
                         zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
@@ -258,7 +314,7 @@ const Resources = () => {
                             Nothing to see here
                         </Text>
                     </View>
-                ) : (data?.length === 0 || !data || data === undefined) && authUser?.school != 'stfx' && (
+                ) : (data?.length === 0 || !data || data === undefined) && authUser?.school != 'stfx' && authUser?.school?.toUpperCase() !== 'DEMO' && (
                         <View style={{
                             position: 'absolute', top: '45%', right: 0, left: 0, transform: [{ translateX: windowWidth % 2 }, { translateY: windowWidth % 2 }],
                             zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginHorizontal: 'auto',
