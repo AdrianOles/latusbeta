@@ -148,7 +148,7 @@ const Resources = () => {
                     <Text style={{ color: colors.text[theme].secondary, fontFamily: 'Figtree-Semibold', fontSize: 16, lineHeight: 21 }}>{data?.length > 0 && data ? data.length : 0} total</Text>
                 </View>
                 {
-                    authUser?.staffRole === 'ADMIN' && (authUser?.school === "stfx" ? true : false) && (
+                    authUser?.staffRole === 'ADMIN' && (authUser?.school === "STFX" ? true : false) && (
                         <TouchableOpacity onPress={() => navigation.navigate("Menu", { })} style={{ paddingHorizontal: 16, paddingRight: 0, paddingVertical: 16 }}>
                             <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: 36, aspectRatio: 1, backgroundColor: colors.text[theme].primary, borderRadius: 250 }}>
                                 <Ionicons name={'add'} size={24} color={colors.background[theme].general}></Ionicons>

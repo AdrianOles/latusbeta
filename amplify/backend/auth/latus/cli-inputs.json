@@ -121,6 +121,6 @@
     "parentStack": {
       "Ref": "AWS::StackId"
     },
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/signin/\",\"https://www.latus.ca/signin/\",\"latus.app://callback/\"],\"LogoutURLs\":[\"http://localhost:3000/signin/\",\"https://www.latus.ca/signin/\",\"latus.app://callback/\"]}"
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/signin/\",\"https://www.latus.ca/signin/\",\"latus.app://callback/\",\"projectlatus.app://callback/\"],\"LogoutURLs\":[\"http://localhost:3000/signin/\",\"https://www.latus.ca/signin/\",\"latus.app://callback/\",\"projectlatus.app://callback/\"]}"
   }
 }

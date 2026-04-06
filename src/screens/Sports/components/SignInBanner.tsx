@@ -28,10 +28,10 @@ const SignInBanner = React.memo(({ animation }: { animation: any }) => {
                 borderBottomWidth: 1,
                 borderColor: colors.fills[theme].subtle
             }}>
-                <Image
+                {/* <Image
                     source={hcdsb}
                     style={{ width: 32, height: 32, marginRight: 12 }}
-                />
+                /> */}
                 <View style={{
                     display: 'flex',
                     flexDirection: 'row',

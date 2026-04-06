@@ -11,6 +11,7 @@ import { getMaxDateForAcademicYear } from "../../Home/AddDate";
 import DateScroll from "./DateScroll";
 import { format } from 'date-fns';
 import Svg, { Path } from "react-native-svg";
+import { hcaa } from "../../../../assets";
 
 interface StickHeaderProps {
     currentPage: SharedValue<number>;
@@ -118,13 +119,12 @@ const StickHeader = React.memo(({ currentPage, onTabPress, authUser, dateSearch,
                 display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 0, paddingHorizontal: 16, paddingTop: 4
             }}>
                 <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                    <Svg height={28} width={28} style={{top: 4}}>
-                        <Path d="M0.560019 5.17465C1.30652 4.40238 2.51422 4.40277 3.26021 5.17553L12.0336 14.2634C12.6233 14.8737 13.5807 14.874 14.1733 14.264L16.9984 11.3411C17.0867 11.2501 17.2306 11.25 17.3188 11.3412L19.6998 13.8088C19.788 13.9002 19.7879 14.0486 19.6997 14.1399L19.6948 14.1379L15.2333 18.7527C14.0556 19.9711 12.1452 19.9704 10.9658 18.7513L0.559108 7.96957C-0.186821 7.19688 -0.186273 5.94694 0.560019 5.17465ZM10.9716 0.913396C12.1493 -0.305025 14.0606 -0.304402 15.2401 0.914787L25.6614 11.7092C26.4074 12.482 26.407 13.7328 25.6605 14.5051C24.914 15.2771 23.7062 15.2768 22.9603 14.5042L14.1752 5.40565C13.5854 4.79476 12.6272 4.79446 12.0346 5.40495L9.23283 8.30345C9.13195 8.40782 8.96743 8.40776 8.86662 8.30334L6.53049 5.88363C6.42969 5.77921 6.42975 5.60908 6.53061 5.50472L10.9716 0.913396Z"
-                            fill={colors.text[theme].primary} fill-opacity="0.89"
-                        />
-                    </Svg>
+                    <Image 
+                        source={hcaa}
+                        style={{ width: 32, height: 32 }}
+                    />
                     <Text maxFontSizeMultiplier={1} style={{ fontSize: 24, fontFamily: 'Figtree-Bold', color: colors.text[theme].primary, marginLeft: 4 }}>
-                        Sports
+                        HCAA Sports
                     </Text>
                 </View>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>

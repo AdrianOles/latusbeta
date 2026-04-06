@@ -167,7 +167,7 @@ const Profile = () => {
                                 color: colors.text[theme].secondary, fontSize: 17, lineHeight: 22, letterSpacing: 0.2,
                                 fontFamily: 'Figtree-SemiBold', textTransform: 'capitalize',
                             }}>
-                                {authUser?.staffRole?.toLocaleLowerCase()} | {authUser?.school ? schoolAbrv[authUser.school as keyof typeof schoolAbrv] : ''}
+                                {authUser?.school != 'DEMO' ? `${authUser?.staffRole?.toLocaleLowerCase()} | ` : ''}{authUser?.school ? schoolAbrv[authUser.school as keyof typeof schoolAbrv] : ''}
                             </Text>
                         </>
                     ): (

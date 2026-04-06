@@ -41,6 +41,20 @@ import RootNavigationWithContext from './src/navigation/RootNavigationWithContex
 //   }
 // });
 
+const signInURIs = amplifyconfig.oauth.redirectSignIn.split(',');
+const signOutURIs = amplifyconfig.oauth.redirectSignOut.split(',');
+
+const getRedirectUri = (uris: any[]) => {
+  if (Platform.OS === 'android') {
+    return 'projectlatus.app://callback/'; // projectlatus.app://callback/
+  } else if (Platform.OS === 'ios') {
+    return 'latus.app://callback/'; // latus.app://callback/
+  } else {
+    // Fallback for Web: check if running locally or in production
+    return __DEV__ ? uris[0] : uris[1];
+  }
+};
+
 Amplify.configure({
   ...amplifyconfig,
   Auth: {
@@ -52,8 +66,8 @@ Amplify.configure({
         oauth: {
           domain: amplifyconfig.oauth.domain,
           scopes: amplifyconfig.oauth.scope,
-          redirectSignIn: amplifyconfig.oauth.redirectSignIn.split(','),
-          redirectSignOut: amplifyconfig.oauth.redirectSignOut.split(','),
+          redirectSignIn:['projectlatus.app://callback/'],
+          redirectSignOut: ['projectlatus.app://callback/'],
           responseType: amplifyconfig.oauth.responseType,
           // This is what forces the Google Account selection screen
           ...({

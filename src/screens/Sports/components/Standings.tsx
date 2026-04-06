@@ -128,9 +128,7 @@ const Standings = React.memo(({ league, focus, home, away }: { league: string, f
                             standingsData?.map((item: TeamStanding, index: number) => {
                                 const temp = item.cleanTeam || item.team; // Read pre-calculated string!
                                 return (
-                                    <TouchableOpacity onPress={() => navigation.navigate("SportsTeam", {
-                                        team: temp, league: league, org: "HCAA",
-                                    })} key={item.schoolId || index} style={{ // Use stable ID instead of index
+                                    <TouchableOpacity onPress={() => {}} key={item.schoolId || index} style={{ // Use stable ID instead of index
                                         display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%', padding: 16,
                                         borderBottomWidth: index === (standingsData.length - 1) ? 0 : 1, borderColor: colors.fills[theme].stroke,
                                         backgroundColor: (home === temp || away === temp || focus === temp) ? colors.fills[theme].standard : 'transparent'

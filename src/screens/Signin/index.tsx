@@ -166,7 +166,7 @@ const Signin = () => {
 
   return (
     <>
-    <StatusBar translucent={true} style={theme === 'dark' ? 'dark' : 'light'} backgroundColor={'transparent'} />
+      <StatusBar translucent={true} style={theme === 'dark' ? 'dark' : 'light'} backgroundColor={'transparent'} />
       <SafeAreaView
         style={{ backgroundColor: colors.background[theme].general, paddingBottom: Platform.OS === 'android' ? 32 : 0}}
         edges={["left", "right"]}

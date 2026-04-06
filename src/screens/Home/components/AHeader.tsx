@@ -45,7 +45,7 @@ const AHeader = ({
                     </Text>
                 </View>
                 {
-                    (authUser?.staffRole != 'STUDENT' && (authUser?.school === "stfx" ? true : false)) && (
+                    (authUser?.staffRole != 'STUDENT' && (authUser?.school === "STFX" ? true : false)) && (
                         <TouchableOpacity onPress={() => navigation.navigate('ACreate', {})} style={{ paddingHorizontal: 16, paddingVertical: 16 }}>
                             <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: 36, aspectRatio: 1, backgroundColor: colors.text[theme].primary, borderRadius: 250 }}>
                                 <Ionicons name={'add'} size={24} color={colors.background[theme].general}></Ionicons>

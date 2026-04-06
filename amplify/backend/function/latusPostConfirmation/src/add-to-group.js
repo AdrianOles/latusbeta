@@ -83,6 +83,9 @@ exports.handler = async (event) => {
   if (userEmail.endsWith("@hs.myhcdsb.org")) {
     schoolAccess = 'STK';
   } 
+  if (userEmail.endsWith("@myhcdsb.org")) {
+    schoolAccess = 'DEMO';
+  } 
 
   const schoolGroupParams = {
     GroupName: schoolAccess,

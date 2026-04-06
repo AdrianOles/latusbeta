@@ -17,8 +17,8 @@
       "profile",
       "aws.cognito.signin.user.admin"
     ],
-    "redirectSignIn": "http://localhost:3000/signin/,https://www.latus.ca/signin/,latus.app://callback/",
-    "redirectSignOut": "http://localhost:3000/signin/,https://www.latus.ca/signin/,latus.app://callback/",
+    "redirectSignIn": "http://localhost:3000/signin/,https://www.latus.ca/signin/,latus.app://callback/,projectlatus.app://callback/",
+    "redirectSignOut": "http://localhost:3000/signin/,https://www.latus.ca/signin/,latus.app://callback/,projectlatus.app://callback/",
     "responseType": "code"
   },
   "federationTarget": "COGNITO_USER_AND_IDENTITY_POOLS",

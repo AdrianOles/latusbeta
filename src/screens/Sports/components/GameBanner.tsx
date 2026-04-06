@@ -73,28 +73,28 @@ const GameBanner = React.memo((
 
     const correctFont = (testing).length > 2 ? ((testing).length > 4 ? 30 : 30) : 42;
 
-    useEffect(() => {
-        async function getMyToken() {
-            // 1. Ask for iOS permission
-            const { status } = await Notifications.requestPermissionsAsync();
-            if (status !== 'granted') {
-                console.log('Permission not granted!');
-                return;
-            }
+    // useEffect(() => {
+    //     async function getMyToken() {
+    //         // 1. Ask for iOS permission
+    //         const { status } = await Notifications.requestPermissionsAsync();
+    //         if (status !== 'granted') {
+    //             console.log('Permission not granted!');
+    //             return;
+    //         }
 
-            // 2. Fetch the Expo token
-            try {
-                const tokenData = await Notifications.getExpoPushTokenAsync();
-                console.log("\n👇 COPY THIS TOKEN 👇");
-                console.log(tokenData.data);
-                console.log("👆 COPY THIS TOKEN 👆\n");
-            } catch (error) {
-                console.error("Error fetching token:", error);
-            }
-        }
+    //         // 2. Fetch the Expo token
+    //         try {
+    //             const tokenData = await Notifications.getExpoPushTokenAsync();
+    //             console.log("\n👇 COPY THIS TOKEN 👇");
+    //             console.log(tokenData.data);
+    //             console.log("👆 COPY THIS TOKEN 👆\n");
+    //         } catch (error) {
+    //             console.error("Error fetching token:", error);
+    //         }
+    //     }
 
-        getMyToken();
-    }, []);
+    //     getMyToken();
+    // }, []);
 
     useEffect(() => {
             if (!schoolList.includes(home)) {
