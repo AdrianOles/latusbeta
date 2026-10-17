@@ -246,7 +246,9 @@ export const getLeagueId = (leagueName: string): string => {
         case "Varsity Girls Fastpitch":
             return "25"
         case "Varsity Boys Lacrosse":
-            return "23"
+            return "a0BRQWBVYDoPNf9T"
+        case "Varsity Girls Lacrosse":
+            return "32"
         case "Senior Girls Rugby":
             return "24"
         case "Varsity Girls Slowpitch":
@@ -267,11 +269,11 @@ export const getLeagueId = (leagueName: string): string => {
 export const getSchoolId = (schoolName: string): string => {
     switch (schoolName) {
         case "Assumption":
-            return "1";
+            return "1"; 
         case "Bishop Reding":
             return "2";
         case "Christ the King":
-            return "3";
+            return "SfKxtlaNlC3UcMke";
         case "Holy Trinity":
             return "4";
         case "Corpus Christi":
@@ -281,7 +283,7 @@ export const getSchoolId = (schoolName: string): string => {
         case "Notre Dame":
             return "7";
         case "St. Ignatius of Loyola":
-            return "8";
+            return "VVtS5Z5iF7W3DBbZ";
         case "St. Thomas Aquinas":
             return "9";
         case "St. Kateri Tekakwitha":
@@ -377,114 +379,120 @@ const League = () => {
     });
 
     const groupedDataByStatus = (data: RawInputRecord[]): groupedGameStatus[] => {
-            if (!data || data.length === 0) {
-                return [];
-            }
-    
-            // 1. Transform RawInputRecord[] to gameType[] (Date formatting logic omitted for brevity, but remains as corrected previously)
-            const transformedGames: gameType[] = data.map(record => {
-                let formattedDate: string | undefined = undefined;
-    
-                // --- Date Formatting Logic (as finalized in prior exchanges) ---
-                if (record.date) {
-                    try {
-                        // Check for ISO format or already-formatted short date
-                        if (/^\d{4}-\d{2}-\d{2}$/.test(record.date) || /^[A-Za-z]{3}\s\d{1,2}$/.test(record.date)) {
-                            const dateObj = new Date(record.date);
-                            if (!isNaN(dateObj.getTime())) {
-                                formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            }
-                        } else {
-                            // Handle complex full date string
-                            const isoDate = convertFullDateToISO(record.date);
-                            if (isoDate) {
-                                const dateObj = new Date(isoDate);
-                                if (!isNaN(dateObj.getTime())) {
-                                    formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        // Keep formattedDate as undefined on failure
+        if (!data || data.length === 0) {
+            return [];
+        }
+
+        // 1. Transform RawInputRecord[] to gameType[]
+        const transformedGames: gameType[] = data.map(record => {
+            let formattedDate: string | undefined = undefined;
+
+            // --- Corrected Date Formatting Logic ---
+            if (record.date) {
+                try {
+                    let dateObj: Date | undefined;
+
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(record.date)) {
+                        // FIX: Split YYYY-MM-DD to force local timezone parsing and avoid the 1-day-behind bug
+                        const [year, month, day] = record.date.split('-');
+                        dateObj = new Date(Number(year), Number(month) - 1, Number(day)); // Month is 0-indexed
                     }
+                    else if (/^[A-Za-z]{3}\s\d{1,2}$/.test(record.date)) {
+                        // "Nov 24" format naturally parses in the local timezone
+                        dateObj = new Date(record.date);
+                    }
+                    else {
+                        // Handle complex full date string
+                        const isoDate = convertFullDateToISO(record.date);
+                        if (isoDate) {
+                            // Extract just the YYYY-MM-DD part before parsing
+                            const datePart = isoDate.split('T')[0];
+                            const [year, month, day] = datePart.split('-');
+                            dateObj = new Date(Number(year), Number(month) - 1, Number(day));
+                        }
+                    }
+
+                    if (dateObj && !isNaN(dateObj.getTime())) {
+                        formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    }
+                } catch (e) {
+                    // Keep formattedDate as undefined on failure
                 }
-                // --- End Date Formatting Logic ---
-    
-                return {
-                    date: formattedDate,
-                    league: record.league || 'Unknown League',
-                    location: record.location,
-                    notes: record.notes,
-                    time: record.time,
-                    home: {
-                        name: record.schools[0] || 'Home Team',
-                        score: record.scores.home
-                    },
-                    visitor: {
-                        name: record.schools[1] || 'Visitor Team',
-                        score: record.scores.visitor
-                    },
-                    sets: record.sets
-                        ? { home: record.sets.home, visitor: record.sets.visitor }
-                        : undefined
-                };
-            });
-    
-            // 2. Separate into Upcoming and Past categories (CORRECTED PENDING LOGIC)
-            const upcomingGames: gameType[] = [];
-            const pastGames: gameType[] = [];
-    
-            transformedGames.forEach(game => {
-                const hasScores = game.home.score !== null && game.visitor.score !== null;
-                const isPending = game.time?.toLowerCase().includes('pending') ?? false;
-    
-                // A game is 'Past' if it has scores OR if its time field includes 'pending'.
-                if (hasScores || isPending) {
-                    pastGames.push(game);
-                } else {
-                    // All other games are Upcoming.
-                    upcomingGames.push(game);
-                }
-            });
-    
-            // Optional: Sort Upcoming Games chronologically (by date)
-            // Optional: Sort Past Games reverse chronologically (by date)
-            const sortGames = (a: gameType, b: gameType, isPast: boolean) => {
-                // Use the formatted date for sorting if available, otherwise fallback
-                const dateA = a.date || (isPast ? '1900-01-01' : '3000-01-01');
-                const dateB = b.date || (isPast ? '1900-01-01' : '3000-01-01');
-    
-                // To reliably sort the short "Nov 24" format, we must convert it back to a sortable Date object.
-                const dateObjA = new Date(dateA.includes(' ') ? `${dateA}, ${new Date().getFullYear()}` : dateA);
-                const dateObjB = new Date(dateB.includes(' ') ? `${dateB}, ${new Date().getFullYear()}` : dateB);
-    
-                return dateObjA.getTime() - dateObjB.getTime();
+            }
+            // --- End Date Formatting Logic ---
+
+            return {
+                date: formattedDate,
+                league: record.league || 'Unknown League',
+                location: record.location,
+                notes: record.notes,
+                time: record.time,
+                home: {
+                    name: record.schools[0] || 'Home Team',
+                    score: record.scores.home
+                },
+                visitor: {
+                    name: record.schools[1] || 'Visitor Team',
+                    score: record.scores.visitor
+                },
+                sets: record.sets
+                    ? { home: record.sets.home, visitor: record.sets.visitor }
+                    : undefined
             };
-    
-            // Sort Upcoming chronologically
-            upcomingGames.sort((a, b) => sortGames(a, b, false));
-            // Sort Past reverse chronologically (most recent first)
-            pastGames.sort((a, b) => sortGames(b, a, true));
-    
-            // 3. Create the final structured array with only two groups
-            const groupedData: groupedGameStatus[] = [];
-    
-            if (upcomingGames.length > 0) {
-                groupedData.push({
-                    league: "Upcoming Games",
-                    games: upcomingGames
-                });
+        });
+
+        // 2. Separate into Upcoming and Past categories
+        const upcomingGames: gameType[] = [];
+        const pastGames: gameType[] = [];
+
+        transformedGames.forEach(game => {
+            const hasScores = game.home.score !== null && game.visitor.score !== null;
+            const isPending = game.time?.toLowerCase().includes('pending') ?? false;
+
+            // A game is 'Past' if it has scores OR if its time field includes 'pending'.
+            if (hasScores || isPending) {
+                pastGames.push(game);
+            } else {
+                // All other games are Upcoming.
+                upcomingGames.push(game);
             }
-    
-            if (pastGames.length > 0) {
-                groupedData.push({
-                    league: "Past Games",
-                    games: pastGames
-                });
-            }
-    
-            return groupedData;
+        });
+
+        // Sort function
+        const sortGames = (a: gameType, b: gameType, isPast: boolean) => {
+            const dateA = a.date || (isPast ? '1900-01-01' : '3000-01-01');
+            const dateB = b.date || (isPast ? '1900-01-01' : '3000-01-01');
+
+            const dateObjA = new Date(dateA.includes(' ') ? `${dateA}, ${new Date().getFullYear()}` : dateA);
+            const dateObjB = new Date(dateB.includes(' ') ? `${dateB}, ${new Date().getFullYear()}` : dateB);
+
+            return dateObjA.getTime() - dateObjB.getTime();
         };
+
+        // Sort Upcoming chronologically
+        upcomingGames.sort((a, b) => sortGames(a, b, false));
+        // Sort Past reverse chronologically (most recent first)
+        pastGames.sort((a, b) => sortGames(b, a, true));
+
+        // 3. Create the final structured array with only two groups
+        const groupedData: groupedGameStatus[] = [];
+
+        if (upcomingGames.length > 0) {
+            groupedData.push({
+                league: "Upcoming Games",
+                games: upcomingGames
+            });
+        }
+
+        if (pastGames.length > 0) {
+            groupedData.push({
+                league: "Past Games",
+                games: pastGames
+            });
+        }
+
+        return groupedData;
+    };
 
     const AnimatedHeaderContainer = React.memo(({ animatedHeaderHeight, children }: { animatedHeaderHeight: any, children: React.ReactNode }) => {
         return (

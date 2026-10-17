@@ -165,13 +165,18 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
         return "D";
     }, [format, homeScore, awayScore, teamName, homeName, visitorName]);
 
-    const pendingFlag = time?.includes('pending') || item.home.score === null ? true : false;
     const TBAFlag = time ? time.includes("TBA") : false;
+    const pendingFlag = (time?.includes('pending'));
     const dateBuffer = date ? 0 : 0;
+
+    console.log('time: ', time)
 
     const isDraw = homeScore === awayScore;
     const homeWins = homeScore > awayScore;
     const awayWins = awayScore > homeScore;
+
+    const homeTBA = homeName.includes("TBA");
+    const awayTBA = visitorName.includes("TBA");
 
     const homeFont = homeWins ? "Figtree-SemiBold" : "Figtree-Regular";
     const homeColor = isDraw
@@ -251,7 +256,7 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                             </View>
                         )}
                         {
-                            templateHome ? (
+                            templateHome || homeTBA ? (
                                 <View style={{marginRight: 10}}>
                                     <Svg width="24" height="24" viewBox="0 0 24 25" fill="none">
                                         <Path d="M24 1.99999V8.99998C24 15.59 20.81 19.5837 18.1338 21.7737C15.2513 24.1312 12.3838 24.9324 12.2588 24.9649C12.0869 25.0117 11.9056 25.0117 11.7338 24.9649C11.6088 24.9324 8.745 24.1312 5.85875 21.7737C3.19 19.5837 0 15.59 0 8.99998V1.99999C0 1.46956 0.210714 0.960856 0.585786 0.585785C0.960859 0.210713 1.46957 0 2 0H22C22.5304 0 23.0391 0.210713 23.4142 0.585785C23.7893 0.960856 24 1.46956 24 1.99999Z" fill="#9A999E" />
@@ -274,7 +279,7 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                     {/* AWAY TEAM */}
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
                         {
-                            templateAway ? (
+                            templateAway || awayTBA ? (
                                 <View style={{ marginRight: 10 }}>
                                     <Svg width="24" height="24" viewBox="0 0 24 25" fill="none">
                                         <Path d="M24 1.99999V8.99998C24 15.59 20.81 19.5837 18.1338 21.7737C15.2513 24.1312 12.3838 24.9324 12.2588 24.9649C12.0869 25.0117 11.9056 25.0117 11.7338 24.9649C11.6088 24.9324 8.745 24.1312 5.85875 21.7737C3.19 19.5837 0 15.59 0 8.99998V1.99999C0 1.46956 0.210714 0.960856 0.585786 0.585785C0.960859 0.210713 1.46957 0 2 0H22C22.5304 0 23.0391 0.210713 23.4142 0.585785C23.7893 0.960856 24 1.46956 24 1.99999Z" fill="#9A999E" />
@@ -308,19 +313,26 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                     )
                 }
 
-                {(pendingFlag || time) ? (
+                {(pendingFlag || time || TBAFlag || tbaTimeFlag) ? (
                     <View style={{ flexDirection: 'row', alignItems: 'center', width: 100 }}>
                         <View style={{ width: 1, height: 42, backgroundColor: colors.fills[theme].stroke }} />
                         {
-                            (pendingFlag || TBAFlag || tbaTimeFlag) && (
+                            (pendingFlag) && (
                                 <Text maxFontSizeMultiplier={1.13} style={{ textAlign: 'center', fontFamily: 'Figtree-Medium', fontSize: 15, lineHeight: 20, color: colors.text[theme].tertiary, flexGrow: 1 }}>
-                                    {pendingFlag != tbaTimeFlag ? "Pending" : TBAFlag || tbaTimeFlag ? "TBA" : "TBA"}
+                                    {pendingFlag && "Pending"}
                                 </Text>
                             )
                         }
-                        {!pendingFlag && !TBAFlag && time && (
+                        {
+                            (tbaTimeFlag && TBAFlag) && !pendingFlag && (
+                                <Text maxFontSizeMultiplier={1.13} style={{ textAlign: 'center', fontFamily: 'Figtree-Medium', fontSize: 15, lineHeight: 20, color: colors.text[theme].tertiary, flexGrow: 1 }}>
+                                    TBA
+                                </Text>
+                            )
+                        }
+                        {time && !pendingFlag && (
                             <Text maxFontSizeMultiplier={1.13} style={{ textAlign: 'center', fontFamily: 'Figtree-SemiBold', fontSize: 17, lineHeight: 20, color: colors.text[theme].secondary, flexGrow: 1 }}>
-                                {removeLeadingZero(time)}
+                                {!TBAFlag ? removeLeadingZero(time) : 'TBA'}
                             </Text>
                         )}
                     </View>

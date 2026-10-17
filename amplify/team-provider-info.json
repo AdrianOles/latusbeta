@@ -29,7 +29,7 @@
         "latusPreSignup": {
           "DOMAINALLOWLIST": "",
           "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
-          "s3Key": "amplify-builds/latusPreSignup-4c616b43614f56374a6d-build.zip"
+          "s3Key": "amplify-builds/latusPreSignup-7244646f596362654a6c-build.zip"
         },
         "hcaamasterfunction": {
           "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",

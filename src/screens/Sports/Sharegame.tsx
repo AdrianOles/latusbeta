@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import ViewShot from 'react-native-view-shot';
 import Share, { ShareSingleOptions, Social } from 'react-native-share';
 import * as FileSystem from 'expo-file-system';
-import * as MediaLibrary from 'expo-media-library';
+// import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import * as Linking from 'expo-linking';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -65,7 +65,7 @@ const Sharegame = () => {
     const viewShotRefs = useRef<(ViewShot | null)[]>([]);
     const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
     const [activeIndex, setActiveIndex] = useState(0);
-    const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+    // const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
     const [pos, setPos] = useState<number>(1);
     const [move, setMove] = useState<CardMove>({
         top: undefined, bottom: 16, right: 16, left: undefined
@@ -137,107 +137,107 @@ const Sharegame = () => {
         }
     }, [calculatedWidth, activeIndex]);
 
-    const shareToInstagramAsPost = async () => {
-        let savedAsset: MediaLibrary.Asset | null = null;
+    // const shareToInstagramAsPost = async () => {
+    //     let savedAsset: MediaLibrary.Asset | null = null;
 
-        try {
-            if (!selectedImageUri) {
-                Alert.alert('No Image', 'Please select a background image first.');
-                return;
-            }
+    //     try {
+    //         if (!selectedImageUri) {
+    //             Alert.alert('No Image', 'Please select a background image first.');
+    //             return;
+    //         }
 
-            const activeViewShotRef = viewShotRefs.current[activeIndex];
-            if (!activeViewShotRef || typeof activeViewShotRef.capture !== 'function') {
-                Alert.alert('Error', 'Component not ready. Please try again.');
-                return;
-            }
+    //         const activeViewShotRef = viewShotRefs.current[activeIndex];
+    //         if (!activeViewShotRef || typeof activeViewShotRef.capture !== 'function') {
+    //             Alert.alert('Error', 'Component not ready. Please try again.');
+    //             return;
+    //         }
 
-            // Capture the view with the higher resolution
-            const uri = await activeViewShotRef.capture();
+    //         // Capture the view with the higher resolution
+    //         const uri = await activeViewShotRef.capture();
 
-            // The rest of the function remains the same...
-            const { status } = await MediaLibrary.requestPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission Denied', 'We need permission to save the image to your photo library to share it.');
-                return;
-            }
+    //         // The rest of the function remains the same...
+    //         const { status } = await MediaLibrary.requestPermissionsAsync();
+    //         if (status !== 'granted') {
+    //             Alert.alert('Permission Denied', 'We need permission to save the image to your photo library to share it.');
+    //             return;
+    //         }
 
-            savedAsset = await MediaLibrary.createAssetAsync(uri);
-            if (!savedAsset?.uri) {
-                throw new Error("Failed to save image to gallery.");
-            }
+    //         savedAsset = await MediaLibrary.createAssetAsync(uri);
+    //         if (!savedAsset?.uri) {
+    //             throw new Error("Failed to save image to gallery.");
+    //         }
 
-            const shareOptions: ShareSingleOptions = {
-                social: Share.Social.INSTAGRAM as Social,
-                url: savedAsset.uri,
-                appId: '1433567004455755'
-            };
+    //         const shareOptions: ShareSingleOptions = {
+    //             social: Share.Social.INSTAGRAM as Social,
+    //             url: savedAsset.uri,
+    //             appId: '1433567004455755'
+    //         };
 
-            // const shareOptions = {
-            //     backgroundImage: savedAsset.uri,
-            //     stickerImage: savedAsset.uri, //or you can use "data:" link
-            //     backgroundBottomColor: '#fefefe',
-            //     backgroundTopColor: '#906df4',
-            //     attributionURL: 'http://deep-link-to-app', //in beta
-            //     social: Share.Social.INSTAGRAM_STORIES,
-            //     appId: 'your_fb_app_id' // required since  Jan 2023 (see: https://developers.facebook.com/docs/instagram/sharing-to-stories/#sharing-to-stories)
-            // };
+    //         // const shareOptions = {
+    //         //     backgroundImage: savedAsset.uri,
+    //         //     stickerImage: savedAsset.uri, //or you can use "data:" link
+    //         //     backgroundBottomColor: '#fefefe',
+    //         //     backgroundTopColor: '#906df4',
+    //         //     attributionURL: 'http://deep-link-to-app', //in beta
+    //         //     social: Share.Social.INSTAGRAM_STORIES,
+    //         //     appId: 'your_fb_app_id' // required since  Jan 2023 (see: https://developers.facebook.com/docs/instagram/sharing-to-stories/#sharing-to-stories)
+    //         // };
 
-            await Share.shareSingle(shareOptions);
-        } catch (error: any) {
-            if (error.message.includes("User did not share")) {
-                console.log("Share cancelled by user.");
-            } else {
-                console.error("An error occurred during sharing:", error);
-                Alert.alert('Failed to share', `An error occurred: ${error.message || 'Unknown error'}`);
-            }
-        } finally {
-        }
-    };
+    //         await Share.shareSingle(shareOptions);
+    //     } catch (error: any) {
+    //         if (error.message.includes("User did not share")) {
+    //             console.log("Share cancelled by user.");
+    //         } else {
+    //             console.error("An error occurred during sharing:", error);
+    //             Alert.alert('Failed to share', `An error occurred: ${error.message || 'Unknown error'}`);
+    //         }
+    //     } finally {
+    //     }
+    // };
 
-    const downloadImage = async () => {
-        let savedAsset: MediaLibrary.Asset | null = null;
+    // const downloadImage = async () => {
+    //     let savedAsset: MediaLibrary.Asset | null = null;
 
-        try {
-            if (!selectedImageUri) {
-                Alert.alert('No Image', 'Please select a background image first.');
-                return;
-            }
+    //     try {
+    //         if (!selectedImageUri) {
+    //             Alert.alert('No Image', 'Please select a background image first.');
+    //             return;
+    //         }
 
-            const activeViewShotRef = viewShotRefs.current[activeIndex];
-            if (!activeViewShotRef || typeof activeViewShotRef.capture !== 'function') {
-                Alert.alert('Error', 'Component not ready. Please try again.');
-                return;
-            }
+    //         const activeViewShotRef = viewShotRefs.current[activeIndex];
+    //         if (!activeViewShotRef || typeof activeViewShotRef.capture !== 'function') {
+    //             Alert.alert('Error', 'Component not ready. Please try again.');
+    //             return;
+    //         }
 
-            // Capture the view with the higher resolution
-            const uri = await activeViewShotRef.capture();
+    //         // Capture the view with the higher resolution
+    //         const uri = await activeViewShotRef.capture();
 
-            // The rest of the function remains the same...
-            const { status } = await MediaLibrary.requestPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission Denied', 'We need permission to save the image to your photo library to share it.');
-                return;
-            }
+    //         // The rest of the function remains the same...
+    //         const { status } = await MediaLibrary.requestPermissionsAsync();
+    //         if (status !== 'granted') {
+    //             Alert.alert('Permission Denied', 'We need permission to save the image to your photo library to share it.');
+    //             return;
+    //         }
 
-            savedAsset = await MediaLibrary.createAssetAsync(uri);
-            if (!savedAsset?.uri) {
-                throw new Error("Failed to save image to gallery.");
-            } else {
-                Alert.alert('Saved', 'You successfully saved the image to your camera roll.');
-                Haptics.notificationAsync(
-                    Haptics.NotificationFeedbackType.Success
-                )
-            }
-        } catch (error: any) {
-            if (error.message.includes("User did not share")) {
-                console.log("Share cancelled by user.");
-            } else {
-                console.error("An error occurred during sharing:", error);
-                Alert.alert('Failed to share', `An error occurred: ${error.message || 'Unknown error'}`);
-            }
-        }
-    }
+    //         savedAsset = await MediaLibrary.createAssetAsync(uri);
+    //         if (!savedAsset?.uri) {
+    //             throw new Error("Failed to save image to gallery.");
+    //         } else {
+    //             Alert.alert('Saved', 'You successfully saved the image to your camera roll.');
+    //             Haptics.notificationAsync(
+    //                 Haptics.NotificationFeedbackType.Success
+    //             )
+    //         }
+    //     } catch (error: any) {
+    //         if (error.message.includes("User did not share")) {
+    //             console.log("Share cancelled by user.");
+    //         } else {
+    //             console.error("An error occurred during sharing:", error);
+    //             Alert.alert('Failed to share', `An error occurred: ${error.message || 'Unknown error'}`);
+    //         }
+    //     }
+    // }
 
     useEffect(() => {
         switch (pos) {
@@ -378,7 +378,7 @@ const Sharegame = () => {
             }}>
                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
                     <View style={{ flex: 1, marginRight: 16, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <TouchableOpacity onPress={shareToInstagramAsPost} disabled={!selectedImageUri} style={{
+                        {/* <TouchableOpacity onPress={shareToInstagramAsPost} disabled={!selectedImageUri} style={{
                             borderRadius: 250, marginBottom: 8, overflow: 'hidden',
                             justifyContent: 'center', alignItems: 'center', position: 'relative', width: '100%'
                         }}>
@@ -389,16 +389,16 @@ const Sharegame = () => {
                                 end={{ x: 1, y: 0.5 }}
                                 style={{ position: 'absolute', zIndex: 0, width: '100%', height: '100%' }}
                             />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                         <Text style={{ fontSize: 13, lineHeight: 18, fontFamily: "Figtree-SemiBold", textAlign: 'center', color: colors.text[theme].secondary }}>Post</Text>
                     </View>
                     <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <TouchableOpacity onPress={downloadImage} disabled={!selectedImageUri} style={{
+                        {/* <TouchableOpacity onPress={downloadImage} disabled={!selectedImageUri} style={{
                             borderRadius: 250, marginBottom: 8, overflow: 'hidden', backgroundColor: colors.fills[theme].standard,
                             justifyContent: 'center', alignItems: 'center', position: 'relative', width: '100%'
                         }}>
                             <Ionicons name='download-outline' size={28} color={colors.text[theme].primary} style={{ zIndex: 1, padding: 12 }} />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                         <Text style={{ fontSize: 13, lineHeight: 18, fontFamily: "Figtree-SemiBold", textAlign: 'center', color: colors.text[theme].secondary }}>Save</Text>
                     </View>
                 </View>

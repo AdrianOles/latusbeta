@@ -15,7 +15,9 @@ exports.handler = async (event) => {
     "@my.ntdm.ca",
     "@my.werbr.ca",
     "@hs.myhcdsb.org",
-    "@myhcdsb.org"
+    "@myhcdsb.org",
+    "@students.myhcdsb.org",
+    "@staff.myhcdsb.org"
   ]
 
   if ((email != 'olesnieadrian@gmail.com')

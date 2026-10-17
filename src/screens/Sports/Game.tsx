@@ -185,6 +185,9 @@ const Game = () => {
     const pagerRef = useRef<Animated.ScrollView>(null);
     const [posting, setPosting] = useState<boolean>(false);
 
+    const tbaFlag = homeTeam.toLowerCase().includes("tba") || awayTeam.toLowerCase().includes("tba");
+    console.log("tbaFlag:", tbaFlag);
+
     const handleTabPress = useCallback((index: number) => {
         const targetX = index * SCREEN_WIDTH;
         pagerRef.current?.scrollTo({ x: targetX, animated: true });
@@ -333,7 +336,7 @@ const Game = () => {
                                         zIndex: 0,
                                         transform: [{ translateY: 0 }]
                                     }]}>
-                                        {Platform.OS === 'ios' && (
+                                        {Platform.OS === 'ios' && !tbaFlag && (
                                             <MeshGradientView
                                                 style={{ flex: 1, zIndex: 1 }}
                                                 ignoresSafeArea={true}

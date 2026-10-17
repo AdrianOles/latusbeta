@@ -5,7 +5,7 @@ module.exports = {
     name: IS_ANDROID ? "Project Latus" : "Latus",
     slug: IS_ANDROID ? "project-latus" : "Latus",
     scheme: IS_ANDROID ? "projectlatus.app" : "latus.app",
-    version: "1.5.6",
+    version: "1.5.7",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "automatic",
@@ -41,22 +41,10 @@ module.exports = {
           "instagram-stories",
           "fb",
           "latus.app",
-          "instagram",
-          "instagram-stories",
-          "fb",
-          "latus.app",
-          "fb",
-          "instagram",
           "twitter",
           "tiktoksharesdk"
         ],
         CFBundleURLTypes: [
-          {
-            CFBundleURLSchemes: [
-              "fb1433567004455755",
-              "latus.app"
-            ]
-          },
           {
             CFBundleURLSchemes: [
               "fb1433567004455755",
@@ -73,15 +61,7 @@ module.exports = {
         backgroundColor: "#ffffff"
       },
       edgeToEdgeEnabled: true,
-      package: "app.projectlatus",
-      permissions: [
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.ACCESS_MEDIA_LOCATION",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.ACCESS_MEDIA_LOCATION"
-      ]
+      package: "app.projectlatus"
     },
     web: {
       favicon: "./assets/favicon.png"
@@ -107,14 +87,6 @@ module.exports = {
           "color": "#ffffff",
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": false
-        }
-      ],
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
-          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
-          "isAccessMediaLocationEnabled": true
         }
       ],
       [
@@ -157,7 +129,7 @@ module.exports = {
           : "https://u.expo.dev/38ef905d-694c-488a-8e18-c0cf3bd3fd8e"
       }
     },
-    runtimeVersion: "1.5.6",
+    runtimeVersion: "1.5.7",
     updates: {
       url: IS_ANDROID
         ? "https://u.expo.dev/bb7b911e-b493-490e-9290-91ecaf21f30c"

@@ -128,7 +128,7 @@ const Standings = React.memo(({ league, focus, home, away }: { league: string, f
                             standingsData?.map((item: TeamStanding, index: number) => {
                                 const temp = item.cleanTeam || item.team; // Read pre-calculated string!
                                 return (
-                                    <TouchableOpacity onPress={() => {}} key={item.schoolId || index} style={{ // Use stable ID instead of index
+                                    <View  key={item.schoolId || index} style={{ // Use stable ID instead of index
                                         display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%', padding: 16,
                                         borderBottomWidth: index === (standingsData.length - 1) ? 0 : 1, borderColor: colors.fills[theme].stroke,
                                         backgroundColor: (home === temp || away === temp || focus === temp) ? colors.fills[theme].standard : 'transparent'
@@ -160,7 +160,7 @@ const Standings = React.memo(({ league, focus, home, away }: { league: string, f
                                                 <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: "Figtree-Bold", fontSize: 15, color: colors.text[theme].primary, fontVariant: ['tabular-nums'] }}>{item.PTS}</Text>
                                             </View>
                                         </View>
-                                    </TouchableOpacity>
+                                    </View>
                                 )
                             })
                         }

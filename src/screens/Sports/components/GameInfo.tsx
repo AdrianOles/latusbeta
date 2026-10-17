@@ -182,6 +182,34 @@ const GameInfo = React.memo(({ location, league, home, away, sets, time, dateStr
 
         return null;
     }
+
+
+    const locationLinking = () => {
+        switch (location) {
+            case "St. Francis Xavier":
+                return "https://www.google.ca/maps/place/Saint+Francis+Xavier+Catholic+Secondary+School/@43.4868837,-79.8569024,17z/data=!3m1!4b1!4m6!3m5!1s0x882b658e9bb9cecb:0x1ba22358ac46bfd!8m2!3d43.4868837!4d-79.8569024!16s%2Fg%2F11fl7q2jvc?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+            case "Notre Dame":
+                return "https://www.google.ca/maps/place/Notre+Dame+Catholic+Secondary+School/@43.3779207,-79.8333411,17z/data=!3m1!4b1!4m6!3m5!1s0x882b63d5b135714d:0x8925ec40599495b8!8m2!3d43.3779168!4d-79.8307662!16zL20vMDZmMDNr?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+            case "St. Ignatius of Loyola":
+                return "https://www.google.ca/maps/place/St.+Ignatius+of+Loyola+Catholic+Secondary+School/@43.4445425,-79.7335037,16z/data=!3m1!4b1!4m6!3m5!1s0x882b5d78b9824bd5:0xbcca760b1d1485ac!8m2!3d43.4445425!4d-79.7335037!16s%2Fm%2F09k6v72?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+            case "St. Thomas Aquinas":
+                return "https://www.google.ca/maps/place/St.+Thomas+Aquinas+Catholic+Secondary+School/@43.4352625,-79.6808282,16z/data=!3m1!4b1!4m6!3m5!1s0x882b5c57fd56380f:0x76f0ff71385fff98!8m2!3d43.4352625!4d-79.6808282!16zL20vMGc5NHBz?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+            case "Bishop Reding":
+                return "https://www.google.ca/maps/place/Bishop+P.+F.+Reding+Catholic+Secondary+School/@43.5309694,-79.8632585,16z/data=!3m1!4b1!4m6!3m5!1s0x882b6ee2aa8f8e1b:0x5d524230a0b2a9e2!8m2!3d43.5309694!4d-79.8632585!16s%2Fm%2F02x5z7p?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+            case "Holy Trinity":
+                return "https://www.google.ca/maps/place/Holy+Trinity+Catholic+Secondary+School/@43.4723817,-79.7241111,16z/data=!3m1!4b1!4m6!3m5!1s0x882b5d4f49a1dc3b:0x8da23adccded8a8b!8m2!3d43.4723817!4d-79.7241111!16zL20vMGJ4d2Yz?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+            case "Assumption":
+                return "https://www.google.ca/maps/place/Assumption+Catholic+Secondary+School/@43.3484394,-79.7837669,16z/data=!3m1!4b1!4m6!3m5!1s0x882b6034b49e2803:0x93bb756bf5e374bc!8m2!3d43.3484394!4d-79.7837669!16s%2Fm%2F0261x6r?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+            case "Corpus Christi":
+                return "https://www.google.ca/maps/place/Corpus+Christi+Catholic+Secondary+School/@43.3976748,-79.7847418,17z/data=!4m6!3m5!1s0x882b61271622038b:0x6964ffcffd7712aa!8m2!3d43.3976748!4d-79.7847418!16s%2Fm%2F04f173d?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+            case "St. Kateri Tekakwitha":
+                return "https://www.google.ca/maps/place/St.+Kateri+Tekakwitha+Catholic+Secondary+School/@43.5082699,-79.837057,17z/data=!3m1!4b1!4m6!3m5!1s0x882b613e152f1921:0x2a7320b70c03683f!8m2!3d43.508266!4d-79.8344821!16s%2Fg%2F11qgqwqsc7?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D";
+            case "Christ the King":
+                return "https://www.google.ca/maps/place/Christ+the+King+Catholic+Secondary+School/@43.6511849,-79.9097171,17z/data=!3m1!4b1!4m6!3m5!1s0x882b12ad44182fdd:0x77eebb649237a1c4!8m2!3d43.6511849!4d-79.9097171!16s%2Fm%2F04lfj_k?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3Dl";
+            default:
+                return "https://hcaa.ca/";
+        }
+    };
     
     return (
         <ScrollView style={{
@@ -265,7 +293,7 @@ const GameInfo = React.memo(({ location, league, home, away, sets, time, dateStr
                         <Ionicons name="chevron-forward" size={14} color={colors.text[theme].secondary} style={{ marginBottom: 14 }} />
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {}} style={{
+                <TouchableOpacity onPress={() => Linking.openURL(locationLinking())} style={{
                     display: 'flex', flexDirection: 'row', padding: 16, alignItems: 'center', justifyContent: 'space-between', position: 'relative',
                     paddingBottom: 0, paddingRight: 0, minHeight: 62
                 }}>

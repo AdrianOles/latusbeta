@@ -52,10 +52,13 @@ const Signin = () => {
     checkAuthState();
   }, []);
 
+  
+
   useEffect(() => {
     const checkPendingAuth = async () => {
       const isPending = await AsyncStorage.getItem('auth_in_progress');
-      if (isPending === 'true') {
+      // Only set to loading if we don't ALREADY have the user
+      if (isPending === 'true' && !authUser) {
         setLoading(true);
       }
     };
@@ -65,12 +68,10 @@ const Signin = () => {
     const unsubscribe = Hub.listen('auth', async ({ payload }) => {
       switch (payload.event) {
         case 'signInWithRedirect':
+        case 'signedIn': // Catch standard sign in events too
           await AsyncStorage.removeItem('auth_in_progress');
-
-          // 1. Fire the haptic success motor!
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-          // 2. Trigger the UI animation
+          setLoading(false); // Ensure loading is toggled off
           setSuccess(true);
           break;
 
@@ -84,8 +85,9 @@ const Signin = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [authUser]); // Add authUser as a dependency so the check logic has the latest state
 
+  
   const handleDefaultSignIn = async () => {
     setSchoolError(false)
     clearErrorState(); // FIX: Instantly clear any old errors when they try to sign in
@@ -94,13 +96,14 @@ const Signin = () => {
 
     await AsyncStorage.setItem('auth_in_progress', 'true');
 
+    console.log("signing in")
     signInWithRedirect({
-      provider: 'Google',
-      options: {
-        prompt: 'SELECT_ACCOUNT'
-      }
-    });
-  }
+        provider: 'Google',
+        options: {
+          prompt: 'SELECT_ACCOUNT'
+        }
+      });
+    }
 
   useEffect(() => {
     if (error) {

@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import ViewShot from 'react-native-view-shot';
 import Share, { ShareSingleOptions, Social } from 'react-native-share';
 import * as FileSystem from 'expo-file-system';
-import * as MediaLibrary from 'expo-media-library';
+// import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import * as Linking from 'expo-linking';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -68,7 +68,7 @@ const SharegameStory = () => {
     const viewShotRefs = useRef<(ViewShot | null)[]>([]);
     const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
     const [activeIndex, setActiveIndex] = useState(0);
-    const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+    // const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
     const [pos, setPos] = useState<number>(1);
     const [move, setMove] = useState<CardMove>({
         top: undefined, bottom: 16, right: 16, left: undefined
@@ -142,98 +142,98 @@ const SharegameStory = () => {
         }
     }, [calculatedWidth, activeIndex]);
 
-    const shareToInstagramAsPost = async () => {
-        try {
-            if (!selectedImageUri) {
-                Alert.alert('No Image', 'Please select a background image first.');
-                return;
-            }
+    // const shareToInstagramAsPost = async () => {
+    //     try {
+    //         if (!selectedImageUri) {
+    //             Alert.alert('No Image', 'Please select a background image first.');
+    //             return;
+    //         }
 
-            const activeViewShotRef = viewShotRefs.current[activeIndex];
-            if (!activeViewShotRef || typeof activeViewShotRef.capture !== 'function') {
-                Alert.alert('Error', 'Component not ready. Please try again.');
-                return;
-            }
+    //         const activeViewShotRef = viewShotRefs.current[activeIndex];
+    //         if (!activeViewShotRef || typeof activeViewShotRef.capture !== 'function') {
+    //             Alert.alert('Error', 'Component not ready. Please try again.');
+    //             return;
+    //         }
 
-            // Capture the view with the higher resolution
-            const uri = await activeViewShotRef.capture();
-            // console.log("Capured: ", uri)
+    //         // Capture the view with the higher resolution
+    //         const uri = await activeViewShotRef.capture();
+    //         // console.log("Capured: ", uri)
 
-            // The rest of the function remains the same...
-            const { status } = await MediaLibrary.requestPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission Denied', 'We need permission to save the image to your photo library to share it.');
-                return;
-            }
+    //         // The rest of the function remains the same...
+    //         const { status } = await MediaLibrary.requestPermissionsAsync();
+    //         if (status !== 'granted') {
+    //             Alert.alert('Permission Denied', 'We need permission to save the image to your photo library to share it.');
+    //             return;
+    //         }
 
-            const backgroundBase64 = await FileSystem.readAsStringAsync(selectedImageUri, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
+    //         const backgroundBase64 = await FileSystem.readAsStringAsync(selectedImageUri, {
+    //             encoding: FileSystem.EncodingType.Base64,
+    //         });
 
-            const shareOptions: ShareSingleOptions = {
-                backgroundImage: `data:image/jpeg;base64,${backgroundBase64}`,
-                stickerImage: `data:image/png;base64,${uri}`,
-                backgroundBottomColor: '#fefefe',
-                backgroundTopColor: '#906df4',
-                social: Share.Social.INSTAGRAM_STORIES as Social,
-                appId: '1433567004455755' // required since  Jan 2023 (see: https://developers.facebook.com/docs/instagram/sharing-to-stories/#sharing-to-stories)
-            };
+    //         const shareOptions: ShareSingleOptions = {
+    //             backgroundImage: `data:image/jpeg;base64,${backgroundBase64}`,
+    //             stickerImage: `data:image/png;base64,${uri}`,
+    //             backgroundBottomColor: '#fefefe',
+    //             backgroundTopColor: '#906df4',
+    //             social: Share.Social.INSTAGRAM_STORIES as Social,
+    //             appId: '1433567004455755' // required since  Jan 2023 (see: https://developers.facebook.com/docs/instagram/sharing-to-stories/#sharing-to-stories)
+    //         };
 
-            await Share.shareSingle(shareOptions);
-        } catch (error: any) {
-            if (error.message.includes("User did not share")) {
-                console.log("Share cancelled by user.");
-            } else {
-                console.error("An error occurred during sharing:", error);
-                Alert.alert('Failed to share', `An error occurred: ${error.message || 'Unknown error'}`);
-            }
-        } finally {
-        }
-    };
+    //         await Share.shareSingle(shareOptions);
+    //     } catch (error: any) {
+    //         if (error.message.includes("User did not share")) {
+    //             console.log("Share cancelled by user.");
+    //         } else {
+    //             console.error("An error occurred during sharing:", error);
+    //             Alert.alert('Failed to share', `An error occurred: ${error.message || 'Unknown error'}`);
+    //         }
+    //     } finally {
+    //     }
+    // };
 
-    const downloadImage = async () => {
-        let savedAsset: MediaLibrary.Asset | null = null;
+    // const downloadImage = async () => {
+    //     let savedAsset: MediaLibrary.Asset | null = null;
 
-        try {
-            if (!selectedImageUri) {
-                Alert.alert('No Image', 'Please select a background image first.');
-                return;
-            }
+    //     try {
+    //         if (!selectedImageUri) {
+    //             Alert.alert('No Image', 'Please select a background image first.');
+    //             return;
+    //         }
 
-            const activeViewShotRef = viewShotRefs.current[activeIndex];
-            if (!activeViewShotRef || typeof activeViewShotRef.capture !== 'function') {
-                Alert.alert('Error', 'Component not ready. Please try again.');
-                return;
-            }
+    //         const activeViewShotRef = viewShotRefs.current[activeIndex];
+    //         if (!activeViewShotRef || typeof activeViewShotRef.capture !== 'function') {
+    //             Alert.alert('Error', 'Component not ready. Please try again.');
+    //             return;
+    //         }
 
-            // Capture the view with the higher resolution
-            const uri = await activeViewShotRef.capture();
+    //         // Capture the view with the higher resolution
+    //         const uri = await activeViewShotRef.capture();
 
-            // The rest of the function remains the same...
-            const { status } = await MediaLibrary.requestPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission Denied', 'We need permission to save the image to your photo library to share it.');
-                return;
-            }
+    //         // The rest of the function remains the same...
+    //         const { status } = await MediaLibrary.requestPermissionsAsync();
+    //         if (status !== 'granted') {
+    //             Alert.alert('Permission Denied', 'We need permission to save the image to your photo library to share it.');
+    //             return;
+    //         }
 
-            savedAsset = await MediaLibrary.createAssetAsync(uri);
-            if (!savedAsset?.uri) {
-                throw new Error("Failed to save image to gallery.");
-            } else {
-                Alert.alert('Saved', 'You successfully saved the image to your camera roll.');
-                Haptics.notificationAsync(
-                    Haptics.NotificationFeedbackType.Success
-                )
-            }
-        } catch (error: any) {
-            if (error.message.includes("User did not share")) {
-                console.log("Share cancelled by user.");
-            } else {
-                console.error("An error occurred during sharing:", error);
-                Alert.alert('Failed to share', `An error occurred: ${error.message || 'Unknown error'}`);
-            }
-        }
-    }
+    //         savedAsset = await MediaLibrary.createAssetAsync(uri);
+    //         if (!savedAsset?.uri) {
+    //             throw new Error("Failed to save image to gallery.");
+    //         } else {
+    //             Alert.alert('Saved', 'You successfully saved the image to your camera roll.');
+    //             Haptics.notificationAsync(
+    //                 Haptics.NotificationFeedbackType.Success
+    //             )
+    //         }
+    //     } catch (error: any) {
+    //         if (error.message.includes("User did not share")) {
+    //             console.log("Share cancelled by user.");
+    //         } else {
+    //             console.error("An error occurred during sharing:", error);
+    //             Alert.alert('Failed to share', `An error occurred: ${error.message || 'Unknown error'}`);
+    //         }
+    //     }
+    // }
 
     useEffect(() => {
         switch (pos) {
@@ -380,7 +380,7 @@ const SharegameStory = () => {
             }}>
                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
                     <View style={{ flex: 1, marginRight: 16, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <TouchableOpacity onPress={shareToInstagramAsPost} disabled={!selectedImageUri} style={{
+                        {/* <TouchableOpacity onPress={shareToInstagramAsPost} disabled={!selectedImageUri} style={{
                             borderRadius: 250, marginBottom: 8, overflow: 'hidden',
                             justifyContent: 'center', alignItems: 'center', position: 'relative', width: '100%'
                         }}>
@@ -391,16 +391,16 @@ const SharegameStory = () => {
                                 end={{ x: 1, y: 0.5 }}
                                 style={{ position: 'absolute', zIndex: 0, width: '100%', height: '100%' }}
                             />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                         <Text style={{ fontSize: 13, lineHeight: 18, fontFamily: "Figtree-SemiBold", textAlign: 'center', color: colors.text[theme].secondary }}>Story</Text>
                     </View>
                     <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <TouchableOpacity onPress={downloadImage} disabled={!selectedImageUri} style={{
+                        {/* <TouchableOpacity onPress={downloadImage} disabled={!selectedImageUri} style={{
                             borderRadius: 250, marginBottom: 8, overflow: 'hidden', backgroundColor: colors.fills[theme].standard,
                             justifyContent: 'center', alignItems: 'center', position: 'relative', width: '100%'
                         }}>
                             <Ionicons name='download-outline' size={28} color={colors.text[theme].primary} style={{ zIndex: 1, padding: 12 }} />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                         <Text style={{ fontSize: 13, lineHeight: 18, fontFamily: "Figtree-SemiBold", textAlign: 'center', color: colors.text[theme].secondary }}>Save</Text>
                     </View>
                 </View>

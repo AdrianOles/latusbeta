@@ -12,6 +12,7 @@ import * as Linking from 'expo-linking';
 import React from 'react';
 import RootNavigationWithContext from './src/navigation/RootNavigationWithContext';
 
+
 // const userPoolClientId = "4jje2jbjic8g5sgu8vuud3kk2j";
 // const userPoolId = amplifyconfig.aws_user_pools_id;
 
@@ -46,17 +47,30 @@ const signOutURIs = amplifyconfig.oauth.redirectSignOut.split(',');
 
 const getRedirectUri = (uris: any[]) => {
   if (Platform.OS === 'android') {
-    return 'projectlatus.app://callback/'; // projectlatus.app://callback/
+    return 'projectlatus.app://callback/';
   } else if (Platform.OS === 'ios') {
-    return 'latus.app://callback/'; // latus.app://callback/
+    return 'latus.app://callback/';
   } else {
-    // Fallback for Web: check if running locally or in production
     return __DEV__ ? uris[0] : uris[1];
   }
 };
 
-Amplify.configure({
+const currentSignInURI = getRedirectUri(signInURIs);
+const currentSignOutURI = getRedirectUri(signOutURIs);
+
+const mergedConfig = {
   ...amplifyconfig,
+  oauth: {
+    ...amplifyconfig.oauth,
+    // Force it to use the exact URI for this OS as a string
+    redirectSignIn: currentSignInURI,
+    redirectSignOut: currentSignOutURI,
+  }
+};
+
+// 2. Configure Amplify, casting mergedConfig 'as any' to bypass the TS error
+Amplify.configure({
+  ...(mergedConfig as any),
   Auth: {
     Cognito: {
       userPoolId: amplifyconfig.aws_user_pools_id,
@@ -66,10 +80,10 @@ Amplify.configure({
         oauth: {
           domain: amplifyconfig.oauth.domain,
           scopes: amplifyconfig.oauth.scope,
-          redirectSignIn:['projectlatus.app://callback/'],
-          redirectSignOut: ['projectlatus.app://callback/'],
+          // V6 block needs arrays
+          redirectSignIn: [currentSignInURI],
+          redirectSignOut: [currentSignOutURI],
           responseType: amplifyconfig.oauth.responseType,
-          // This is what forces the Google Account selection screen
           ...({
             queryParams: {
               prompt: 'select_account',

@@ -73,6 +73,8 @@ const GameBanner = React.memo((
 
     const correctFont = (testing).length > 2 ? ((testing).length > 4 ? 30 : 30) : 42;
 
+    console.log("All data: ", { homeScore, awayScore, home, away, league, theme, pending, time, date, final });
+
     // useEffect(() => {
     //     async function getMyToken() {
     //         // 1. Ask for iOS permission
@@ -202,7 +204,7 @@ const GameBanner = React.memo((
                     <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', }}>
                             {
-                                homeScore === null && awayScore === null && !pending ? (
+                                !pending && time && formattedDate ? (
                                     <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                                         <Text maxFontSizeMultiplier={1} style={{ paddingHorizontal: 16, fontSize: 20, fontFamily: 'Figtree-SemiBold', color: colors.text[final ? 'dark' : theme].primary }}>
                                             {time}
@@ -259,8 +261,10 @@ const GameBanner = React.memo((
                         <Image
                             source={schoolLogos[away as school]}
                             style={{
-                                height: 60, aspectRatio: 1, marginBottom: 8, objectFit: 'contain'
+                                height: 60, aspectRatio: 1, marginBottom: 8
                             }}
+                            contentFit="contain"
+                            transition={300}
                         />
                     )}
                     <Text numberOfLines={3} maxFontSizeMultiplier={1} style={{ fontFamily: 'Figtree-SemiBold', fontSize: 13, color: colors.text[final ? 'dark' : theme].primary, textAlign: 'center' }}>
