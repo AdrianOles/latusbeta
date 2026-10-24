@@ -32,6 +32,20 @@
       },
       "providerPlugin": "awscloudformation",
       "service": "AppSync"
+    },
+    "scoresApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "scoresApi"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
     }
   },
   "auth": {
@@ -109,6 +123,26 @@
     },
     "latusPreSignup": {
       "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "scoresApi": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name"
+          ],
+          "category": "function",
+          "resourceName": "sportninjaTokenRefresh"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "sportninjaTokenRefresh": {
+      "build": true,
+      "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
@@ -199,6 +233,46 @@
         {
           "category": "function",
           "resourceName": "latusPreSignup"
+        }
+      ]
+    },
+    "AMPLIFY_function_scoresApi_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "scoresApi"
+        }
+      ]
+    },
+    "AMPLIFY_function_scoresApi_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "scoresApi"
+        }
+      ]
+    },
+    "AMPLIFY_function_sportninjaTokenRefresh_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sportninjaTokenRefresh"
+        }
+      ]
+    },
+    "AMPLIFY_function_sportninjaTokenRefresh_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sportninjaTokenRefresh"
+        }
+      ]
+    },
+    "AMPLIFY_function_sportninjaTokenRefresh_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sportninjaTokenRefresh"
         }
       ]
     }

@@ -121,10 +121,10 @@ const StickHeader = React.memo(({ currentPage, onTabPress, authUser, dateSearch,
                 <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                     <Image 
                         source={hcaa}
-                        style={{ width: 32, height: 32 }}
+                        style={{ width: 104, height: 32 }}
                     />
                     <Text maxFontSizeMultiplier={1} style={{ fontSize: 24, fontFamily: 'Figtree-Bold', color: colors.text[theme].primary, marginLeft: 4 }}>
-                        HCAA Sports
+                        
                     </Text>
                 </View>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>

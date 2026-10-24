@@ -5,7 +5,7 @@ module.exports = {
     name: IS_ANDROID ? "Project Latus" : "Latus",
     slug: IS_ANDROID ? "project-latus" : "Latus",
     scheme: IS_ANDROID ? "projectlatus.app" : "latus.app",
-    version: "1.5.7",
+    version: "1.5.8",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "automatic",
@@ -16,7 +16,7 @@ module.exports = {
       backgroundColor: "#ffffff"
     },
     ios: {
-      buildNumber: "11",
+      buildNumber: "12",
       supportsTablet: false,
       bundleIdentifier: "latus.app",
       splash: {
@@ -130,7 +130,7 @@ module.exports = {
           : "https://u.expo.dev/38ef905d-694c-488a-8e18-c0cf3bd3fd8e"
       }
     },
-    runtimeVersion: "1.5.7",
+    runtimeVersion: { policy: "appVersion" },
     updates: {
       url: IS_ANDROID
         ? "https://u.expo.dev/bb7b911e-b493-490e-9290-91ecaf21f30c"

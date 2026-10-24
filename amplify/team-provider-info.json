@@ -38,6 +38,15 @@
         "hcaaweekly": {
           "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
           "s3Key": "amplify-builds/hcaaweekly-774d4d662f74754f7332-build.zip"
+        },
+        "sportninjaTokenRefresh": {
+          "secretsPathAmplifyAppId": "d3ebv8rvc54f84",
+          "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
+          "s3Key": "amplify-builds/sportninjaTokenRefresh-342f6a384733776c4c54-build.zip"
+        },
+        "scoresApi": {
+          "deploymentBucketName": "amplify-latus-prod-1e6c0-deployment",
+          "s3Key": "amplify-builds/scoresApi-34374830614541742b75-build.zip"
         }
       },
       "storage": {
@@ -45,7 +54,8 @@
       },
       "api": {
         "latus": {},
-        "hcaaAPI": {}
+        "hcaaAPI": {},
+        "scoresApi": {}
       }
     }
   },

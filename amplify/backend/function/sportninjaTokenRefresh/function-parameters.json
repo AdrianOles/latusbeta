@@ -1,0 +1,7 @@
+{
+  "lambdaLayers": [],
+  "secretNames": [
+    "SN_EMAIL",
+    "SN_PASSWORD"
+  ]
+}

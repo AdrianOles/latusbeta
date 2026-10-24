@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "paths": {
+    "/scores": {
+      "name": "/scores",
+      "lambdaFunction": "scoresApi",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/schedules": {
+      "name": "/schedules",
+      "lambdaFunction": "scoresApi",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/standings": {
+      "name": "/standings",
+      "lambdaFunction": "scoresApi",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/teams": {
+      "name": "/teams",
+      "lambdaFunction": "scoresApi",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+  [
+    {
+      "Action": [
+        "ssm:GetParameter"
+      ],
+      "Resource": [
+        "arn:aws:ssm:*:*:parameter/sportninja/*"
+      ]
+    }
+  ]
