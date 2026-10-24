@@ -13,7 +13,14 @@ import { HomeStackParamList } from '../../navigation';
 import { getScores, ScoresParams } from './components/fetchers/master';
 import { RawInputRecord } from '.';
 import useSWR from 'swr';
-import { getSchoolId } from './Team';
+import {
+    getSchoolId,
+    getSchoolsInLeague,
+    isPlaceholderId,
+    LEAGUES,
+    LeagueName,
+    SchoolName,
+} from './components/fetchers/getSchoolId';
 import { gameType } from '../../types/Games';
 import { SharedValue } from 'react-native-reanimated';
 import { LeagueGame } from './components/LeagueGame';
@@ -43,6 +50,27 @@ const getFormattedDate = (date: Date): string => {
     return `${year}-${month}-${day}`;
 };
 
+/**
+ * Every league where `school` has a real (non-placeholder) team id, paired
+ * with that team id. Team ids are per league, so each league needs its own
+ * lookup. Placeholders are skipped silently here to avoid a console warning
+ * per league on every fetch.
+ */
+const getSchoolLeagueQueries = (school: string): Pick<ScoresParams, 'leagueid' | 'schoolSelect'>[] => {
+    const queries: Pick<ScoresParams, 'leagueid' | 'schoolSelect'>[] = [];
+
+    for (const leagueName of Object.keys(LEAGUES) as LeagueName[]) {
+        const leagueid = LEAGUES[leagueName];
+        if (isPlaceholderId(leagueid)) continue;
+        if (!getSchoolsInLeague(leagueid).includes(school as SchoolName)) continue;
+
+        const schoolSelect = getSchoolId(leagueid, school);
+        if (schoolSelect) queries.push({ leagueid, schoolSelect });
+    }
+
+    return queries;
+};
+
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -64,48 +92,6 @@ const MySchool = () => {
         "STA": "St. Thomas Aquinas"
     } as const
 
-    const schoolData = [
-        {
-            name: 'Assumption',
-            abbrev: 'asu'
-        },
-        {
-            name: 'Bishop P.F. Reding',
-            abbrev: 'br'
-        },
-        {
-            name: 'Christ the King',
-            abbrev: 'ctk'
-        },
-        {
-            name: 'Corpus Christi',
-            abbrev: 'cc'
-        },
-        {
-            name: 'Holy Trinity',
-            abbrev: 'ht'
-        },
-        {
-            name: 'Notre Dame',
-            abbrev: 'nd'
-        },
-        {
-            name: 'St. Francis Xavier',
-            abbrev: 'stfx'
-        },
-        {
-            name: 'St. Kateri Takakwitha',
-            abbrev: 'skt'
-        },
-        {
-            name: 'St. Ignatius of Loyola',
-            abbrev: 'loy'
-        },
-        {
-            name: 'St. Thomas Aquinas',
-            abbrev: 'sta'
-        }
-    ];
 
     const groupGamesByLocation = (
         gamesData: RawInputRecord[],
@@ -197,18 +183,29 @@ const MySchool = () => {
     );
 
     const fetcher = useCallback(async (school?: string) => {
-        if (school) {
-            const queryParams: ScoresParams = {
-                dateSelect: getFormattedDate(new Date(new Date().setDate(new Date().getDate() + 1))),
-                schoolSelect: getSchoolId(school),
-            };
-            const data = await getScores(queryParams);
-            const temp = groupGamesByLocation(data as RawInputRecord[], school);
-            console.log(temp);
-            return temp;
+        if (!school) return null;
+
+        const dateSelect = getFormattedDate(new Date(new Date().setDate(new Date().getDate() + 1)));
+
+        // One request per league the school plays in, each filtered to that
+        // league's team id, run in parallel.
+        const leagueQueries = getSchoolLeagueQueries(school);
+
+        let data: RawInputRecord[];
+        if (leagueQueries.length > 0) {
+            const results = await Promise.all(
+                leagueQueries.map((q) => getScores({ ...q, dateSelect })),
+            );
+            data = results.flat() as RawInputRecord[];
         } else {
-            return null;
+            // No team ids filled in for this school yet: fetch the whole day
+            // unfiltered and let groupGamesByLocation match on the name.
+            data = (await getScores({ dateSelect })) as RawInputRecord[];
         }
+
+        const temp = groupGamesByLocation(data, school);
+        console.log(temp);
+        return temp;
     }, []);
 
     return (
@@ -225,7 +222,7 @@ const MySchool = () => {
                 position: 'relative', height: '100%',
                 paddingHorizontal: 8
             }}>
-                <Pressable onPress={() => {}} style={{  }}>
+                <Pressable onPress={() => { }} style={{}}>
                     <View style={{
                         display: 'flex', flexDirection: 'row', justifyContent: 'space-between',
                         alignItems: 'center', paddingHorizontal: 12, width: '100%', paddingVertical: 16,
@@ -236,7 +233,7 @@ const MySchool = () => {
                     </View>
                 </Pressable>
 
-                
+
                 <ScrollView>
                     <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBlock: 16 }}>
                         <Text style={{ fontFamily: "Figtree-Medium", fontSize: 17, color: colors.text[theme].secondary, marginBottom: 4 }}>Happening today, at</Text>
@@ -244,7 +241,7 @@ const MySchool = () => {
                     </View>
                     {
                         isLoading && (
-                            <View style={{marginTop: 40}}>
+                            <View style={{ marginTop: 40 }}>
                                 <ActivityIndicator size={"large"} color={colors.text[theme].primary} />
                                 <Text style={{
                                     textAlign: 'center', marginTop: 12, color: colors.text[theme].secondary,
@@ -256,7 +253,7 @@ const MySchool = () => {
                     {
                         error && (
                             <View style={{ marginTop: 40 }}>
-                                <Ionicons name='alert-circle-outline' size={42} style={{alignSelf: 'center', color: colors.text[theme].secondary}}  />
+                                <Ionicons name='alert-circle-outline' size={42} style={{ alignSelf: 'center', color: colors.text[theme].secondary }} />
                                 <Text style={{
                                     textAlign: 'center', marginTop: 12, color: colors.text[theme].secondary,
                                     fontSize: 16, fontFamily: 'Figtree-SemiBold'

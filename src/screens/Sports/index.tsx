@@ -134,6 +134,7 @@ const MyFlatList = React.memo(({
                         teamName={'St. Francis Xavier'}
                         mode={'game'}
                         date={dateString}
+                        homePage={true}
                     />
                 );
             } else {
@@ -344,7 +345,10 @@ const Sports = () => {
                 currentLeague = leagueName;
             } else if (currentLeague) {
                 leagueName = currentLeague;
-            } if (!leagueName) {
+            }
+
+            // Skip missing leagues and anything elementary-level.
+            if (!leagueName || /elementary/i.test(leagueName)) {
                 return;
             }
 

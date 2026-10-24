@@ -101,7 +101,7 @@ export const abbreviateRank = (inputString: string): string => {
     return result;
 }
 
-const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, mode, date }: { date?: string, league?: string, items: gameType[], widthScreen: number, teamName: school, mode?: "league" | "team" | "game" | 'school' }) => {
+const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, mode, date, homePage }: { date?: string, league?: string, items: gameType[], widthScreen: number, teamName: school, mode?: "league" | "team" | "game" | 'school', homePage?: boolean }) => {
     const navigation = useNavigation<HomeStackParamList>(); // If GameCard needs navigation
     const { theme } = useAuthContext();
     //Remove stroke for the last GameCard
@@ -119,28 +119,6 @@ const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, 
             return null;
         }
     }
-
-    const results = React.useMemo(() => getResultsForTeam(items, teamName), [items, teamName]);
-    
-    const renderGameCard = ({ item, index }: { item: gameType, index: number }) => {
-        const isLastItem = index === (items.length - 1);
-        return (
-            <GameCard
-                mode={mode}
-                dateString={date}
-                date={item.date}
-                time={item.time}
-                format={mode === 'game' || mode === 'school' ? results[index] as "W" | "L" | "D" : undefined}
-                remove={isLastItem}
-                key={index} // key property is still important, although FlatList uses keyExtractor
-                item={item}
-                widthScreen={widthScreen - 32}
-                lpadding={16}
-                league={item.league}
-                teamName={teamName}
-            />
-        );
-    };
 
     return (
         <View style={{
@@ -165,6 +143,7 @@ const LeagueGameComponent = React.memo(({ league, items, widthScreen, teamName, 
                         dateString={date}
                         time={game.time} // Assuming game object has time
                         remove={index === items.length - 1} // Remove divider for last item
+                        homePage={homePage}
                     />
                 ))}
             </View>

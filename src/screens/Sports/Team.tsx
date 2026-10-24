@@ -28,19 +28,20 @@ import { getScores, ScoresParams } from './components/fetchers/master';
 import { format } from 'date-fns';
 import { SkeletonGameCard } from './components/SkeletonGameCard';
 import Svg, { Path } from 'react-native-svg';
+import { getSchoolId } from './components/fetchers/getSchoolId';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 // Define MyFlatList as a separate component outside of Testrun
 interface MyFlatListProps {
     data: groupedGameStatus[] | null;
-    componentItems?: React.ReactElement[]; // <-- Add this new prop
+    componentItems?: React.ReactElement[];
     HeaderComponent?: React.ComponentType<any>;
     pageIndex: number;
-    teamName: school,
+    teamName: school;
     theme: 'light' | 'dark';
-    mainScrollY: Animated.SharedValue<number>;
-    currentActivePageIndex: Animated.SharedValue<number>;
+    mainScrollY: SharedValue<number>;
+    currentActivePageIndex: SharedValue<number>;
     flatListRefs: React.MutableRefObject<Map<number, any>>;
     syncTabs: (index: number, scrollY: number) => void;
     onRefreshRequest: () => Promise<any>;
@@ -198,25 +199,25 @@ const MyFlatList = React.memo(({
 export const getLeagueId = (leagueName: string): string => {
     switch (leagueName) {
         case "Varsity Boys Baseball":
-            return "26"
+            return "XIe07x0pjT4sCCBh"
         case "Junior Girls Basketball":
-            return "5"
+            return "QBx6I6iG0MdZAx8R"
         case "Senior Girls Basketball":
-            return "6"
+            return "X75JR6J83JNHEp2I"
         case "Junior Girls Field Hockey":
-            return "7"
+            return "biwtTVoCIhx5q3jq"
         case "Senior Girls Field Hockey":
-            return "8"
+            return "t2je0DByW7UGk9XI"
         case "Junior Boys Football":
-            return "1"
+            return "HPnoqpYahXjVj3em"
         case "Senior Boys Football":
-            return '2'
+            return 'Fmmth77bLBTSKFuF'
         case "Varsity Co-Ed Ultimate":
             return '28'
         case "Junior Boys Volleyball":
-            return "3"
+            return "312LCksejUyaAUUo"
         case "Senior Boys Volleyball":
-            return "4"
+            return "YSkMUWgt8C0LhUKk"
         case "Novice Boys Basketball":
             return "9"
         case "Junior Boys Basketball":
@@ -263,33 +264,6 @@ export const getLeagueId = (leagueName: string): string => {
             return "22"
         default:
             return "26";
-    }
-}
-
-export const getSchoolId = (schoolName: string): string => {
-    switch (schoolName) {
-        case "Assumption":
-            return "1"; 
-        case "Bishop Reding":
-            return "2";
-        case "Christ the King":
-            return "SfKxtlaNlC3UcMke";
-        case "Holy Trinity":
-            return "4";
-        case "Corpus Christi":
-            return "5";
-        case "St. Francis Xavier":
-            return "6";
-        case "Notre Dame":
-            return "7";
-        case "St. Ignatius of Loyola":
-            return "VVtS5Z5iF7W3DBbZ";
-        case "St. Thomas Aquinas":
-            return "9";
-        case "St. Kateri Tekakwitha":
-            return "51";
-        default:
-            return "1";
     }
 }
 
@@ -544,7 +518,7 @@ const League = () => {
             // Example: Fetching scores for a specific date
             dateSelect: 'ALL',
             leagueSelect: getLeagueId(league),
-            schoolSelect: getSchoolId(team),
+            schoolSelect: getSchoolId(team, getLeagueId(league)) ?? undefined,
         };
         const data = await getScores(queryParams);
         return groupedDataByStatus(data as RawInputRecord[]);

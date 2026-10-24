@@ -76,10 +76,10 @@ const WinningArrow = React.memo(({ color }: { color: string }) => (
 ));
 // -----------------------------------
 
-const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time, remove, format, mode, dateString, league, teamName }:
+const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time, remove, format, mode, dateString, league, teamName, homePage }:
     {
         item: gameType, widthScreen: number, lpadding?: number | undefined, date?: string, time?: string, remove?: boolean,
-        format?: "W" | "L" | "D", mode?: string, dateString?: string, league?: string, teamName?: string
+        format?: "W" | "L" | "D", mode?: string, dateString?: string, league?: string, teamName?: string, homePage?: boolean
     }) => {
     const navigation = useNavigation<HomeStackParamList>();
     const { theme } = useAuthContext();
@@ -169,7 +169,7 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
     const pendingFlag = (time?.includes('pending'));
     const dateBuffer = date ? 0 : 0;
 
-    console.log('time: ', time)
+    console.log(item)
 
     const isDraw = homeScore === awayScore;
     const homeWins = homeScore > awayScore;
@@ -220,9 +220,9 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                 paddingTop: date ? 16 : 24
             }}
         >
-            {date && !tbaTimeFlag && (
+            {date && !tbaTimeFlag && !homePage &&(
                 <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: 'Figtree-SemiBold', paddingHorizontal: 16, fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, paddingBottom: 12 }}>
-                    {formatToShortDate(date)}{item.notes && !item.notes.startsWith('Regular Season')
+                    {formatToShortDate(date)}{item.notes && !homePage && !item.notes.startsWith('Regular Season') && !item.notes.startsWith('Boys Football')
                         ? ` • ${item.notes
                             .split('.')[0] // Captures 'GHAC' and stops at the first dot
                             .replace(/\.$/, '') // Keeps your existing logic for other strings
@@ -230,9 +230,9 @@ const GameCardComponent = React.memo(({ item, widthScreen, lpadding, date, time,
                         : ''}
                 </Text>
             )}
-            {date && tbaTimeFlag && (
+            {date && tbaTimeFlag && !homePage && (
                 <Text maxFontSizeMultiplier={1.2} style={{ fontFamily: 'Figtree-SemiBold', paddingHorizontal: 16, fontSize: 13, lineHeight: 18, color: colors.text[theme].secondary, paddingBottom: 12 }}>
-                    {item.notes && !item.notes.startsWith('Regular Season')
+                    {item.notes && !homePage && !item.notes.startsWith('Regular Season')
                         ? `${item.notes
                             .split('.')[0] // Captures 'GHAC' and stops at the first dot
                             .replace(/\.$/, '') // Keeps your existing logic for other strings

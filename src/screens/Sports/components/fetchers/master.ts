@@ -50,6 +50,32 @@ const PER_PAGE = 45;
 /** Sentinel value the old <select> elements used for "no filter". */
 const ALL = 'ALL';
 
+// --- GAME TYPES ---
+
+/**
+ * SportNinja game_type_id -> label.
+ * 2, 8, 9 and 10 are confirmed. 7 and 11 are inferred from bracket shape
+ * (three games before the semis; the GHAC game after the HCAA final) —
+ * confirm them and delete the entries if they turn out wrong.
+ */
+const GAME_TYPE_LABELS: Record<number, string> = {
+    2: 'Regular Season',
+    7: 'Quarterfinal',       // inferred
+    8: 'Semifinal',
+    9: 'Final',
+    10: 'Consolation Final',
+    11: 'GHAC',              // inferred
+};
+
+/** Types that are not surfaced in notes (they would appear on every game). */
+const SILENT_GAME_TYPES = new Set<number>([2]);
+
+/** Human-readable game type, or undefined for unknown / silent types. */
+function gameTypeLabel(id: unknown): string | undefined {
+    if (typeof id !== 'number' || SILENT_GAME_TYPES.has(id)) return undefined;
+    return GAME_TYPE_LABELS[id];
+}
+
 // --- AUTHENTICATION ---
 
 /**
@@ -69,12 +95,16 @@ export function setAuthToken(token: string | null): void {
     runtimeToken = token && token.trim().length > 0 ? token.trim() : null;
 }
 
+/** TEMPORARY: hardcoded token. Remove before committing. */
+const TEMP_TOKEN = 'v2.local.SeESbcd7pyzenBt-W-3Qg3ZQ0R0mtBnDY67dg3L2KrmyNHEVvnQ6sjTK7qKHwSrX94adLV0HhhQnuVgnfHNh4L4Y8zI_B1VYmCg9DyE0d-cGZmVuYAytl6G-G4qDZ5Qh5L3AaVUNA_SJ3I3zwjP1XHm5nckvfbgV1uh4ZlL7V7jymGaT_YJZhEefbnmIBf_gVz1C9xY2CnKWsEGnqA_LwRbISrEdkb_s-7dCEWiziyaP6132mU8FbpBxnSatxFWtaUkpYjrJl-FbMwU1DywE15FMCBs9s1okA7uW04PcqllV1EGvgGCIz_b_HOEOWwCHyUm6sinRkgwDlcBRSw';
+
 function getAuthToken(): string | null {
     if (runtimeToken) return runtimeToken;
     const fromEnv = typeof process !== 'undefined'
         ? process.env?.SPORTNINJA_TOKEN
         : undefined;
-    return fromEnv && fromEnv.trim().length > 0 ? fromEnv.trim() : null;
+    if (fromEnv && fromEnv.trim().length > 0) return fromEnv.trim();
+    return TEMP_TOKEN;
 }
 
 /**
@@ -88,7 +118,7 @@ function buildHeaders(): Record<string, string> {
         'Content-Type': 'application/json',
     };
 
-    const token = 'v2.local.SeESbcd7pyzenBt-W-3Qg3ZQ0R0mtBnDY67dg3L2KrmyNHEVvnQ6sjTK7qKHwSrX94adLV0HhhQnuVgnfHNh4L4Y8zI_B1VYmCg9DyE0d-cGZmVuYAytl6G-G4qDZ5Qh5L3AaVUNA_SJ3I3zwjP1XHm5nckvfbgV1uh4ZlL7V7jymGaT_YJZhEefbnmIBf_gVz1C9xY2CnKWsEGnqA_LwRbISrEdkb_s-7dCEWiziyaP6132mU8FbpBxnSatxFWtaUkpYjrJl-FbMwU1DywE15FMCBs9s1okA7uW04PcqllV1EGvgGCIz_b_HOEOWwCHyUm6sinRkgwDlcBRSw';
+    const token = getAuthToken();
     if (token) {
         headers.Authorization = /^Bearer\s/i.test(token) ? token : `Bearer ${token}`;
         // Server-side only: browsers reject attempts to set these, and the
@@ -145,6 +175,8 @@ interface RawGame {
     id: string;
     starts_at: string;
     game_status_id?: number;
+    game_type_id?: number;
+    league_game_number?: string | null;
     shootout?: boolean;
     homeTeam?: RawTeam | null;
     visitingTeam?: RawTeam | null;
@@ -358,10 +390,22 @@ function buildLocation(g: RawGame): string | undefined {
     return unique.length > 0 ? unique.join(' — ') : undefined;
 }
 
-/** Mirrors the scraper's "Notes: ..." cell. */
+/**
+ * Mirrors the scraper's "Notes: ..." cell.
+ * Order: game type, bracket label (e.g. "Tier 1", "GHAC"), API notes,
+ * shootout flag, division name.
+ */
 function buildNotes(g: RawGame): string | undefined {
-    const raw = firstString(g.notes, g.note, g.description, g.summary);
     const bits: string[] = [];
+
+    const type = gameTypeLabel(g.game_type_id);
+    if (type) bits.push(type);
+
+    // league_game_number is used as a free-text bracket label in HCAA data.
+    const bracket = firstString(g.league_game_number);
+    if (bracket && bracket.toLowerCase() !== type?.toLowerCase()) bits.push(bracket);
+
+    const raw = firstString(g.notes, g.note, g.description, g.summary);
     if (raw) bits.push(raw);
     if (g.shootout) bits.push('Decided in shootout');
     const division = g.schedule?.name?.trim();

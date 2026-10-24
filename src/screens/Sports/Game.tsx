@@ -37,8 +37,8 @@ interface MyFlatListProps {
     theme: 'light' | 'dark';
     flatListRefs: React.MutableRefObject<Map<number, any>>;
     syncTabs: (index: number, scrollY: number) => void;
-    currentActivePageIndex: Animated.SharedValue<number>;
-    mainScrollY: Animated.SharedValue<number>;
+    currentActivePageIndex: SharedValue<number>;
+    mainScrollY: SharedValue<number>;
 }
 
 const MyFlatList = React.memo(({
