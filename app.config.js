@@ -5,7 +5,7 @@ module.exports = {
     name: IS_ANDROID ? "Project Latus" : "Latus",
     slug: IS_ANDROID ? "project-latus" : "Latus",
     scheme: IS_ANDROID ? "projectlatus.app" : "latus.app",
-    version: "1.5.8",
+    version: "1.5.9",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "automatic",
@@ -55,6 +55,7 @@ module.exports = {
       }
     },
     android: {
+      versionCode: 21,
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         monochromeImage: "./assets/images/adaptive-icon.png",
@@ -130,7 +131,7 @@ module.exports = {
           : "https://u.expo.dev/38ef905d-694c-488a-8e18-c0cf3bd3fd8e"
       }
     },
-    runtimeVersion: { policy: "appVersion" },
+    runtimeVersion: "1.5.9",
     updates: {
       url: IS_ANDROID
         ? "https://u.expo.dev/bb7b911e-b493-490e-9290-91ecaf21f30c"
