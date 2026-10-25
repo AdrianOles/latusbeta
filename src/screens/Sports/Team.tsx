@@ -518,7 +518,7 @@ const League = () => {
             // Example: Fetching scores for a specific date
             dateSelect: 'ALL',
             leagueSelect: getLeagueId(league),
-            schoolSelect: getSchoolId(team, getLeagueId(league)) ?? undefined,
+            schoolSelect: getSchoolId(getLeagueId(league), team) ?? undefined,
         };
         const data = await getScores(queryParams);
         return groupedDataByStatus(data as RawInputRecord[]);
